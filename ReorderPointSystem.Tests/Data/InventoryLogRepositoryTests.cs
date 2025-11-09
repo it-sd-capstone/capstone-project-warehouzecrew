@@ -1,6 +1,6 @@
 ﻿namespace ReorderPointSystem.Tests.Data
 {
-    internal class InventoryLogRepositoryTests
+    public class InventoryLogRepositoryTests
     {
     }
 }

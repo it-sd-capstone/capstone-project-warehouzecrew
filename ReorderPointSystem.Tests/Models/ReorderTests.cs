@@ -1,6 +1,6 @@
 ﻿namespace ReorderPointSystem.Tests.Models
 {
-    internal class ReorderTests
+    public class ReorderTests
     {
     }
 }
