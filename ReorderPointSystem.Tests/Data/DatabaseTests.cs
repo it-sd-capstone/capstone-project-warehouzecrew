@@ -3,22 +3,8 @@ using ReorderPointSystem.Data;
 
 namespace ReorderPointSystem.Tests.Data
 {
-    public class DatabaseTests
+    public class DatabaseTests : TestBase
     {
-        private const string TestDbFilePath = "test_rps.db";
-
-        // This will run before each test
-        public DatabaseTests()
-        {
-            // Ensure a clean test database before each test
-            if (System.IO.File.Exists(TestDbFilePath))
-            {
-                System.IO.File.Delete(TestDbFilePath);
-            }
-
-            Database.SetTestDatabase(TestDbFilePath);
-        }
-
         [Fact]
         public void GetConnection_ReturnsOpenConnection()
         {
