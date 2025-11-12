@@ -37,7 +37,7 @@ namespace ReorderPointSystem.Data
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM reorders WHERE id = @Id";
+            command.CommandText = "SELECT * FROM reorders WHERE id = @Id";
             command.Parameters.AddWithValue("@Id", id);
 
             using var reader = command.ExecuteReader();
@@ -55,7 +55,7 @@ namespace ReorderPointSystem.Data
             return null; // Not found
         }
 
-        public static int Add(Reorder reorderEntry)
+        public static Reorder Add(Reorder reorderEntry)
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
@@ -74,14 +74,22 @@ namespace ReorderPointSystem.Data
 
                 SELECT last_insert_rowid();
                 ";
+
+            DateTime currentDateTime = DateTime.Now;
             command.Parameters.AddWithValue("@ItemId", reorderEntry.ItemId);
             command.Parameters.AddWithValue("@Quantity", reorderEntry.Quantity);
             command.Parameters.AddWithValue("@Status", reorderEntry.Status);
-            command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+            command.Parameters.AddWithValue("@CreatedAt", currentDateTime);
 
-            // Returns id of the newly created reorder
-            int newReorderId = (int) command.ExecuteScalar();
-            return newReorderId;
+            // Returns new Reorder with updated Id and CreatedAt
+            int resultId = Convert.ToInt32(command.ExecuteScalar());
+            return new Reorder(
+                resultId,
+                reorderEntry.ItemId,
+                reorderEntry.Quantity,
+                reorderEntry.Status,
+                currentDateTime
+            );
         }
 
         public static bool Update(Reorder reorderEntry)
@@ -89,9 +97,10 @@ namespace ReorderPointSystem.Data
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                UPDATE
-                    item_id = @ItemId
-                    quantity = @Quantity
+                UPDATE reorders
+                SET
+                    item_id = @ItemId,
+                    quantity = @Quantity,
                     status = @Status
                 WHERE
                     id = @Id";
@@ -109,7 +118,7 @@ namespace ReorderPointSystem.Data
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = @"DELETE FROM reorders WHERE id = @Id";
+            command.CommandText = "DELETE FROM reorders WHERE id = @Id";
             command.Parameters.AddWithValue("@Id", reorderId);
             
             // Returns true if successful
