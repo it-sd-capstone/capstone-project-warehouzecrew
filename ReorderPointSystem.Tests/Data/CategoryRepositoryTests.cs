@@ -9,8 +9,9 @@ using Xunit.Abstractions;
 
 namespace ReorderPointSystem.Tests.Data
 {
-    public class CategoryRepositoryTests
-    { 
+    public class CategoryRepositoryTests : TestBase
+    {
+
 
     }
 }
