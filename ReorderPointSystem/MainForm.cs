@@ -6,5 +6,19 @@ namespace ReorderPointSystem
         {
             InitializeComponent();
         }
+
+        private void EnableTestModeChkbx_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EnableTestModeChkbx.Checked == true)
+            {
+                AddTestDataBtn.Visible = true;
+                SimDayBtn.Visible = true;
+            } 
+            else
+            {
+                AddTestDataBtn.Visible = false;
+                SimDayBtn.Visible = false;
+            }
+        }
     }
 }
