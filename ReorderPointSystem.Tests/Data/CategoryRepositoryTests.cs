@@ -100,6 +100,7 @@ namespace ReorderPointSystem.Tests.Data
 
             //Assert
             Assert.Null(deleted);
+
         }
     }
 }
