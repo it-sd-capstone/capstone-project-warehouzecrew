@@ -32,41 +32,41 @@
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
             ItemInfoGroupBox = new GroupBox();
-            ItemsListGroupBox = new GroupBox();
-            PendingOrdersGroupBox = new GroupBox();
-            CurrentOrdersGroupBox = new GroupBox();
-            ItemNameLabel = new Label();
-            ItemNameTextBox = new TextBox();
-            CurrentAmountLabel = new Label();
-            ReorderPointLabel = new Label();
-            MaxAmtLabel = new Label();
-            CurrentQtyTextBox = new TextBox();
-            ReorderPointTextBox = new TextBox();
-            ReorderMaxTextBox = new TextBox();
+            EnableReorderLabel = new Label();
+            EnableReorderChkbx = new CheckBox();
+            DeleteItemBtn = new Button();
+            ClearFieldsBtn = new Button();
+            SubmitItemBtn = new Button();
             ItemDescriptionGroupBox = new GroupBox();
             ItemDescriptionLabel = new Label();
-            SubmitItemBtn = new Button();
-            ClearFieldsBtn = new Button();
-            DeleteItemBtn = new Button();
-            ItemsListBox = new ListBox();
-            SearchBtn = new Button();
-            ItemSearchTextBox = new TextBox();
+            ReorderMaxTextBox = new TextBox();
+            ReorderPointTextBox = new TextBox();
+            CurrentQtyTextBox = new TextBox();
+            MaxAmtLabel = new Label();
+            ReorderPointLabel = new Label();
+            CurrentAmountLabel = new Label();
+            ItemNameTextBox = new TextBox();
+            ItemNameLabel = new Label();
+            ItemsListGroupBox = new GroupBox();
+            AddToOrderBtn = new Button();
             EditItemBtn = new Button();
-            EnableReorderChkbx = new CheckBox();
-            EnableReorderLabel = new Label();
+            ItemSearchTextBox = new TextBox();
+            SearchBtn = new Button();
+            ItemsListBox = new ListBox();
+            PendingOrdersGroupBox = new GroupBox();
+            DeletePendingOrderBtn = new Button();
             PendingOrderListBox = new ListBox();
+            CurrentOrdersGroupBox = new GroupBox();
+            CurrentOrdersListBox = new ListBox();
             OrderItemsGroupBox = new GroupBox();
             OrderItemsListBox = new ListBox();
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
-            DeletePendingOrderBtn = new Button();
-            AddToOrderBtn = new Button();
-            CurrentOrdersListBox = new ListBox();
             ItemInfoGroupBox.SuspendLayout();
+            ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
             PendingOrdersGroupBox.SuspendLayout();
             CurrentOrdersGroupBox.SuspendLayout();
-            ItemDescriptionGroupBox.SuspendLayout();
             OrderItemsGroupBox.SuspendLayout();
             SuspendLayout();
             // 
@@ -90,6 +90,7 @@
             SimDayBtn.Text = "Simulate Day";
             SimDayBtn.UseVisualStyleBackColor = true;
             SimDayBtn.Visible = false;
+            SimDayBtn.Click += SimDayBtn_Click;
             // 
             // AddTestDataBtn
             // 
@@ -100,6 +101,7 @@
             AddTestDataBtn.Text = "Add Test DB Data";
             AddTestDataBtn.UseVisualStyleBackColor = true;
             AddTestDataBtn.Visible = false;
+            AddTestDataBtn.Click += AddTestDataBtn_Click;
             // 
             // ItemInfoGroupBox
             // 
@@ -124,109 +126,53 @@
             ItemInfoGroupBox.TabStop = false;
             ItemInfoGroupBox.Text = "Item Info";
             // 
-            // ItemsListGroupBox
+            // EnableReorderLabel
             // 
-            ItemsListGroupBox.Controls.Add(AddToOrderBtn);
-            ItemsListGroupBox.Controls.Add(EditItemBtn);
-            ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
-            ItemsListGroupBox.Controls.Add(SearchBtn);
-            ItemsListGroupBox.Controls.Add(ItemsListBox);
-            ItemsListGroupBox.Location = new Point(423, 12);
-            ItemsListGroupBox.Name = "ItemsListGroupBox";
-            ItemsListGroupBox.Size = new Size(405, 732);
-            ItemsListGroupBox.TabIndex = 4;
-            ItemsListGroupBox.TabStop = false;
-            ItemsListGroupBox.Text = "Items List";
+            EnableReorderLabel.AutoSize = true;
+            EnableReorderLabel.Location = new Point(102, 69);
+            EnableReorderLabel.Name = "EnableReorderLabel";
+            EnableReorderLabel.Size = new Size(273, 15);
+            EnableReorderLabel.TabIndex = 13;
+            EnableReorderLabel.Text = "Selected Item Allows Automatic Reorder Flagging?";
             // 
-            // PendingOrdersGroupBox
+            // EnableReorderChkbx
             // 
-            PendingOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
-            PendingOrdersGroupBox.Controls.Add(PendingOrderListBox);
-            PendingOrdersGroupBox.Location = new Point(834, 12);
-            PendingOrdersGroupBox.Name = "PendingOrdersGroupBox";
-            PendingOrdersGroupBox.Size = new Size(405, 139);
-            PendingOrdersGroupBox.TabIndex = 4;
-            PendingOrdersGroupBox.TabStop = false;
-            PendingOrdersGroupBox.Text = "Pending Orders";
+            EnableReorderChkbx.AutoSize = true;
+            EnableReorderChkbx.Location = new Point(66, 70);
+            EnableReorderChkbx.Name = "EnableReorderChkbx";
+            EnableReorderChkbx.Size = new Size(15, 14);
+            EnableReorderChkbx.TabIndex = 12;
+            EnableReorderChkbx.UseVisualStyleBackColor = true;
             // 
-            // CurrentOrdersGroupBox
+            // DeleteItemBtn
             // 
-            CurrentOrdersGroupBox.Controls.Add(CurrentOrdersListBox);
-            CurrentOrdersGroupBox.Location = new Point(834, 157);
-            CurrentOrdersGroupBox.Name = "CurrentOrdersGroupBox";
-            CurrentOrdersGroupBox.Size = new Size(405, 369);
-            CurrentOrdersGroupBox.TabIndex = 5;
-            CurrentOrdersGroupBox.TabStop = false;
-            CurrentOrdersGroupBox.Text = "Currently Active Orders";
+            DeleteItemBtn.Location = new Point(269, 640);
+            DeleteItemBtn.Name = "DeleteItemBtn";
+            DeleteItemBtn.Size = new Size(114, 59);
+            DeleteItemBtn.TabIndex = 11;
+            DeleteItemBtn.Text = "Delete Item";
+            DeleteItemBtn.UseVisualStyleBackColor = true;
+            DeleteItemBtn.Click += DeleteItemBtn_Click;
             // 
-            // ItemNameLabel
+            // ClearFieldsBtn
             // 
-            ItemNameLabel.AutoSize = true;
-            ItemNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameLabel.Location = new Point(6, 32);
-            ItemNameLabel.Name = "ItemNameLabel";
-            ItemNameLabel.Size = new Size(90, 21);
-            ItemNameLabel.TabIndex = 0;
-            ItemNameLabel.Text = "Item Name:";
+            ClearFieldsBtn.Location = new Point(137, 640);
+            ClearFieldsBtn.Name = "ClearFieldsBtn";
+            ClearFieldsBtn.Size = new Size(114, 59);
+            ClearFieldsBtn.TabIndex = 10;
+            ClearFieldsBtn.Text = "Clear";
+            ClearFieldsBtn.UseVisualStyleBackColor = true;
+            ClearFieldsBtn.Click += ClearFieldsBtn_Click;
             // 
-            // ItemNameTextBox
+            // SubmitItemBtn
             // 
-            ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameTextBox.Location = new Point(102, 32);
-            ItemNameTextBox.Name = "ItemNameTextBox";
-            ItemNameTextBox.Size = new Size(287, 29);
-            ItemNameTextBox.TabIndex = 1;
-            // 
-            // CurrentAmountLabel
-            // 
-            CurrentAmountLabel.AutoSize = true;
-            CurrentAmountLabel.Location = new Point(6, 98);
-            CurrentAmountLabel.Name = "CurrentAmountLabel";
-            CurrentAmountLabel.Size = new Size(114, 15);
-            CurrentAmountLabel.TabIndex = 2;
-            CurrentAmountLabel.Text = "Current Qty in Stock";
-            // 
-            // ReorderPointLabel
-            // 
-            ReorderPointLabel.AutoSize = true;
-            ReorderPointLabel.Location = new Point(154, 98);
-            ReorderPointLabel.Name = "ReorderPointLabel";
-            ReorderPointLabel.Size = new Size(79, 15);
-            ReorderPointLabel.TabIndex = 3;
-            ReorderPointLabel.Text = "Reorder Point";
-            // 
-            // MaxAmtLabel
-            // 
-            MaxAmtLabel.AutoSize = true;
-            MaxAmtLabel.Location = new Point(266, 98);
-            MaxAmtLabel.Name = "MaxAmtLabel";
-            MaxAmtLabel.Size = new Size(120, 15);
-            MaxAmtLabel.TabIndex = 4;
-            MaxAmtLabel.Text = "Reorder Max Amount";
-            // 
-            // CurrentQtyTextBox
-            // 
-            CurrentQtyTextBox.Location = new Point(6, 116);
-            CurrentQtyTextBox.Name = "CurrentQtyTextBox";
-            CurrentQtyTextBox.Size = new Size(114, 23);
-            CurrentQtyTextBox.TabIndex = 5;
-            CurrentQtyTextBox.TextAlign = HorizontalAlignment.Center;
-            // 
-            // ReorderPointTextBox
-            // 
-            ReorderPointTextBox.Location = new Point(137, 116);
-            ReorderPointTextBox.Name = "ReorderPointTextBox";
-            ReorderPointTextBox.Size = new Size(114, 23);
-            ReorderPointTextBox.TabIndex = 6;
-            ReorderPointTextBox.TextAlign = HorizontalAlignment.Center;
-            // 
-            // ReorderMaxTextBox
-            // 
-            ReorderMaxTextBox.Location = new Point(269, 116);
-            ReorderMaxTextBox.Name = "ReorderMaxTextBox";
-            ReorderMaxTextBox.Size = new Size(114, 23);
-            ReorderMaxTextBox.TabIndex = 7;
-            ReorderMaxTextBox.TextAlign = HorizontalAlignment.Center;
+            SubmitItemBtn.Location = new Point(6, 640);
+            SubmitItemBtn.Name = "SubmitItemBtn";
+            SubmitItemBtn.Size = new Size(114, 59);
+            SubmitItemBtn.TabIndex = 9;
+            SubmitItemBtn.Text = "Submit";
+            SubmitItemBtn.UseVisualStyleBackColor = true;
+            SubmitItemBtn.Click += SubmitItemBtn_Click;
             // 
             // ItemDescriptionGroupBox
             // 
@@ -245,32 +191,125 @@
             ItemDescriptionLabel.Size = new Size(377, 442);
             ItemDescriptionLabel.TabIndex = 0;
             // 
-            // SubmitItemBtn
+            // ReorderMaxTextBox
             // 
-            SubmitItemBtn.Location = new Point(6, 640);
-            SubmitItemBtn.Name = "SubmitItemBtn";
-            SubmitItemBtn.Size = new Size(114, 59);
-            SubmitItemBtn.TabIndex = 9;
-            SubmitItemBtn.Text = "Submit";
-            SubmitItemBtn.UseVisualStyleBackColor = true;
+            ReorderMaxTextBox.Location = new Point(269, 116);
+            ReorderMaxTextBox.Name = "ReorderMaxTextBox";
+            ReorderMaxTextBox.Size = new Size(114, 23);
+            ReorderMaxTextBox.TabIndex = 7;
+            ReorderMaxTextBox.TextAlign = HorizontalAlignment.Center;
             // 
-            // ClearFieldsBtn
+            // ReorderPointTextBox
             // 
-            ClearFieldsBtn.Location = new Point(137, 640);
-            ClearFieldsBtn.Name = "ClearFieldsBtn";
-            ClearFieldsBtn.Size = new Size(114, 59);
-            ClearFieldsBtn.TabIndex = 10;
-            ClearFieldsBtn.Text = "Clear";
-            ClearFieldsBtn.UseVisualStyleBackColor = true;
+            ReorderPointTextBox.Location = new Point(137, 116);
+            ReorderPointTextBox.Name = "ReorderPointTextBox";
+            ReorderPointTextBox.Size = new Size(114, 23);
+            ReorderPointTextBox.TabIndex = 6;
+            ReorderPointTextBox.TextAlign = HorizontalAlignment.Center;
             // 
-            // DeleteItemBtn
+            // CurrentQtyTextBox
             // 
-            DeleteItemBtn.Location = new Point(269, 640);
-            DeleteItemBtn.Name = "DeleteItemBtn";
-            DeleteItemBtn.Size = new Size(114, 59);
-            DeleteItemBtn.TabIndex = 11;
-            DeleteItemBtn.Text = "Delete Item";
-            DeleteItemBtn.UseVisualStyleBackColor = true;
+            CurrentQtyTextBox.Location = new Point(6, 116);
+            CurrentQtyTextBox.Name = "CurrentQtyTextBox";
+            CurrentQtyTextBox.Size = new Size(114, 23);
+            CurrentQtyTextBox.TabIndex = 5;
+            CurrentQtyTextBox.TextAlign = HorizontalAlignment.Center;
+            // 
+            // MaxAmtLabel
+            // 
+            MaxAmtLabel.AutoSize = true;
+            MaxAmtLabel.Location = new Point(266, 98);
+            MaxAmtLabel.Name = "MaxAmtLabel";
+            MaxAmtLabel.Size = new Size(120, 15);
+            MaxAmtLabel.TabIndex = 4;
+            MaxAmtLabel.Text = "Reorder Max Amount";
+            // 
+            // ReorderPointLabel
+            // 
+            ReorderPointLabel.AutoSize = true;
+            ReorderPointLabel.Location = new Point(154, 98);
+            ReorderPointLabel.Name = "ReorderPointLabel";
+            ReorderPointLabel.Size = new Size(79, 15);
+            ReorderPointLabel.TabIndex = 3;
+            ReorderPointLabel.Text = "Reorder Point";
+            // 
+            // CurrentAmountLabel
+            // 
+            CurrentAmountLabel.AutoSize = true;
+            CurrentAmountLabel.Location = new Point(6, 98);
+            CurrentAmountLabel.Name = "CurrentAmountLabel";
+            CurrentAmountLabel.Size = new Size(114, 15);
+            CurrentAmountLabel.TabIndex = 2;
+            CurrentAmountLabel.Text = "Current Qty in Stock";
+            // 
+            // ItemNameTextBox
+            // 
+            ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ItemNameTextBox.Location = new Point(102, 32);
+            ItemNameTextBox.Name = "ItemNameTextBox";
+            ItemNameTextBox.Size = new Size(287, 29);
+            ItemNameTextBox.TabIndex = 1;
+            // 
+            // ItemNameLabel
+            // 
+            ItemNameLabel.AutoSize = true;
+            ItemNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ItemNameLabel.Location = new Point(6, 32);
+            ItemNameLabel.Name = "ItemNameLabel";
+            ItemNameLabel.Size = new Size(90, 21);
+            ItemNameLabel.TabIndex = 0;
+            ItemNameLabel.Text = "Item Name:";
+            // 
+            // ItemsListGroupBox
+            // 
+            ItemsListGroupBox.Controls.Add(AddToOrderBtn);
+            ItemsListGroupBox.Controls.Add(EditItemBtn);
+            ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
+            ItemsListGroupBox.Controls.Add(SearchBtn);
+            ItemsListGroupBox.Controls.Add(ItemsListBox);
+            ItemsListGroupBox.Location = new Point(423, 12);
+            ItemsListGroupBox.Name = "ItemsListGroupBox";
+            ItemsListGroupBox.Size = new Size(405, 732);
+            ItemsListGroupBox.TabIndex = 4;
+            ItemsListGroupBox.TabStop = false;
+            ItemsListGroupBox.Text = "Items List";
+            // 
+            // AddToOrderBtn
+            // 
+            AddToOrderBtn.Location = new Point(6, 699);
+            AddToOrderBtn.Name = "AddToOrderBtn";
+            AddToOrderBtn.Size = new Size(393, 23);
+            AddToOrderBtn.TabIndex = 4;
+            AddToOrderBtn.Text = "Add The Selected Item To A Pending Order";
+            AddToOrderBtn.UseVisualStyleBackColor = true;
+            AddToOrderBtn.Click += AddToOrderBtn_Click;
+            // 
+            // EditItemBtn
+            // 
+            EditItemBtn.Location = new Point(6, 670);
+            EditItemBtn.Name = "EditItemBtn";
+            EditItemBtn.Size = new Size(393, 23);
+            EditItemBtn.TabIndex = 3;
+            EditItemBtn.Text = "Edit The Highlighted Item";
+            EditItemBtn.UseVisualStyleBackColor = true;
+            EditItemBtn.Click += EditItemBtn_Click;
+            // 
+            // ItemSearchTextBox
+            // 
+            ItemSearchTextBox.Location = new Point(6, 641);
+            ItemSearchTextBox.Name = "ItemSearchTextBox";
+            ItemSearchTextBox.Size = new Size(312, 23);
+            ItemSearchTextBox.TabIndex = 2;
+            // 
+            // SearchBtn
+            // 
+            SearchBtn.Location = new Point(324, 640);
+            SearchBtn.Name = "SearchBtn";
+            SearchBtn.Size = new Size(75, 23);
+            SearchBtn.TabIndex = 1;
+            SearchBtn.Text = "Search";
+            SearchBtn.UseVisualStyleBackColor = true;
+            SearchBtn.Click += SearchBtn_Click;
             // 
             // ItemsListBox
             // 
@@ -281,48 +320,26 @@
             ItemsListBox.Size = new Size(393, 604);
             ItemsListBox.TabIndex = 0;
             // 
-            // SearchBtn
+            // PendingOrdersGroupBox
             // 
-            SearchBtn.Location = new Point(324, 640);
-            SearchBtn.Name = "SearchBtn";
-            SearchBtn.Size = new Size(75, 23);
-            SearchBtn.TabIndex = 1;
-            SearchBtn.Text = "Search";
-            SearchBtn.UseVisualStyleBackColor = true;
+            PendingOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
+            PendingOrdersGroupBox.Controls.Add(PendingOrderListBox);
+            PendingOrdersGroupBox.Location = new Point(834, 12);
+            PendingOrdersGroupBox.Name = "PendingOrdersGroupBox";
+            PendingOrdersGroupBox.Size = new Size(405, 139);
+            PendingOrdersGroupBox.TabIndex = 4;
+            PendingOrdersGroupBox.TabStop = false;
+            PendingOrdersGroupBox.Text = "Pending Orders";
             // 
-            // ItemSearchTextBox
+            // DeletePendingOrderBtn
             // 
-            ItemSearchTextBox.Location = new Point(6, 641);
-            ItemSearchTextBox.Name = "ItemSearchTextBox";
-            ItemSearchTextBox.Size = new Size(312, 23);
-            ItemSearchTextBox.TabIndex = 2;
-            // 
-            // EditItemBtn
-            // 
-            EditItemBtn.Location = new Point(6, 670);
-            EditItemBtn.Name = "EditItemBtn";
-            EditItemBtn.Size = new Size(393, 23);
-            EditItemBtn.TabIndex = 3;
-            EditItemBtn.Text = "Edit The Highlighted Item";
-            EditItemBtn.UseVisualStyleBackColor = true;
-            // 
-            // EnableReorderChkbx
-            // 
-            EnableReorderChkbx.AutoSize = true;
-            EnableReorderChkbx.Location = new Point(66, 70);
-            EnableReorderChkbx.Name = "EnableReorderChkbx";
-            EnableReorderChkbx.Size = new Size(15, 14);
-            EnableReorderChkbx.TabIndex = 12;
-            EnableReorderChkbx.UseVisualStyleBackColor = true;
-            // 
-            // EnableReorderLabel
-            // 
-            EnableReorderLabel.AutoSize = true;
-            EnableReorderLabel.Location = new Point(102, 69);
-            EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(273, 15);
-            EnableReorderLabel.TabIndex = 13;
-            EnableReorderLabel.Text = "Selected Item Allows Automatic Reorder Flagging?";
+            DeletePendingOrderBtn.Location = new Point(6, 107);
+            DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
+            DeletePendingOrderBtn.Size = new Size(393, 23);
+            DeletePendingOrderBtn.TabIndex = 4;
+            DeletePendingOrderBtn.Text = "Delete Selected Pending Order";
+            DeletePendingOrderBtn.UseVisualStyleBackColor = true;
+            DeletePendingOrderBtn.Click += DeletePendingOrderBtn_Click;
             // 
             // PendingOrderListBox
             // 
@@ -332,6 +349,25 @@
             PendingOrderListBox.Name = "PendingOrderListBox";
             PendingOrderListBox.Size = new Size(393, 79);
             PendingOrderListBox.TabIndex = 0;
+            // 
+            // CurrentOrdersGroupBox
+            // 
+            CurrentOrdersGroupBox.Controls.Add(CurrentOrdersListBox);
+            CurrentOrdersGroupBox.Location = new Point(834, 157);
+            CurrentOrdersGroupBox.Name = "CurrentOrdersGroupBox";
+            CurrentOrdersGroupBox.Size = new Size(405, 369);
+            CurrentOrdersGroupBox.TabIndex = 5;
+            CurrentOrdersGroupBox.TabStop = false;
+            CurrentOrdersGroupBox.Text = "Currently Active Orders";
+            // 
+            // CurrentOrdersListBox
+            // 
+            CurrentOrdersListBox.FormattingEnabled = true;
+            CurrentOrdersListBox.ItemHeight = 15;
+            CurrentOrdersListBox.Location = new Point(6, 22);
+            CurrentOrdersListBox.Name = "CurrentOrdersListBox";
+            CurrentOrdersListBox.Size = new Size(381, 334);
+            CurrentOrdersListBox.TabIndex = 0;
             // 
             // OrderItemsGroupBox
             // 
@@ -369,33 +405,7 @@
             EditOrderAmtBtn.TabIndex = 3;
             EditOrderAmtBtn.Text = "Update Item's Order Quantity";
             EditOrderAmtBtn.UseVisualStyleBackColor = true;
-            // 
-            // DeletePendingOrderBtn
-            // 
-            DeletePendingOrderBtn.Location = new Point(6, 107);
-            DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
-            DeletePendingOrderBtn.Size = new Size(393, 23);
-            DeletePendingOrderBtn.TabIndex = 4;
-            DeletePendingOrderBtn.Text = "Delete Selected Pending Order";
-            DeletePendingOrderBtn.UseVisualStyleBackColor = true;
-            // 
-            // AddToOrderBtn
-            // 
-            AddToOrderBtn.Location = new Point(6, 699);
-            AddToOrderBtn.Name = "AddToOrderBtn";
-            AddToOrderBtn.Size = new Size(393, 23);
-            AddToOrderBtn.TabIndex = 4;
-            AddToOrderBtn.Text = "Add The Selected Item To A Pending Order";
-            AddToOrderBtn.UseVisualStyleBackColor = true;
-            // 
-            // CurrentOrdersListBox
-            // 
-            CurrentOrdersListBox.FormattingEnabled = true;
-            CurrentOrdersListBox.ItemHeight = 15;
-            CurrentOrdersListBox.Location = new Point(6, 22);
-            CurrentOrdersListBox.Name = "CurrentOrdersListBox";
-            CurrentOrdersListBox.Size = new Size(381, 334);
-            CurrentOrdersListBox.TabIndex = 0;
+            EditOrderAmtBtn.Click += EditOrderAmtBtn_Click;
             // 
             // MainForm
             // 
@@ -414,13 +424,14 @@
             Controls.Add(EnableTestModeChkbx);
             Name = "MainForm";
             Text = "Form1";
+            Load += MainForm_Load;
             ItemInfoGroupBox.ResumeLayout(false);
             ItemInfoGroupBox.PerformLayout();
+            ItemDescriptionGroupBox.ResumeLayout(false);
             ItemsListGroupBox.ResumeLayout(false);
             ItemsListGroupBox.PerformLayout();
             PendingOrdersGroupBox.ResumeLayout(false);
             CurrentOrdersGroupBox.ResumeLayout(false);
-            ItemDescriptionGroupBox.ResumeLayout(false);
             OrderItemsGroupBox.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
