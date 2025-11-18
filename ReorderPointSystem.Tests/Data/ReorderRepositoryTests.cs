@@ -63,10 +63,11 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleData();
+            var repo = new ReorderRepository();
             Reorder reorder = new Reorder(1, 5);
 
             // Act
-            Reorder result = ReorderRepository.Add(reorder);
+            Reorder result = repo.Add(reorder);
 
             // Assert
             Assert.NotNull(result);
@@ -78,10 +79,11 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleData();
-            Reorder reorder = ReorderRepository.Add(new Reorder(1, 5));
+            var repo = new ReorderRepository();
+            Reorder reorder = repo.Add(new Reorder(1, 5));
 
             // Act
-            bool result = ReorderRepository.Update(reorder);
+            bool result = repo.Update(reorder);
 
             // Assert
             Assert.True(result);
@@ -91,10 +93,11 @@ namespace ReorderPointSystem.Tests.Data
         public void Update_ShouldReturnFalse_WhenEntryDoesNotExist()
         {
             // Arrange
+            var repo = new ReorderRepository();
             Reorder reorder = new Reorder(1, 5);
 
             // Act
-            bool result = ReorderRepository.Update(reorder);
+            bool result = repo.Update(reorder);
 
             // Assert
             Assert.False(result);
@@ -105,10 +108,11 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleData();
-            Reorder reorder = ReorderRepository.Add(new Reorder(1, 5));
+            var repo = new ReorderRepository();
+            Reorder reorder = repo.Add(new Reorder(1, 5));
 
             // Act
-            bool result = ReorderRepository.Delete(reorder.Id);
+            bool result = repo.Delete(reorder.Id);
 
             // Assert
             Assert.True(result);
@@ -117,8 +121,11 @@ namespace ReorderPointSystem.Tests.Data
         [Fact]
         public void Delete_ShouldReturnFalse_WhenEntryDoesNotExist()
         {
+            // Arrange
+            var repo = new ReorderRepository();
+
             // Act
-            bool result = ReorderRepository.Delete(5);
+            bool result = repo.Delete(5);
 
             // Assert
             Assert.False(result);
@@ -129,10 +136,11 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleData();
-            Reorder reorder = ReorderRepository.Add(new Reorder(1, 5));
+            var repo = new ReorderRepository();
+            Reorder reorder = repo.Add(new Reorder(1, 5));
 
             // Act
-            Reorder? result = ReorderRepository.GetById(reorder.Id);
+            Reorder? result = repo.GetById(reorder.Id);
 
             // Assert
             Assert.NotNull(result);
@@ -142,8 +150,11 @@ namespace ReorderPointSystem.Tests.Data
         [Fact]
         public void GetById_ShouldReturnNull_WhenEntryDoesNotExist()
         {
+            // Arrange
+            var repo = new ReorderRepository();
+
             // Act
-            Reorder? result = ReorderRepository.GetById(8);
+            Reorder? result = repo.GetById(8);
 
             // Assert
             Assert.Null(result);
@@ -154,11 +165,12 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleData();
-            Reorder reorder1 = ReorderRepository.Add(new Reorder(1, 5));
-            Reorder reorder2 = ReorderRepository.Add(new Reorder(1, 2));
+            var repo = new ReorderRepository();
+            Reorder reorder1 = repo.Add(new Reorder(1, 5));
+            Reorder reorder2 = repo.Add(new Reorder(1, 2));
 
             // Act
-            List<Reorder> results = ReorderRepository.GetAll();
+            List<Reorder> results = repo.GetAll();
 
             // Assert
             Assert.NotNull(results);
@@ -168,8 +180,11 @@ namespace ReorderPointSystem.Tests.Data
         [Fact]
         public void GetAll_ShouldReturnEmptyList_WhenAnyEntryDoesNotExist()
         {
+            // Arrange
+            var repo = new ReorderRepository();
+
             // Act
-            List<Reorder> results = ReorderRepository.GetAll();
+            List<Reorder> results = repo.GetAll();
 
             // Assert
             Assert.NotNull(results);
