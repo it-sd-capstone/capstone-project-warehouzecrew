@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReorderPointSystem.Data
 {
-    internal class Database
+    internal static class Database
     {
         private static string dbFilePath = "rps.db";
         private static string connectionString = $"Data Source={dbFilePath};Version=3;";
