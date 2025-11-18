@@ -1,6 +1,5 @@
 ﻿using System.Data.SQLite;
 using ReorderPointSystem.Data;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ReorderPointSystem.Tests.Data
 {
@@ -16,8 +15,8 @@ namespace ReorderPointSystem.Tests.Data
             using var connection = Database.GetConnection();
 
             // Assert
-            Assert.IsNotNull(connection);
-            Assert.AreEqual(System.Data.ConnectionState.Open, connection.State);
+            Assert.NotNull(connection);
+            Assert.Equal(System.Data.ConnectionState.Open, connection.State);
         }
 
         [Fact]
@@ -27,7 +26,7 @@ namespace ReorderPointSystem.Tests.Data
             Database.Initialize();
 
             // Assert
-            Assert.IsTrue(System.IO.File.Exists(TestDbFilePath), "Database file was not created.");
+            Assert.True(System.IO.File.Exists(TestDbFilePath), "Database file was not created.");
             using var connection = Database.GetConnection();
             using var command = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table';", connection);
             using var reader = command.ExecuteReader();
