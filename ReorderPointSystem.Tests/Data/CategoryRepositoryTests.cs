@@ -19,7 +19,6 @@ namespace ReorderPointSystem.Tests.Data
 
         public CategoryRepositoryTests(ITestOutputHelper output)
         {
-            Database.Initialize();
 
             _repository = new CategoryRepository();
             _output = output;

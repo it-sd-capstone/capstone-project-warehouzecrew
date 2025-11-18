@@ -9,7 +9,7 @@ namespace ReorderPointSystem.Tests.Data
         public void GetConnection_ReturnsOpenConnection()
         {
             // Arrange
-            Database.Initialize();
+            // Database is initialized prior to this code via TestBase
 
             // Act
             using var connection = Database.GetConnection();
@@ -23,7 +23,7 @@ namespace ReorderPointSystem.Tests.Data
         public void Initialize_CreatesDatabaseFileAndTables()
         {
             // Act
-            Database.Initialize();
+            // Database is initialized prior to this code via TestBase
 
             // Assert
             Assert.True(System.IO.File.Exists(TestDbFilePath), "Database file was not created.");
