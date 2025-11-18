@@ -1,4 +1,4 @@
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+
 
 namespace ReorderPointSystem.Tests
 {
@@ -8,7 +8,7 @@ namespace ReorderPointSystem.Tests
         [Fact]
         public void Test1()
         {
-            Assert.IsTrue(4 > 0);
+            Assert.True(4 > 0);
         }
     }
 }
