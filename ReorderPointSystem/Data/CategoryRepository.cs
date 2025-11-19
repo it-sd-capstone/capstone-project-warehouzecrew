@@ -1,53 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Data.SQLite;
 using ReorderPointSystem.Models;
 
 namespace ReorderPointSystem.Data
 {
     internal class CategoryRepository
     {
-        private readonly List<Category> _categories = new List<Category>();
-
         public List<Category> GetAll()
         {
-            return _categories;
+            var categories = new List<Category>();
+
+            using var connection = Database.GetConnection();
+            using var command = new SQLiteCommand("SELECT id, name FROM categories ORDER BY name;", connection);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                categories.Add(new Category
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1)
+                });
+            }
+
+            return categories;
         }
 
         public Category? GetById(int id)
         {
-            return _categories.FirstOrDefault(c => c.Id == id);
+            using var connection = Database.GetConnection();
+            using var command = new SQLiteCommand("SELECT id, name FROM categories WHERE id = @id;", connection);
+            command.Parameters.AddWithValue("@id", id);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return new Category
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1)
+                };
+            }
+
+            return null;
         }
 
         public int Add(Category category)
         {
-            if (category.Id == 0)
-                category.Id = _categories.Count > 0 ? _categories.Max(c => c.Id) + 1 : 1;
+            using var connection = Database.GetConnection();
+            using var command = new SQLiteCommand(
+                "INSERT INTO categories (name) VALUES (@name); SELECT last_insert_rowid();",
+                connection);
 
-            _categories.Add(category);
-            return category.Id;
+            command.Parameters.AddWithValue("@name", category.Name);
+
+            long insertedId = (long)command.ExecuteScalar();
+            return (int)insertedId;
         }
 
         public void Update(Category category)
         {
-            var existing = GetById(category.Id);
-            if (existing != null)
-            {
-                existing.Name = category.Name;
-            }
+            using var connection = Database.GetConnection();
+            using var command = new SQLiteCommand(
+                "UPDATE categories SET name = @name WHERE id = @id;",
+                connection);
+
+            command.Parameters.AddWithValue("@name", category.Name);
+            command.Parameters.AddWithValue("@id", category.Id);
+
+            command.ExecuteNonQuery();
         }
 
         public void Delete(int categoryId)
         {
-            var category = GetById(categoryId);
-            if (category != null)
-            {
-                _categories.Remove(category);
-            }
+            using var connection = Database.GetConnection();
+            using var command = new SQLiteCommand(
+                "DELETE FROM categories WHERE id = @id;",
+                connection);
+
+            command.Parameters.AddWithValue("@id", categoryId);
+
+            command.ExecuteNonQuery();
         }
     }
 }
-
