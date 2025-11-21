@@ -449,6 +449,8 @@
             Controls.Add(AddTestDataBtn);
             Controls.Add(SimDayBtn);
             Controls.Add(EnableTestModeChkbx);
+            FormBorderStyle = FormBorderStyle.Fixed3D;
+            MaximizeBox = false;
             Name = "MainForm";
             Text = "Reorder Point System";
             Load += MainForm_Load;
