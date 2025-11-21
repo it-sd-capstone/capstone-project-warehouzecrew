@@ -64,6 +64,8 @@
             OrderItemsListBox = new ListBox();
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
+            SubmitPendingOrderButton = new Button();
+            OrderRecievedBtn = new Button();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -349,6 +351,7 @@
             // 
             // PendingOrdersGroupBox
             // 
+            PendingOrdersGroupBox.Controls.Add(SubmitPendingOrderButton);
             PendingOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
             PendingOrdersGroupBox.Controls.Add(PendingOrderListBox);
             PendingOrdersGroupBox.Location = new Point(834, 12);
@@ -360,9 +363,9 @@
             // 
             // DeletePendingOrderBtn
             // 
-            DeletePendingOrderBtn.Location = new Point(6, 107);
+            DeletePendingOrderBtn.Location = new Point(205, 107);
             DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
-            DeletePendingOrderBtn.Size = new Size(393, 23);
+            DeletePendingOrderBtn.Size = new Size(188, 23);
             DeletePendingOrderBtn.TabIndex = 4;
             DeletePendingOrderBtn.Text = "Delete Selected Pending Order";
             DeletePendingOrderBtn.UseVisualStyleBackColor = true;
@@ -418,7 +421,7 @@
             // EditOrderAmtTextBox
             // 
             EditOrderAmtTextBox.Enabled = false;
-            EditOrderAmtTextBox.Location = new Point(884, 722);
+            EditOrderAmtTextBox.Location = new Point(840, 721);
             EditOrderAmtTextBox.Name = "EditOrderAmtTextBox";
             EditOrderAmtTextBox.Size = new Size(78, 23);
             EditOrderAmtTextBox.TabIndex = 2;
@@ -426,7 +429,7 @@
             // EditOrderAmtBtn
             // 
             EditOrderAmtBtn.Enabled = false;
-            EditOrderAmtBtn.Location = new Point(1007, 721);
+            EditOrderAmtBtn.Location = new Point(924, 720);
             EditOrderAmtBtn.Name = "EditOrderAmtBtn";
             EditOrderAmtBtn.Size = new Size(173, 23);
             EditOrderAmtBtn.TabIndex = 3;
@@ -434,11 +437,31 @@
             EditOrderAmtBtn.UseVisualStyleBackColor = true;
             EditOrderAmtBtn.Click += EditOrderAmtBtn_Click;
             // 
+            // SubmitPendingOrderButton
+            // 
+            SubmitPendingOrderButton.Location = new Point(13, 107);
+            SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
+            SubmitPendingOrderButton.Size = new Size(188, 23);
+            SubmitPendingOrderButton.TabIndex = 5;
+            SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
+            SubmitPendingOrderButton.UseVisualStyleBackColor = true;
+            // 
+            // OrderRecievedBtn
+            // 
+            OrderRecievedBtn.Enabled = false;
+            OrderRecievedBtn.Location = new Point(1103, 720);
+            OrderRecievedBtn.Name = "OrderRecievedBtn";
+            OrderRecievedBtn.Size = new Size(118, 23);
+            OrderRecievedBtn.TabIndex = 6;
+            OrderRecievedBtn.Text = "Order Recieved";
+            OrderRecievedBtn.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 761);
+            Controls.Add(OrderRecievedBtn);
             Controls.Add(CurrentOrdersGroupBox);
             Controls.Add(EditOrderAmtBtn);
             Controls.Add(PendingOrdersGroupBox);
@@ -504,5 +527,7 @@
         private ListBox CurrentOrdersListBox;
         private Button RefreshButton;
         private ComboBox SortByComboBox;
+        private Button SubmitPendingOrderButton;
+        private Button OrderRecievedBtn;
     }
 }
