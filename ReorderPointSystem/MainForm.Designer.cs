@@ -148,7 +148,7 @@
             // 
             // DeleteItemBtn
             // 
-            DeleteItemBtn.Location = new Point(269, 640);
+            DeleteItemBtn.Location = new Point(282, 640);
             DeleteItemBtn.Name = "DeleteItemBtn";
             DeleteItemBtn.Size = new Size(114, 59);
             DeleteItemBtn.TabIndex = 11;
@@ -158,7 +158,7 @@
             // 
             // ClearFieldsBtn
             // 
-            ClearFieldsBtn.Location = new Point(137, 640);
+            ClearFieldsBtn.Location = new Point(144, 640);
             ClearFieldsBtn.Name = "ClearFieldsBtn";
             ClearFieldsBtn.Size = new Size(114, 59);
             ClearFieldsBtn.TabIndex = 10;
@@ -168,7 +168,7 @@
             // 
             // SubmitItemBtn
             // 
-            SubmitItemBtn.Location = new Point(6, 640);
+            SubmitItemBtn.Location = new Point(8, 640);
             SubmitItemBtn.Name = "SubmitItemBtn";
             SubmitItemBtn.Size = new Size(114, 59);
             SubmitItemBtn.TabIndex = 9;
