@@ -77,9 +77,9 @@
             EnableTestModeChkbx.AutoSize = true;
             EnableTestModeChkbx.Location = new Point(18, 727);
             EnableTestModeChkbx.Name = "EnableTestModeChkbx";
-            EnableTestModeChkbx.Size = new Size(163, 19);
+            EnableTestModeChkbx.Size = new Size(160, 19);
             EnableTestModeChkbx.TabIndex = 0;
-            EnableTestModeChkbx.Text = "Enable Simulation  Mode?";
+            EnableTestModeChkbx.Text = "Enable Simulation Mode?";
             EnableTestModeChkbx.UseVisualStyleBackColor = true;
             EnableTestModeChkbx.CheckedChanged += EnableTestModeChkbx_CheckedChanged;
             // 
