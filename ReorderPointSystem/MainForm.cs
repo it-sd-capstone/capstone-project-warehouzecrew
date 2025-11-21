@@ -159,7 +159,7 @@ namespace ReorderPointSystem
         {
             SQLiteConnection conn = Database.GetConnection();
             String searchStr = ItemSearchTextBox.Text.ToString();
-            String sqlSearchStr = "SELECT * FROM items WHERE name LIKE %" + searchStr + "%";
+            String sqlSearchStr = "SELECT * FROM items WHERE name LIKE '%" + searchStr + "%'";
             SQLiteCommand cmd = new SQLiteCommand(sqlSearchStr, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
 
