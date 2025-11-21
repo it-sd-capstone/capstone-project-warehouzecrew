@@ -85,7 +85,7 @@
             // 
             // SimDayBtn
             // 
-            SimDayBtn.Location = new Point(187, 723);
+            SimDayBtn.Location = new Point(198, 723);
             SimDayBtn.Name = "SimDayBtn";
             SimDayBtn.Size = new Size(95, 23);
             SimDayBtn.TabIndex = 1;
@@ -96,11 +96,11 @@
             // 
             // AddTestDataBtn
             // 
-            AddTestDataBtn.Location = new Point(288, 723);
+            AddTestDataBtn.Location = new Point(311, 723);
             AddTestDataBtn.Name = "AddTestDataBtn";
-            AddTestDataBtn.Size = new Size(113, 23);
+            AddTestDataBtn.Size = new Size(90, 23);
             AddTestDataBtn.TabIndex = 2;
-            AddTestDataBtn.Text = "Add Test DB Data";
+            AddTestDataBtn.Text = "Add Test Data";
             AddTestDataBtn.UseVisualStyleBackColor = true;
             AddTestDataBtn.Visible = false;
             AddTestDataBtn.Click += AddTestDataBtn_Click;
