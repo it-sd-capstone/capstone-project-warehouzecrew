@@ -117,7 +117,7 @@ namespace ReorderPointSystem
                     Debug.WriteLine(itemNames[i] + " already exists in the table.");
                 }
             }
-                conn.Close();
+            conn.Close();
         }
 
         // IF the item displayed is already in the DB, update the record for said item
@@ -210,14 +210,24 @@ namespace ReorderPointSystem
         // Edit the amount of an item to be ordered, from within a pending order
         private void EditOrderAmtBtn_Click(object sender, EventArgs e)
         {
-            if (OrderItemsListBox.SelectedIndex != -1) 
-            { 
-                
+            if (OrderItemsListBox.SelectedIndex != -1)
+            {
+
             }
             else
             {
                 MessageBox.Show("You must select an item before you can edit it's order quantity.", "Error - No selected item");
             }
+        }
+
+        private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RefreshButtonClick(object sender, EventArgs e)
+        {
+
         }
     }
 }
