@@ -292,10 +292,10 @@
             // 
             // RefreshButton
             // 
-            RefreshButton.Location = new Point(332, 17);
+            RefreshButton.Location = new Point(324, 17);
             RefreshButton.Margin = new Padding(3, 2, 3, 2);
             RefreshButton.Name = "RefreshButton";
-            RefreshButton.Size = new Size(67, 22);
+            RefreshButton.Size = new Size(75, 22);
             RefreshButton.TabIndex = 5;
             RefreshButton.Text = "Refresh";
             RefreshButton.UseVisualStyleBackColor = true;
@@ -342,9 +342,9 @@
             // 
             ItemsListBox.FormattingEnabled = true;
             ItemsListBox.ItemHeight = 15;
-            ItemsListBox.Location = new Point(6, 44);
+            ItemsListBox.Location = new Point(6, 54);
             ItemsListBox.Name = "ItemsListBox";
-            ItemsListBox.Size = new Size(393, 589);
+            ItemsListBox.Size = new Size(393, 574);
             ItemsListBox.TabIndex = 0;
             // 
             // PendingOrdersGroupBox
