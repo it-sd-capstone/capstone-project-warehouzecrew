@@ -1,6 +1,7 @@
 using System.Data.SQLite;
 using System.Diagnostics;
 using ReorderPointSystem.Data;
+using ReorderPointSystem.Services;
 
 namespace ReorderPointSystem
 {
@@ -222,12 +223,41 @@ namespace ReorderPointSystem
 
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Utilizing this method from the UI controller
+            // UpdatesItemsDisplay();
 
         }
 
         private void RefreshButtonClick(object sender, EventArgs e)
         {
+            //     var items = UIController.LoadItems();
 
+            /* Re-force alphabetical sorting no matter what
+            items = UIController.SortItems(items, "Alphabetical (A to Z)");
+
+            DisplayItems(items); */
         }
+
+        /*
+         * 
+         * Sort update 
+        private void UpdateItemsDisplay()
+        {
+            // Load all items from controller
+            var items = UIController.LoadItems();
+
+            // Apply sorting only if something is selected
+            if (SortByComboBox.SelectedItem is string sortCriteria)
+            {
+                items = UIController.SortItems(items, sortCriteria);
+            }
+
+            // Display sorted items
+            ItemsListBox.Items.Clear();
+            foreach (var item in items)
+                ItemsListBox.Items.Add(item.Name);
+        } */
+
+
     }
 }
