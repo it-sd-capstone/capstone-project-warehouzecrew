@@ -1,97 +1,73 @@
 ﻿using ReorderPointSystem.Models;
-using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ReorderPointSystem.Data
 {
     internal class ItemRepository
     {
-        public List<Item> GetAll()
+        public List<Item> GetAll(SQLiteDataReader reader)
         {
-            string getAllQuery = @"select * from items";
-            SQLiteConnection con = Database.GetConnection();
-            using var query = new SQLiteCommand(getAllQuery, con);
-            var reader = query.ExecuteReader();
             var items = new List<Item>();
             while (reader.Read())
             {
                 items.Add(MapReaderToItem(reader));
             }
-            con.Close();
             return items;
         }
         /// <summary><list type="table">
         /// <item>by default the searchString indicates that an items name should contain the given string</item>
+        /// <item>by "ALL" will skip filtering and just return a list of all items</item>
         /// <item>if it starts with [@], it will trigger special cases, which can be stacked in any way one after the other, where all must be true for a given item to pass</item>
         /// <item>use "[@]name " for the rest of the search string until the next [@] to apply to the item name</item>
         /// <item>use "[@]desc " for the rest of the search string until the next [@] to apply to the item description</item>
         /// <item>use "[@]cat " for the rest of the search string until the next [@] to apply to the item category</item>
         /// <item>use "[@]above " for the rest of the search string until the next [@] to indicate the item should have more than that many items</item>
         /// <item>use "[@]below " for the rest of the search string until the next [@] to indicate the item should have less than that many items</item>
-        /// <item>advanced example: "[@]cat 5[@]above 1700" returns all items in category 5 whos current stock is >= 1700</item>
+        /// <item>advanced example: "[@]cat food[@]above 1700" returns all items in category food whos current stock is >= 1700</item>
         /// </list></summary>
         public List<Item> Search(string searchString)
         {
-            List<Item> items = GetAll();
-            List<Item> fromSearch = new List<Item>();
-            List<string> searches = new List<string>();
-            if (searchString.StartsWith("[@]"))
+            string search = searchString == "ALL" ? @"select * from items" : @"select i.* from items as i join categories as c on i.category_id = c.id where";
+            if (searchString != "ALL")
             {
-                foreach (string s in searchString.Split("[@]"))
+                if (searchString.StartsWith("[@]"))
                 {
-                    switch (s.Split()[0])
+                    bool first = true;
+                    foreach (string s in searchString.Split("[@]"))
                     {
-                        case "name": searches.Add("N" + s.Substring(5)); break;
-                        case "desc": searches.Add("D" + s.Substring(5)); break;
-                        case "cat": searches.Add("C" + s.Substring(4)); break;
-                        case "above": searches.Add("A" + s.Substring(6)); break;
-                        case "below": searches.Add("B" + s.Substring(6)); break;
+                        if (first) { first = false; }
+                        else { search += " and "; }
+                        switch (s.Split()[0])
+                        {
+                            case "name": search += "i.name like '%" + s.Trim().Substring(5) + "%'"; break;
+                            case "desc": search += "i.description like '%" + s.Trim().Substring(5) + "%'"; break;
+                            case "cat": search += "c.name like '%" + s.Trim().Substring(4) + "%'"; break;
+                            case "above": search += "i.current_amount > " + s.Trim().Substring(6); break;
+                            case "below": search += "i.current_amount < " + s.Trim().Substring(6); break;
+                            default: throw new Exception("Search tag " + s.Trim().Split()[0] + " not implemented");
+                        }
                     }
                 }
-            }
-            else
-            {
-                searches.Add("N" + searchString);
-            }
-            foreach (var item in items)
-            {
-                bool valid = true;
-                foreach (var search in searches)
+                else
                 {
-                    switch (search.Substring(0,1))
-                    {
-                        case "N": if (!item.Name.Contains(search.Substring(1))) { valid = false; } break;
-                        case "D": if (!item.Description.Contains(search.Substring(1))) { valid = false; } break;
-                        case "C": if (item.CategoryId != int.Parse(search.Substring(1))) { valid = false; } break;
-                        case "A": if (item.CurrentAmount < int.Parse(search.Substring(1))) { valid = false; } break;
-                        case "B": if (item.CurrentAmount > int.Parse(search.Substring(1))) { valid = false; } break;
-                    }
-                    if (!valid)
-                    {
-                        break;
-                    }
-                }
-                if (valid)
-                {
-                    fromSearch.Add(item);
+                    search += " i.name = " + searchString;
                 }
             }
-            return fromSearch;
+            SQLiteConnection con = Database.GetConnection();
+            using var query = new SQLiteCommand(search, con);
+            var reader = query.ExecuteReader();
+            return GetAll(reader);
         }
         public Item? GetById(int id)
         {
-            var items = GetAll();
-            foreach (var item in items)
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"select * from items where id={id}";
+            command.Parameters.AddWithValue("{id}", id);
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                if (item.Id == id)
-                {
-                    return item;
-                }
+                return MapReaderToItem(reader);
             }
             return null;
         }
