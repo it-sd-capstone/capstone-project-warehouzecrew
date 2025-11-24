@@ -319,7 +319,17 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                if (selectedItem != null)
+                {
+                    Item copy = selectedItem;
+                    pendingOrder.Add(copy);
+                    OrderItemsListBox.DataSource = null;
+                    OrderItemsListBox.DataSource = pendingOrder; 
+                }
+                else
+                {
+                    MessageBox.Show("Select an item first, please.", "Error: no item Selected");
+                }
             }
             else
             {
@@ -412,9 +422,9 @@ namespace ReorderPointSystem
         {
             String name = ((Item)e.ListItem).Name;
             String id = ((Item)e.ListItem).Id.ToString();
-            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
+            String qty = ((Item)e.ListItem).MaxAmount.ToString();
 
-            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
+            e.Value = name.ToUpper() + "     ID=" + id + "      OrderQTY=" + qty;
         }
 
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
