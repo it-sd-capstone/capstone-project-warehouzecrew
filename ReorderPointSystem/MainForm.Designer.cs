@@ -32,6 +32,8 @@
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
             ItemInfoGroupBox = new GroupBox();
+            CategoryComboBoxLabel = new Label();
+            CategoryComboBox = new ComboBox();
             EnableReorderLabel = new Label();
             EnableReorderChkbx = new CheckBox();
             DeleteItemBtn = new Button();
@@ -109,6 +111,8 @@
             // 
             // ItemInfoGroupBox
             // 
+            ItemInfoGroupBox.Controls.Add(CategoryComboBoxLabel);
+            ItemInfoGroupBox.Controls.Add(CategoryComboBox);
             ItemInfoGroupBox.Controls.Add(EnableReorderLabel);
             ItemInfoGroupBox.Controls.Add(EnableReorderChkbx);
             ItemInfoGroupBox.Controls.Add(DeleteItemBtn);
@@ -129,6 +133,24 @@
             ItemInfoGroupBox.TabIndex = 3;
             ItemInfoGroupBox.TabStop = false;
             ItemInfoGroupBox.Text = "Item Info";
+            // 
+            // CategoryComboBoxLabel
+            // 
+            CategoryComboBoxLabel.AutoSize = true;
+            CategoryComboBoxLabel.Location = new Point(30, 159);
+            CategoryComboBoxLabel.Name = "CategoryComboBoxLabel";
+            CategoryComboBoxLabel.Size = new Size(66, 15);
+            CategoryComboBoxLabel.TabIndex = 15;
+            CategoryComboBoxLabel.Text = "Categories:";
+            // 
+            // CategoryComboBox
+            // 
+            CategoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            CategoryComboBox.FormattingEnabled = true;
+            CategoryComboBox.Location = new Point(137, 156);
+            CategoryComboBox.Name = "CategoryComboBox";
+            CategoryComboBox.Size = new Size(246, 23);
+            CategoryComboBox.TabIndex = 14;
             // 
             // EnableReorderLabel
             // 
@@ -181,9 +203,9 @@
             // ItemDescriptionGroupBox
             // 
             ItemDescriptionGroupBox.Controls.Add(ItemDescriptionLabel);
-            ItemDescriptionGroupBox.Location = new Point(6, 159);
+            ItemDescriptionGroupBox.Location = new Point(6, 202);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
-            ItemDescriptionGroupBox.Size = new Size(393, 475);
+            ItemDescriptionGroupBox.Size = new Size(393, 432);
             ItemDescriptionGroupBox.TabIndex = 8;
             ItemDescriptionGroupBox.TabStop = false;
             ItemDescriptionGroupBox.Text = "Item Description";
@@ -534,5 +556,7 @@
         private ComboBox SortByComboBox;
         private Button SubmitPendingOrderButton;
         private Button OrderRecievedBtn;
+        private Label CategoryComboBoxLabel;
+        private ComboBox CategoryComboBox;
     }
 }
