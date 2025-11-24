@@ -45,12 +45,14 @@ namespace ReorderPointSystem
         // Helper function to reload data from the DB after an edit/delete has been made
         private void ReloadDB()
         {
-            // TODO when the item class is completed, add functionality here
+            itemsList = controller.LoadItems();
+            DisplayItems(itemsList);
         }
 
+        // recursive helper function to continue checking for reorder items
         private async Task CheckReorders()
         {
-            await Task.Delay(15000);
+            await Task.Delay(5000);
             pendingOrder = controller.ProcessLowStockReorders(itemsList);
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
             {
@@ -68,8 +70,7 @@ namespace ReorderPointSystem
         private void MainForm_Load(object sender, EventArgs e)
         {
             Database.Initialize();
-            itemsList = controller.LoadItems();
-            DisplayItems(itemsList);
+            ReloadDB();
             CheckReorders();
         }
 
@@ -91,7 +92,20 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            // TODO when item class is completed, finish implementation
+            SQLiteConnection conn = Database.GetConnection();
+            Random rand = new Random();
+            foreach (Item item in itemsList)
+            {
+                int num = rand.Next(100);
+                if (num >= 50)
+                {
+                    int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
+                    String updateStr = "UPDATE items SET current_amount = \'" + decrease + "\' WHERE id = \'" + item.Id + "\'";
+                    SQLiteCommand cmd = new SQLiteCommand(updateStr, conn);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            ReloadDB();
         }
 
         // Insert dummy records into the DB for testing purposes
@@ -264,6 +278,7 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
+            ItemsListBox.DataSource = null;
             ItemsListBox.DataSource = items;
             ItemsListBox.DisplayMember = "Name";
         }

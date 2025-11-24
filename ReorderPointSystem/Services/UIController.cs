@@ -112,6 +112,9 @@ namespace ReorderPointSystem.Services
                 item.LastUpdatedAt = result;
                 items.Add(item);
             }
+            reader.Close();
+            conn.Close();
+            cmd.Dispose();
             return items;
         }
 
