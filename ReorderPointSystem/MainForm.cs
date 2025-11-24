@@ -1,5 +1,6 @@
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Xml.Serialization;
 using ReorderPointSystem.Data;
 using ReorderPointSystem.Models;
 using ReorderPointSystem.Services;
@@ -12,6 +13,7 @@ namespace ReorderPointSystem
         private List<Item> itemsList;
         private List<Item> pendingOrder;
         private List<Category> categories;
+        private List<Reorder> reorders;
         private Item selectedItem;
         private UIController controller = new UIController(new InventoryManager());
         public MainForm()
@@ -81,12 +83,22 @@ namespace ReorderPointSystem
             CategoryComboBox.DisplayMember = "Name";
         }
 
+        // Helper function to load Orders on form load
+        private void LoadOrders()
+        {
+            reorders = controller.LoadOrders();
+            CurrentOrdersListBox.DataSource = reorders;
+            CurrentOrdersListBox.ValueMember = "Id";
+            CategoryComboBox.DisplayMember = "ItemId";
+        }
+
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
             Database.Initialize();
             ReloadDB();
             LoadCategories();
+            LoadOrders();
             CheckReorders();
         }
 
@@ -415,7 +427,7 @@ namespace ReorderPointSystem
 
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
-
+            // TODO DB structure needs to be revisited to allow for PK/FK matching in reorder table before completing
         }
 
         private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
