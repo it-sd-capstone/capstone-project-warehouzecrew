@@ -219,8 +219,8 @@ namespace ReorderPointSystem
                 else
                 {
                     MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                } 
-            } 
+                }
+            }
             else
             {
                 int curAmt;
@@ -240,7 +240,7 @@ namespace ReorderPointSystem
                     "\', \'" + curAmt +
                     "\', \'" + reorderPt +
                     "\', \'" + maxAmt +
-                    "\', DATETIME(\'now\'), DATETIME(\'now\'))"; 
+                    "\', DATETIME(\'now\'), DATETIME(\'now\'))";
                     SQLiteConnection conn = Database.GetConnection();
                     SQLiteCommand cmd = new SQLiteCommand(sql, conn);
                     cmd.ExecuteNonQuery();
@@ -324,7 +324,7 @@ namespace ReorderPointSystem
                     Item copy = selectedItem;
                     pendingOrder.Add(copy);
                     OrderItemsListBox.DataSource = null;
-                    OrderItemsListBox.DataSource = pendingOrder; 
+                    OrderItemsListBox.DataSource = pendingOrder;
                 }
                 else
                 {
@@ -356,7 +356,14 @@ namespace ReorderPointSystem
         {
             if (OrderItemsListBox.SelectedIndex != -1)
             {
-
+                int qty;
+                bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
+                if (validQty)
+                {
+                    pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount = qty;
+                }
+                OrderItemsListBox.DataSource = null;
+                OrderItemsListBox.DataSource = pendingOrder;
             }
             else
             {
@@ -369,8 +376,8 @@ namespace ReorderPointSystem
             ItemsListBox.DataSource = null;
             ItemsListBox.DataSource = items;
             ItemsListBox.DisplayMember = "Name";
-            if (ItemsListBox.Items.Count > 0) 
-            { 
+            if (ItemsListBox.Items.Count > 0)
+            {
                 ItemsListBox.SelectedIndex = 0;
                 selectedItem = itemsList[ItemsListBox.SelectedIndex];
             }
@@ -427,6 +434,16 @@ namespace ReorderPointSystem
             e.Value = name.ToUpper() + "     ID=" + id + "      OrderQTY=" + qty;
         }
 
+        private void OrderItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (OrderItemsListBox.SelectedIndex != -1)
+            {
+                EditOrderAmtBtn.Enabled = true;
+                EditOrderAmtTextBox.Enabled = true;
+                EditOrderAmtTextBox.Text = pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount.ToString();
+            }
+        }
+
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -436,5 +453,6 @@ namespace ReorderPointSystem
         {
 
         }
+
     }
 }

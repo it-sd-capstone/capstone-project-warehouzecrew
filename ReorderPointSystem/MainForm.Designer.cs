@@ -452,6 +452,7 @@
             OrderItemsListBox.Name = "OrderItemsListBox";
             OrderItemsListBox.Size = new Size(381, 154);
             OrderItemsListBox.TabIndex = 0;
+            OrderItemsListBox.SelectedIndexChanged += OrderItemsListBox_SelectedIndexChanged;
             OrderItemsListBox.Format += OrderItemsListBox_Format;
             // 
             // EditOrderAmtTextBox
