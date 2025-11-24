@@ -76,17 +76,17 @@ namespace ReorderPointSystem.Services
 
         public void AddNewItem(Item item)
         {
-
+            // TODO integrate this method into MainForm
         }
 
         public void UpdateExistingItem(Item item)
         {
-
+            // TODO integrate this method into MainForm
         }
 
         public void DeleteItem(int itemID) 
-        { 
-        
+        {
+            // TODO integrate this method into MainForm
         }
 
         public List<Item> SearchItems(string name)
