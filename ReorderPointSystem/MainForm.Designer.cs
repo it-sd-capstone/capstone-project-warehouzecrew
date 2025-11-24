@@ -349,6 +349,7 @@
             ItemsListBox.Size = new Size(393, 574);
             ItemsListBox.TabIndex = 0;
             ItemsListBox.SelectedIndexChanged += ItemsListBox_SelectedIndexChanged;
+            ItemsListBox.Format += ItemsListBox_Format;
             // 
             // PendingOrdersGroupBox
             // 
@@ -370,6 +371,7 @@
             SubmitPendingOrderButton.TabIndex = 5;
             SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
             SubmitPendingOrderButton.UseVisualStyleBackColor = true;
+            SubmitPendingOrderButton.Click += SubmitPendingOrderButton_Click;
             // 
             // DeletePendingOrderBtn
             // 
@@ -389,6 +391,7 @@
             PendingOrderListBox.Name = "PendingOrderListBox";
             PendingOrderListBox.Size = new Size(393, 79);
             PendingOrderListBox.TabIndex = 0;
+            PendingOrderListBox.SelectedIndexChanged += PendingOrderListBox_SelectedIndexChanged;
             // 
             // CurrentOrdersGroupBox
             // 
@@ -427,6 +430,7 @@
             OrderItemsListBox.Name = "OrderItemsListBox";
             OrderItemsListBox.Size = new Size(381, 154);
             OrderItemsListBox.TabIndex = 0;
+            OrderItemsListBox.Format += OrderItemsListBox_Format;
             // 
             // EditOrderAmtTextBox
             // 

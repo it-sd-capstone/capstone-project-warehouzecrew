@@ -10,6 +10,7 @@ namespace ReorderPointSystem
     {
 
         private List<Item> itemsList;
+        private List<Item> pendingOrder;
         private UIController controller = new UIController(new InventoryManager());
         public MainForm()
         {
@@ -47,12 +48,29 @@ namespace ReorderPointSystem
             // TODO when the item class is completed, add functionality here
         }
 
+        private async Task CheckReorders()
+        {
+            await Task.Delay(15000);
+            pendingOrder = controller.ProcessLowStockReorders(itemsList);
+            if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
+            {
+                String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                SQLiteConnection conn = Database.GetConnection();
+                SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                int orderID;
+                int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                PendingOrderListBox.Items.Add("WIP Order ID: " + orderID);
+            }
+            CheckReorders();
+        }
+
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
             Database.Initialize();
             itemsList = controller.LoadItems();
             DisplayItems(itemsList);
+            CheckReorders();
         }
 
         // Display or hide the Simulation buttons
@@ -180,13 +198,14 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            SQLiteConnection conn = Database.GetConnection();
-            String searchStr = ItemSearchTextBox.Text.ToString();
-            String sqlSearchStr = "SELECT * FROM items WHERE name LIKE '%" + searchStr + "%'";
-            SQLiteCommand cmd = new SQLiteCommand(sqlSearchStr, conn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
-
-            // TODO when the Item class is completed, finish the implementation of the search button
+            ItemsListBox.DataSource = null;
+            itemsList = controller.SearchItems(ItemSearchTextBox.Text.ToString());
+            ItemsListBox.DataSource = itemsList;
+            ClearFieldsBtn_Click(sender, e);
+            if (!ItemsListBox.Size.IsEmpty)
+            {
+                ItemsListBox.SelectedIndex = 0;
+            }
 
         }
 
@@ -246,11 +265,12 @@ namespace ReorderPointSystem
         private void DisplayItems(List<Item> items)
         {
             ItemsListBox.DataSource = items;
+            ItemsListBox.DisplayMember = "Name";
         }
 
         private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex !=  -1)
+            if (ItemsListBox.SelectedIndex != -1)
             {
                 int index = ItemsListBox.SelectedIndex;
                 DisableProductInfoOptions();
@@ -260,6 +280,41 @@ namespace ReorderPointSystem
                 ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
                 ItemDescriptionLabel.Text = itemsList[index].Description;
             }
+        }
+
+        private void ItemsListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            String name = ((Item)e.ListItem).Name;
+            String id = ((Item)e.ListItem).Id.ToString();
+            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
+
+            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
+        }
+
+        private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (PendingOrderListBox.SelectedIndex != -1)
+            {
+                OrderItemsListBox.DataSource = pendingOrder;
+            }
+            else
+            {
+                MessageBox.Show("Error: no selected index");
+            }
+        }
+
+        private void OrderItemsListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            String name = ((Item)e.ListItem).Name;
+            String id = ((Item)e.ListItem).Id.ToString();
+            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
+
+            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
         }
 
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
