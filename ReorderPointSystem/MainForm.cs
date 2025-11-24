@@ -343,7 +343,12 @@ namespace ReorderPointSystem
         {
             if (PendingOrderListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                PendingOrderListBox.Items.Clear();
+                PendingOrderListBox.SelectedIndex = -1;
+                PendingOrderListBox.Refresh();
+                pendingOrder.Clear();
+                OrderItemsListBox.DataSource = null;
+                OrderItemsListBox.DataSource = pendingOrder;
             }
             else
             {
