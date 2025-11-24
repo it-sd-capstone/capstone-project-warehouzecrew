@@ -274,12 +274,17 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                String sql = "DELETE FROM items WHERE id = \'" + selectedItem.Id + "\'";
+                Console.WriteLine(sql);
+                SQLiteConnection conn = Database.GetConnection();
+                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                cmd.ExecuteNonQuery();
             }
             else
             {
                 MessageBox.Show("You must select an item before you can delete it.", "Error - No selected Item");
             }
+            ReloadDB();
         }
 
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
