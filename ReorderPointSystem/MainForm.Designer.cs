@@ -56,6 +56,7 @@
             SearchBtn = new Button();
             ItemsListBox = new ListBox();
             PendingOrdersGroupBox = new GroupBox();
+            SubmitPendingOrderButton = new Button();
             DeletePendingOrderBtn = new Button();
             PendingOrderListBox = new ListBox();
             CurrentOrdersGroupBox = new GroupBox();
@@ -64,7 +65,6 @@
             OrderItemsListBox = new ListBox();
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
-            SubmitPendingOrderButton = new Button();
             OrderRecievedBtn = new Button();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
@@ -348,6 +348,7 @@
             ItemsListBox.Name = "ItemsListBox";
             ItemsListBox.Size = new Size(393, 574);
             ItemsListBox.TabIndex = 0;
+            ItemsListBox.SelectedIndexChanged += ItemsListBox_SelectedIndexChanged;
             // 
             // PendingOrdersGroupBox
             // 
@@ -360,6 +361,15 @@
             PendingOrdersGroupBox.TabIndex = 4;
             PendingOrdersGroupBox.TabStop = false;
             PendingOrdersGroupBox.Text = "Pending Orders";
+            // 
+            // SubmitPendingOrderButton
+            // 
+            SubmitPendingOrderButton.Location = new Point(13, 107);
+            SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
+            SubmitPendingOrderButton.Size = new Size(188, 23);
+            SubmitPendingOrderButton.TabIndex = 5;
+            SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
+            SubmitPendingOrderButton.UseVisualStyleBackColor = true;
             // 
             // DeletePendingOrderBtn
             // 
@@ -436,15 +446,6 @@
             EditOrderAmtBtn.Text = "Update Item's Order Quantity";
             EditOrderAmtBtn.UseVisualStyleBackColor = true;
             EditOrderAmtBtn.Click += EditOrderAmtBtn_Click;
-            // 
-            // SubmitPendingOrderButton
-            // 
-            SubmitPendingOrderButton.Location = new Point(13, 107);
-            SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
-            SubmitPendingOrderButton.Size = new Size(188, 23);
-            SubmitPendingOrderButton.TabIndex = 5;
-            SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
-            SubmitPendingOrderButton.UseVisualStyleBackColor = true;
             // 
             // OrderRecievedBtn
             // 
