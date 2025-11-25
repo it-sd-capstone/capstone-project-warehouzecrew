@@ -279,6 +279,7 @@ namespace ReorderPointSystem
             ReorderMaxTextBox.Text = string.Empty;
             selectedItem = null;
             EnableProductInfoOptions();
+            DeleteItemBtn.Enabled = false;
         }
 
         // Remove the selected item from the Items DB, If an item is selected
@@ -318,6 +319,14 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
+                int index = ItemsListBox.SelectedIndex;
+                selectedItem = itemsList[index];
+                ItemNameTextBox.Text = itemsList[index].Name;
+                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
+                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
+                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
+                ItemDescriptionLabel.Text = itemsList[index].Description;
+                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
                 EnableProductInfoOptions();
             }
             else
