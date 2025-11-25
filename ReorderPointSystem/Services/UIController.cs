@@ -89,6 +89,34 @@ namespace ReorderPointSystem.Services
             // TODO integrate this method into MainForm
         }
 
+        // Inventory list sorting function
+        public List<Item> SortItems(List<Item> items, string sortCriteria)
+        {
+            switch (sortCriteria)
+            {
+                case "Alphabetical (A to Z)":
+                    return items.OrderBy(i => i.Name).ToList();
+
+                case "Alphabetical (Z to A)":
+                    return items.OrderByDescending(i => i.Name).ToList();
+
+                case "Quantity (Low to High)":
+                    return items.OrderBy(i => i.CurrentAmount).ToList();
+
+                case "Quantity (High to Low)":
+                    return items.OrderByDescending(i => i.CurrentAmount).ToList();
+
+                case "Date Added (Newest)":
+                    return items.OrderByDescending(i => i.CreatedAt).ToList();
+
+                case "Date Added (Oldest)":
+                    return items.OrderBy(i => i.CreatedAt).ToList();
+
+                default:
+                    return items;
+            }
+        }
+
         public List<Item> SearchItems(string name)
         {
             SQLiteConnection conn = Database.GetConnection();

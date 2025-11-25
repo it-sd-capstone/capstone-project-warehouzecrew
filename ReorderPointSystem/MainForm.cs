@@ -473,37 +473,35 @@ namespace ReorderPointSystem
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Utilizing this method from the UI controller
-            // UpdatesItemsDisplay();
+            UpdateItemsDisplay();
 
         }
 
         private void RefreshButtonClick(object sender, EventArgs e)
         {
-            //     var items = UIController.LoadItems();
+            var items = controller.LoadItems();
 
-            /* Re-force alphabetical sorting no matter what
-            items = UIController.SortItems(items, "Alphabetical (A to Z)");
+            // Re-force alphabetical sorting
+            items = controller.SortItems(items, "Alphabetical (A to Z)");
 
-            DisplayItems(items); */
+            DisplayItems(items);
         }
-        /*
-         * 
-         * Sort update 
+
         private void UpdateItemsDisplay()
         {
             // Load all items from controller
-            var items = UIController.LoadItems();
+            var items = controller.LoadItems();
 
             // Apply sorting only if something is selected
             if (SortByComboBox.SelectedItem is string sortCriteria)
             {
-                items = UIController.SortItems(items, sortCriteria);
+                items = controller.SortItems(items, sortCriteria);
             }
 
             // Display sorted items
-            ItemsListBox.Items.Clear();
-            foreach (var item in items)
-                ItemsListBox.Items.Add(item.Name);
-        } */
+            ItemsListBox.DataSource = null;         // reset first
+            ItemsListBox.DataSource = items;        // bind new list
+            ItemsListBox.DisplayMember = "Name";    // the property to show in the ListBox
+        } 
     }
 }
