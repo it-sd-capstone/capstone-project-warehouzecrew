@@ -4,7 +4,7 @@ using System.Data.SQLite;
 
 namespace ReorderPointSystem.Tests.Data
 {
-    public class ItemRepositoryTests
+    public class ItemRepositoryTests : TestBase
     {
         [Fact]
         public void TestAdd()
