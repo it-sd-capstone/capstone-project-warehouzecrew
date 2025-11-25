@@ -1,12 +1,21 @@
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Xml.Serialization;
 using ReorderPointSystem.Data;
+using ReorderPointSystem.Models;
 using ReorderPointSystem.Services;
 
 namespace ReorderPointSystem
 {
     public partial class MainForm : Form
     {
+
+        private List<Item> itemsList;
+        private List<Item> pendingOrder;
+        private List<Category> categories;
+        private List<Reorder> reorders;
+        private Item selectedItem;
+        private UIController controller = new UIController(new InventoryManager());
         public MainForm()
         {
             InitializeComponent();
@@ -15,25 +24,82 @@ namespace ReorderPointSystem
         // Helper function to disable editing item information
         private void DisableProductInfoOptions()
         {
-            ItemInfoGroupBox.Enabled = false;
+            ItemNameTextBox.Enabled = false;
+            CurrentQtyTextBox.Enabled = false;
+            ReorderMaxTextBox.Enabled = false;
+            ReorderPointTextBox.Enabled = false;
+            EnableReorderChkbx.Enabled = false;
+            SubmitItemBtn.Enabled = false;
+            DeleteItemBtn.Enabled = false;
+            CategoryComboBox.Enabled = false;
+            ClearFieldsBtn.Enabled = true;
         }
 
         // Helper function to enable editing item information
         private void EnableProductInfoOptions()
         {
-            ItemInfoGroupBox.Enabled = true;
+            ItemNameTextBox.Enabled = true;
+            CurrentQtyTextBox.Enabled = true;
+            ReorderMaxTextBox.Enabled = true;
+            ReorderPointTextBox.Enabled = true;
+            EnableReorderChkbx.Enabled = true;
+            SubmitItemBtn.Enabled = true;
+            DeleteItemBtn.Enabled = true;
+            CategoryComboBox.Enabled = true;
         }
 
         // Helper function to reload data from the DB after an edit/delete has been made
         private void ReloadDB()
         {
-            // TODO when the item class is completed, add functionality here
+            itemsList = controller.LoadItems();
+            DisplayItems(itemsList);
+        }
+
+        // recursive helper function to continue checking for reorder items
+        private async Task CheckReorders()
+        {
+            await Task.Delay(5000);
+            pendingOrder = controller.ProcessLowStockReorders(itemsList);
+            if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
+            {
+                String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                SQLiteConnection conn = Database.GetConnection();
+                SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                int orderID;
+                int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                PendingOrderListBox.Items.Add("WIP Order ID: " + orderID);
+            }
+            CheckReorders();
+        }
+
+        // helper function to load all current categories on form load
+        private void LoadCategories()
+        {
+            CategoryRepository cats = new CategoryRepository();
+            categories = cats.GetAll();
+            CategoryComboBox.Items.Clear();
+            CategoryComboBox.DataSource = categories;
+            CategoryComboBox.ValueMember = "Id";
+            CategoryComboBox.DisplayMember = "Name";
+        }
+
+        // Helper function to load Orders on form load
+        private void LoadOrders()
+        {
+            reorders = controller.LoadOrders();
+            CurrentOrdersListBox.DataSource = reorders;
+            CurrentOrdersListBox.ValueMember = "Id";
+            CategoryComboBox.DisplayMember = "ItemId";
         }
 
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
             Database.Initialize();
+            ReloadDB();
+            LoadCategories();
+            LoadOrders();
+            CheckReorders();
         }
 
         // Display or hide the Simulation buttons
@@ -54,7 +120,20 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            // TODO when item class is completed, finish implementation
+            SQLiteConnection conn = Database.GetConnection();
+            Random rand = new Random();
+            foreach (Item item in itemsList)
+            {
+                int num = rand.Next(100);
+                if (num >= 50)
+                {
+                    int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
+                    String updateStr = "UPDATE items SET current_amount = \'" + decrease + "\' WHERE id = \'" + item.Id + "\'";
+                    SQLiteCommand cmd = new SQLiteCommand(updateStr, conn);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            ReloadDB();
         }
 
         // Insert dummy records into the DB for testing purposes
@@ -102,13 +181,15 @@ namespace ReorderPointSystem
                 if (!reader2.HasRows)
                 {
 
-                    String insertCommand2 = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount) VALUES " +
+                    String insertCommand2 = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at) VALUES " +
                         "(\'" + itemCategoryID[i] + "\', " +
                         "\'" + itemNames[i] + "\', " +
                         "\'" + itemDescription[i] + "\', " +
                         "\'" + itemCurrAmt[i] + "\', " +
                         "\'" + itemReorderPoint[i] + "\', " +
-                        "\'" + itemReorderAmt[i] + "\')";
+                        "\'" + itemReorderAmt[i] + "\', " +
+                        "\'" + DateTime.Now + "\', " +
+                        "\'" + DateTime.Now + "\')";
                     SQLiteCommand insertCMD2 = new SQLiteCommand(insertCommand2, conn);
                     insertCMD2.ExecuteNonQuery();
                     insertCMD2.Dispose();
@@ -125,7 +206,63 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-
+            if (selectedItem != null)
+            {
+                int curAmt;
+                int reorderPt;
+                int maxAmt;
+                int id = selectedItem.Id;
+                String name = ItemNameTextBox.Text;
+                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
+                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
+                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
+                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
+                {
+                    String sql = "UPDATE items SET name = \'" + name +
+                        "\', current_amount = \'" + curAmt +
+                        "\', reorder_point = \'" + reorderPt +
+                        "\', max_amount = \'" + maxAmt +
+                        "\', updated_at = DATETIME(\'now\'), category_id = \'" + CategoryComboBox.SelectedValue +
+                        "\' WHERE id = \'" + id + "\'";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                }
+            }
+            else
+            {
+                int curAmt;
+                int reorderPt;
+                int maxAmt;
+                String name = ItemNameTextBox.Text;
+                String description = ItemDescriptionLabel.Text;
+                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
+                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
+                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
+                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
+                {
+                    String sql = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at) " +
+                    "VALUES (\'" + CategoryComboBox.SelectedValue +
+                    "\', \'" + name +
+                    "\', \'" + description +
+                    "\', \'" + curAmt +
+                    "\', \'" + reorderPt +
+                    "\', \'" + maxAmt +
+                    "\', DATETIME(\'now\'), DATETIME(\'now\'))";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                }
+            }
+            ReloadDB();
         }
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
@@ -140,6 +277,9 @@ namespace ReorderPointSystem
             CurrentQtyTextBox.Text = string.Empty;
             ReorderPointTextBox.Text = string.Empty;
             ReorderMaxTextBox.Text = string.Empty;
+            selectedItem = null;
+            EnableProductInfoOptions();
+            DeleteItemBtn.Enabled = false;
         }
 
         // Remove the selected item from the Items DB, If an item is selected
@@ -147,24 +287,30 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                String sql = "DELETE FROM items WHERE id = \'" + selectedItem.Id + "\'";
+                Console.WriteLine(sql);
+                SQLiteConnection conn = Database.GetConnection();
+                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                cmd.ExecuteNonQuery();
             }
             else
             {
                 MessageBox.Show("You must select an item before you can delete it.", "Error - No selected Item");
             }
+            ReloadDB();
         }
 
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            SQLiteConnection conn = Database.GetConnection();
-            String searchStr = ItemSearchTextBox.Text.ToString();
-            String sqlSearchStr = "SELECT * FROM items WHERE name LIKE %" + searchStr + "%";
-            SQLiteCommand cmd = new SQLiteCommand(sqlSearchStr, conn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
-
-            // TODO when the Item class is completed, finish the implementation of the search button
+            ItemsListBox.DataSource = null;
+            itemsList = controller.SearchItems(ItemSearchTextBox.Text.ToString());
+            ItemsListBox.DataSource = itemsList;
+            ClearFieldsBtn_Click(sender, e);
+            if (!ItemsListBox.Size.IsEmpty)
+            {
+                ItemsListBox.SelectedIndex = 0;
+            }
 
         }
 
@@ -173,7 +319,15 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                int index = ItemsListBox.SelectedIndex;
+                selectedItem = itemsList[index];
+                ItemNameTextBox.Text = itemsList[index].Name;
+                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
+                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
+                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
+                ItemDescriptionLabel.Text = itemsList[index].Description;
+                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
+                EnableProductInfoOptions();
             }
             else
             {
@@ -186,7 +340,17 @@ namespace ReorderPointSystem
         {
             if (ItemsListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                if (selectedItem != null)
+                {
+                    Item copy = selectedItem;
+                    pendingOrder.Add(copy);
+                    OrderItemsListBox.DataSource = null;
+                    OrderItemsListBox.DataSource = pendingOrder;
+                }
+                else
+                {
+                    MessageBox.Show("Select an item first, please.", "Error: no item Selected");
+                }
             }
             else
             {
@@ -200,7 +364,12 @@ namespace ReorderPointSystem
         {
             if (PendingOrderListBox.SelectedIndex != -1)
             {
-                // TODO add logic here when the Item class is completed
+                PendingOrderListBox.Items.Clear();
+                PendingOrderListBox.SelectedIndex = -1;
+                PendingOrderListBox.Refresh();
+                pendingOrder.Clear();
+                OrderItemsListBox.DataSource = null;
+                OrderItemsListBox.DataSource = pendingOrder;
             }
             else
             {
@@ -213,11 +382,91 @@ namespace ReorderPointSystem
         {
             if (OrderItemsListBox.SelectedIndex != -1)
             {
-
+                int qty;
+                bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
+                if (validQty)
+                {
+                    pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount = qty;
+                }
+                OrderItemsListBox.DataSource = null;
+                OrderItemsListBox.DataSource = pendingOrder;
             }
             else
             {
                 MessageBox.Show("You must select an item before you can edit it's order quantity.", "Error - No selected item");
+            }
+        }
+
+        private void DisplayItems(List<Item> items)
+        {
+            ItemsListBox.DataSource = null;
+            ItemsListBox.DataSource = items;
+            ItemsListBox.DisplayMember = "Name";
+            if (ItemsListBox.Items.Count > 0)
+            {
+                ItemsListBox.SelectedIndex = 0;
+                selectedItem = itemsList[ItemsListBox.SelectedIndex];
+            }
+        }
+
+        private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ItemsListBox.SelectedIndex != -1)
+            {
+                int index = ItemsListBox.SelectedIndex;
+                selectedItem = itemsList[index];
+                DisableProductInfoOptions();
+                ItemNameTextBox.Text = itemsList[index].Name;
+                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
+                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
+                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
+                ItemDescriptionLabel.Text = itemsList[index].Description;
+                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
+            }
+        }
+
+        private void ItemsListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            String name = ((Item)e.ListItem).Name;
+            String id = ((Item)e.ListItem).Id.ToString();
+            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
+
+            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
+        }
+
+        private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
+        {
+            // TODO DB structure needs to be revisited to allow for PK/FK matching in reorder table before completing
+        }
+
+        private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (PendingOrderListBox.SelectedIndex != -1)
+            {
+                OrderItemsListBox.DataSource = pendingOrder;
+            }
+            else
+            {
+                MessageBox.Show("Error: no selected index");
+            }
+        }
+
+        private void OrderItemsListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            String name = ((Item)e.ListItem).Name;
+            String id = ((Item)e.ListItem).Id.ToString();
+            String qty = ((Item)e.ListItem).MaxAmount.ToString();
+
+            e.Value = name.ToUpper() + "     ID=" + id + "      OrderQTY=" + qty;
+        }
+
+        private void OrderItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (OrderItemsListBox.SelectedIndex != -1)
+            {
+                EditOrderAmtBtn.Enabled = true;
+                EditOrderAmtTextBox.Enabled = true;
+                EditOrderAmtTextBox.Text = pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount.ToString();
             }
         }
 
@@ -237,7 +486,6 @@ namespace ReorderPointSystem
 
             DisplayItems(items); */
         }
-
         /*
          * 
          * Sort update 
@@ -257,7 +505,5 @@ namespace ReorderPointSystem
             foreach (var item in items)
                 ItemsListBox.Items.Add(item.Name);
         } */
-
-
     }
 }
