@@ -481,9 +481,6 @@ namespace ReorderPointSystem
         {
             var items = controller.LoadItems();
 
-            // Re-force alphabetical sorting
-            items = controller.SortItems(items, "Alphabetical (A to Z)");
-
             DisplayItems(items);
         }
 
