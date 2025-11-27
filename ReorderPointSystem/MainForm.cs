@@ -19,6 +19,36 @@ namespace ReorderPointSystem
         public MainForm()
         {
             InitializeComponent();
+
+            //Sets up GridView 
+            SetupGridColumns();
+        }
+        private void SetupGridColumns()
+        {
+            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            ItemsGridView.Columns.Clear();
+
+            // Create columns on percentages or total element space
+            DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
+            idColumn.Name = "Id";
+            idColumn.HeaderText = "ID";
+            idColumn.FillWeight = 20; // 20% of total width
+
+            DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
+            nameColumn.Name = "Name";
+            nameColumn.HeaderText = "Name";
+            nameColumn.FillWeight = 50; // 50% of total width
+
+            DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
+            qtyColumn.Name = "CurrentAmount";
+            qtyColumn.HeaderText = "Quantity";
+            qtyColumn.FillWeight = 30; // 30% of total width
+
+            // Add columns to grid
+            ItemsGridView.Columns.Add(idColumn);
+            ItemsGridView.Columns.Add(nameColumn);
+            ItemsGridView.Columns.Add(qtyColumn);
         }
 
         // Helper function to disable editing item information
