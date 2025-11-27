@@ -489,19 +489,20 @@ namespace ReorderPointSystem
 
         private void UpdateItemsDisplay()
         {
-            // Load all items from controller
             var items = controller.LoadItems();
 
-            // Apply sorting only if something is selected
             if (SortByComboBox.SelectedItem is string sortCriteria)
-            {
                 items = controller.SortItems(items, sortCriteria);
+
+            // Clear rows and add only the relevant columns
+            ItemsGridView.Rows.Clear();
+            foreach (var item in items)
+            {
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
             }
 
-            // Display sorted items
-            ItemsListBox.DataSource = null;         // reset first
-            ItemsListBox.DataSource = items;        // bind new list
-            ItemsListBox.DisplayMember = "Name";    // the property to show in the ListBox
-        } 
+            if (ItemsGridView.Rows.Count > 0)
+                ItemsGridView.Rows[0].Selected = true;
+        }
     }
 }
