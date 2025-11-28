@@ -455,19 +455,29 @@ namespace ReorderPointSystem
             }
         }
 
-        private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ItemsGridView_SelectionChanged(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.SelectedRows.Count > 0)
             {
-                int index = ItemsListBox.SelectedIndex;
-                selectedItem = itemsList[index];
-                DisableProductInfoOptions();
-                ItemNameTextBox.Text = itemsList[index].Name;
-                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
-                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
-                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
-                ItemDescriptionLabel.Text = itemsList[index].Description;
-                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
+                var row = ItemsGridView.SelectedRows[0];
+
+                // Safely get the ID value
+                if (row.Cells["Id"].Value != null)
+                {
+                    int id = Convert.ToInt32(row.Cells["Id"].Value);
+                    selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
+
+                    if (selectedItem != null)
+                    {
+                        DisableProductInfoOptions();
+                        ItemNameTextBox.Text = selectedItem.Name;
+                        CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
+                        ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
+                        ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
+                        ItemDescriptionLabel.Text = selectedItem.Description;
+                        CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+                    }
+                }
             }
         }
 
@@ -548,9 +558,5 @@ namespace ReorderPointSystem
                 ItemsGridView.Rows[0].Selected = true;
         }
 
-        private void ItemsGridView_SelectionChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
