@@ -353,17 +353,27 @@ namespace ReorderPointSystem
         // Enables the controls in the ItemInfoGroupBox for editing
         private void EditItemBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.SelectedRows.Count > 0)
             {
-                int index = ItemsListBox.SelectedIndex;
-                selectedItem = itemsList[index];
-                ItemNameTextBox.Text = itemsList[index].Name;
-                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
-                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
-                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
-                ItemDescriptionLabel.Text = itemsList[index].Description;
-                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
-                EnableProductInfoOptions();
+                var row = ItemsGridView.SelectedRows[0];
+
+                int id = (int)row.Cells["Id"].Value;
+
+                selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
+
+                // If the item exists, populate the fields and enable editing
+                if (selectedItem != null)
+                {
+                    ItemNameTextBox.Text = selectedItem.Name;
+                    CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
+                    ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
+                    ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
+                    ItemDescriptionLabel.Text = selectedItem.Description;
+                    CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+
+                    // Enable editing controls
+                    EnableProductInfoOptions();
+                }
             }
             else
             {
@@ -374,7 +384,7 @@ namespace ReorderPointSystem
         // Add the highlighted item to a pending order. If no pending orders exist, also create a new pending order
         private void AddToOrderBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.CurrentRow != null)
             {
                 if (selectedItem != null)
                 {
