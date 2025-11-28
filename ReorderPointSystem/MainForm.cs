@@ -315,7 +315,7 @@ namespace ReorderPointSystem
         // Remove the selected item from the Items DB, If an item is selected
         private void DeleteItemBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.CurrentRow != null)
             {
                 String sql = "DELETE FROM items WHERE id = \'" + selectedItem.Id + "\'";
                 Console.WriteLine(sql);
