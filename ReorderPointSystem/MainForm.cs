@@ -445,13 +445,19 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
-            ItemsListBox.DataSource = null;
-            ItemsListBox.DataSource = items;
-            ItemsListBox.DisplayMember = "Name";
-            if (ItemsListBox.Items.Count > 0)
+            ItemsGridView.Rows.Clear();
+
+            foreach (var item in items)
             {
-                ItemsListBox.SelectedIndex = 0;
-                selectedItem = itemsList[ItemsListBox.SelectedIndex];
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+            }
+
+            // Select the first row if available
+            if (ItemsGridView.Rows.Count > 0)
+            {
+                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
+                int id = (int)ItemsGridView.Rows[0].Cells["Id"].Value;
+                selectedItem = items.FirstOrDefault(x => x.Id == id);
             }
         }
 
