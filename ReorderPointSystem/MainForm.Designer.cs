@@ -50,6 +50,7 @@
             ItemNameTextBox = new TextBox();
             ItemNameLabel = new Label();
             ItemsListGroupBox = new GroupBox();
+            ItemsGridView = new DataGridView();
             SortByComboBox = new ComboBox();
             RefreshButton = new Button();
             AddToOrderBtn = new Button();
@@ -67,14 +68,13 @@
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
             OrderRecievedBtn = new Button();
-            ItemsGridView = new DataGridView();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ItemsGridView).BeginInit();
             PendingOrdersGroupBox.SuspendLayout();
             CurrentOrdersGroupBox.SuspendLayout();
             OrderItemsGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ItemsGridView).BeginInit();
             SuspendLayout();
             // 
             // EnableTestModeChkbx
@@ -303,6 +303,23 @@
             ItemsListGroupBox.TabStop = false;
             ItemsListGroupBox.Text = "Items List";
             // 
+            // ItemsGridView
+            // 
+            ItemsGridView.AllowUserToAddRows = false;
+            ItemsGridView.AllowUserToDeleteRows = false;
+            ItemsGridView.AllowUserToResizeColumns = false;
+            ItemsGridView.AllowUserToResizeRows = false;
+            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ItemsGridView.BackgroundColor = SystemColors.Window;
+            ItemsGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            ItemsGridView.Location = new Point(6, 46);
+            ItemsGridView.MultiSelect = false;
+            ItemsGridView.Name = "ItemsGridView";
+            ItemsGridView.ReadOnly = true;
+            ItemsGridView.Size = new Size(393, 588);
+            ItemsGridView.TabIndex = 7;
+            ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
+            // 
             // SortByComboBox
             // 
             SortByComboBox.FormattingEnabled = true;
@@ -474,22 +491,6 @@
             OrderRecievedBtn.Text = "Order Recieved";
             OrderRecievedBtn.UseVisualStyleBackColor = true;
             // 
-            // ItemsGridView
-            // 
-            ItemsGridView.AllowUserToAddRows = false;
-            ItemsGridView.AllowUserToDeleteRows = false;
-            ItemsGridView.AllowUserToResizeColumns = false;
-            ItemsGridView.AllowUserToResizeRows = false;
-            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            ItemsGridView.BackgroundColor = SystemColors.Window;
-            ItemsGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ItemsGridView.Location = new Point(6, 46);
-            ItemsGridView.MultiSelect = false;
-            ItemsGridView.Name = "ItemsGridView";
-            ItemsGridView.ReadOnly = true;
-            ItemsGridView.Size = new Size(393, 588);
-            ItemsGridView.TabIndex = 7;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -516,10 +517,10 @@
             ItemDescriptionGroupBox.ResumeLayout(false);
             ItemsListGroupBox.ResumeLayout(false);
             ItemsListGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
             PendingOrdersGroupBox.ResumeLayout(false);
             CurrentOrdersGroupBox.ResumeLayout(false);
             OrderItemsGroupBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

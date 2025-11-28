@@ -547,5 +547,10 @@ namespace ReorderPointSystem
             if (ItemsGridView.Rows.Count > 0)
                 ItemsGridView.Rows[0].Selected = true;
         }
+
+        private void ItemsGridView_SelectionChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
