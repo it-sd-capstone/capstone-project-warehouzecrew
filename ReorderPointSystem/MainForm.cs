@@ -333,15 +333,21 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            ItemsListBox.DataSource = null;
-            itemsList = controller.SearchItems(ItemSearchTextBox.Text.ToString());
-            ItemsListBox.DataSource = itemsList;
-            ClearFieldsBtn_Click(sender, e);
-            if (!ItemsListBox.Size.IsEmpty)
+            itemsList = controller.SearchItems(ItemSearchTextBox.Text);
+            ItemsGridView.Rows.Clear();
+
+            foreach (var item in itemsList)
             {
-                ItemsListBox.SelectedIndex = 0;
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
             }
 
+            ClearFieldsBtn_Click(sender, e);
+            if (ItemsGridView.Rows.Count > 0)
+            {
+                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
+                int id = (int)ItemsGridView.Rows[0].Cells["Id"].Value;
+                selectedItem = itemsList.FirstOrDefault(x => x.Id == id);
+            }
         }
 
         // Enables the controls in the ItemInfoGroupBox for editing
