@@ -114,8 +114,23 @@ namespace ReorderPointSystem
         // recursive helper function to continue checking for reorder items
         private async Task CheckReorders()
         {
+            List<Item> oldOrder = null;
             await Task.Delay(5000);
+            if (pendingOrder != null)
+            {
+                oldOrder = pendingOrder;
+            }
             pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
+            if (oldOrder != null)
+            {
+                foreach (Item item in oldOrder)
+                {
+                    if (!pendingOrder.Contains(item))
+                    {
+                        pendingOrder.Add(item);
+                    }
+                }
+            }
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
             {
                 String searchStr = "SELECT COUNT(\'id\') FROM reorders";
@@ -123,7 +138,7 @@ namespace ReorderPointSystem
                 SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
                 int orderID;
                 int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                PendingOrderListBox.Items.Add("WIP Order ID: " + orderID);
+                PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
             }
             CheckReorders();
         }
@@ -416,6 +431,19 @@ namespace ReorderPointSystem
                 if (selectedItem != null)
                 {
                     Item copy = selectedItem;
+                    if (PendingOrderListBox.Items.Count == 0)
+                    {
+                        String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                        SQLiteConnection conn = Database.GetConnection();
+                        SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                        int orderID;
+                        int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                        PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
+                    }
+                    if (pendingOrder == null)
+                    {
+                        pendingOrder = new List<Item> { };
+                    }
                     pendingOrder.Add(copy);
                     OrderItemsDataGrid.Rows.Clear();
                     foreach (Item item in pendingOrder)
@@ -530,6 +558,7 @@ namespace ReorderPointSystem
                 controller.GetInventoryManager().GetReorderRepository().Add(reorder);
             }
             LoadOrders();
+            DeletePendingOrderBtn_Click(sender, e);
         }
 
         private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
