@@ -625,8 +625,10 @@ namespace ReorderPointSystem
                     {
                         item.AddStock(selectedReorder.Quantity);
                         controller.GetInventoryManager().GetItemRepository().Update(item);
+                        controller.GetInventoryManager().GetReorderRepository().Update(selectedReorder);
                     }
                     DisplayItems(itemsList);
+                    LoadOrders();
 
                 } 
                 else

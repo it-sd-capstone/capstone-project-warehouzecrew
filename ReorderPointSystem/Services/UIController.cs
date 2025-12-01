@@ -138,9 +138,21 @@ namespace ReorderPointSystem.Services
             List<Item> itemsOut = new List<Item>();
             foreach (Item item in itemsIn) 
             { 
-                if (item.NeedsReorder() && !reorders.Exists(x => x.ItemId == item.Id))
+                if (item.NeedsReorder())
                 {
-                    itemsOut.Add(item);
+                    List<Reorder> matchedOrders = reorders.FindAll(x => findMatchedId(x, item));
+                    bool onOrder = false;
+                    foreach (Reorder reorder in matchedOrders)
+                    {
+                        if (reorder.Status.Equals("In process") || reorder.Status.Equals("Pending approval"))
+                        {
+                            onOrder = true;
+                        }
+                    }
+                    if (!onOrder)
+                    {
+                        itemsOut.Add(item);
+                    }
                 }
             }
             return itemsOut;
@@ -149,6 +161,18 @@ namespace ReorderPointSystem.Services
         public InventoryManager GetInventoryManager()
         {
             return _inventoryManager;
+        }
+
+        private bool findMatchedId(Reorder o, Item item)
+        {
+            if (o.ItemId == item.Id)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
