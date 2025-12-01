@@ -487,15 +487,6 @@ namespace ReorderPointSystem
             }
         }
 
-        private void ItemsListBox_Format(object sender, ListControlConvertEventArgs e)
-        {
-            String name = ((Item)e.ListItem).Name;
-            String id = ((Item)e.ListItem).Id.ToString();
-            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
-
-            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
-        }
-
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
             // TODO DB structure needs to be revisited to allow for PK/FK matching in reorder table before completing
