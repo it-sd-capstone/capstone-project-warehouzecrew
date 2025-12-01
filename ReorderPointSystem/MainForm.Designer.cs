@@ -395,9 +395,9 @@
             // 
             // SubmitPendingOrderButton
             // 
-            SubmitPendingOrderButton.Location = new Point(13, 107);
+            SubmitPendingOrderButton.Location = new Point(6, 107);
             SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
-            SubmitPendingOrderButton.Size = new Size(188, 23);
+            SubmitPendingOrderButton.Size = new Size(195, 23);
             SubmitPendingOrderButton.TabIndex = 5;
             SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
             SubmitPendingOrderButton.UseVisualStyleBackColor = true;
@@ -407,7 +407,7 @@
             // 
             DeletePendingOrderBtn.Location = new Point(205, 107);
             DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
-            DeletePendingOrderBtn.Size = new Size(188, 23);
+            DeletePendingOrderBtn.Size = new Size(194, 23);
             DeletePendingOrderBtn.TabIndex = 4;
             DeletePendingOrderBtn.Text = "Delete Selected Pending Order";
             DeletePendingOrderBtn.UseVisualStyleBackColor = true;
@@ -439,7 +439,7 @@
             CurrentOrdersListBox.ItemHeight = 15;
             CurrentOrdersListBox.Location = new Point(6, 22);
             CurrentOrdersListBox.Name = "CurrentOrdersListBox";
-            CurrentOrdersListBox.Size = new Size(381, 334);
+            CurrentOrdersListBox.Size = new Size(393, 334);
             CurrentOrdersListBox.TabIndex = 0;
             CurrentOrdersListBox.SelectedIndexChanged += CurrentOrdersListBox_SelectedIndexChanged;
             CurrentOrdersListBox.Format += CurrentOrdersListBox_Format;

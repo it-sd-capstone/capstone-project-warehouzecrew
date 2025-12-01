@@ -172,6 +172,7 @@ namespace ReorderPointSystem
             LoadCategories();
             LoadOrders();
             CheckReorders();
+            ClearFieldsBtn_Click(sender, e);
         }
 
         // Display or hide the Simulation buttons
