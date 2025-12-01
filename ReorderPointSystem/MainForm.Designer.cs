@@ -441,6 +441,7 @@
             CurrentOrdersListBox.Name = "CurrentOrdersListBox";
             CurrentOrdersListBox.Size = new Size(381, 334);
             CurrentOrdersListBox.TabIndex = 0;
+            CurrentOrdersListBox.Format += CurrentOrdersListBox_Format;
             // 
             // OrderItemsGroupBox
             // 

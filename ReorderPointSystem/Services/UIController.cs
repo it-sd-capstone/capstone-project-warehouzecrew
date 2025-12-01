@@ -68,25 +68,8 @@ namespace ReorderPointSystem.Services
         public List<Reorder> LoadOrders()
         {
             List<Reorder> orders = new List<Reorder>();
-            ReorderRepository repository = new ReorderRepository();
-            orders = repository.GetAll();
+            orders = _inventoryManager.GetReorderRepository().GetAll();
             return orders;
-        }
-
-
-        public void AddNewItem(Item item)
-        {
-            // TODO integrate this method into MainForm
-        }
-
-        public void UpdateExistingItem(Item item)
-        {
-            // TODO integrate this method into MainForm
-        }
-
-        public void DeleteItem(int itemID) 
-        {
-            // TODO integrate this method into MainForm
         }
 
         // Inventory list sorting function
@@ -150,12 +133,12 @@ namespace ReorderPointSystem.Services
             return items;
         }
 
-        public List<Item> ProcessLowStockReorders(List<Item> itemsIn)
+        public List<Item> ProcessLowStockReorders(List<Item> itemsIn, List<Reorder> reorders)
         {
             List<Item> itemsOut = new List<Item>();
             foreach (Item item in itemsIn) 
             { 
-                if (item.NeedsReorder())
+                if (item.NeedsReorder() && !reorders.Exists(x => x.ItemId == item.Id))
                 {
                     itemsOut.Add(item);
                 }
@@ -163,5 +146,9 @@ namespace ReorderPointSystem.Services
             return itemsOut;
         }
 
+        public InventoryManager GetInventoryManager()
+        {
+            return _inventoryManager;
+        }
     }
 }

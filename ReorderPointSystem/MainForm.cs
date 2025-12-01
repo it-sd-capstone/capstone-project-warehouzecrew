@@ -114,7 +114,7 @@ namespace ReorderPointSystem
         private async Task CheckReorders()
         {
             await Task.Delay(5000);
-            pendingOrder = controller.ProcessLowStockReorders(itemsList);
+            pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
             {
                 String searchStr = "SELECT COUNT(\'id\') FROM reorders";
@@ -142,6 +142,7 @@ namespace ReorderPointSystem
         private void LoadOrders()
         {
             reorders = controller.LoadOrders();
+            CurrentOrdersListBox.DataSource = null;
             CurrentOrdersListBox.DataSource = reorders;
             CurrentOrdersListBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "ItemId";
@@ -467,6 +468,8 @@ namespace ReorderPointSystem
                 {
                     OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
                 }
+                EditOrderAmtBtn.Enabled = false;
+                EditOrderAmtTextBox.Enabled = false;
             }
             else
             {
@@ -520,7 +523,12 @@ namespace ReorderPointSystem
 
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
-            // TODO DB structure needs to be revisited to allow for PK/FK matching in reorder table before completing
+            foreach (Item item in pendingOrder)
+            {
+                Reorder reorder = new Reorder(item.Id, item.MaxAmount);
+                controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+            }
+            LoadOrders();
         }
 
         private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -581,6 +589,17 @@ namespace ReorderPointSystem
                 EditOrderAmtTextBox.Text = row.Cells["ReorderQty"].Value.ToString();
 
             }
+        }
+
+        private void CurrentOrdersListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            int id = ((Reorder)e.ListItem).Id;
+            int itemId = ((Reorder)e.ListItem).ItemId;
+            int qty = ((Reorder)e.ListItem).Quantity;
+            DateTime created = ((Reorder)e.ListItem).CreatedAt;
+            String status = ((Reorder)e.ListItem).Status;
+
+            e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
         }
     }
 }
