@@ -15,6 +15,7 @@ namespace ReorderPointSystem
         private List<Category> categories;
         private List<Reorder> reorders;
         private Item selectedItem;
+        private Reorder selectedReorder;
         private UIController controller = new UIController(new InventoryManager());
         public MainForm()
         {
@@ -600,6 +601,43 @@ namespace ReorderPointSystem
             String status = ((Reorder)e.ListItem).Status;
 
             e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
+        }
+
+        private void CurrentOrdersListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CurrentOrdersListBox.Items.Count > 0 && CurrentOrdersListBox.SelectedIndex != -1)
+            {
+                selectedReorder = reorders[CurrentOrdersListBox.SelectedIndex];
+            }
+            OrderRecievedBtn.Enabled = true;
+        }
+
+        private void OrderRecievedBtn_Click(object sender, EventArgs e)
+        {
+            if (selectedReorder != null)
+            {
+                if (selectedReorder.Status.Equals("Pending approval"))
+                {
+
+                    selectedReorder.MarkComplete();
+                    Item item = itemsList.Find(x => x.Id == selectedReorder.ItemId);
+                    if (item != null)
+                    {
+                        item.AddStock(selectedReorder.Quantity);
+                        controller.GetInventoryManager().GetItemRepository().Update(item);
+                    }
+                    DisplayItems(itemsList);
+
+                } 
+                else
+                {
+                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already recieved");
+                }
+            } 
+            else
+            {
+                MessageBox.Show("You must select an order before you can recieve it.", "Error - no order selected");
+            }
         }
     }
 }

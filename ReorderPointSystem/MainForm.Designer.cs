@@ -441,6 +441,7 @@
             CurrentOrdersListBox.Name = "CurrentOrdersListBox";
             CurrentOrdersListBox.Size = new Size(381, 334);
             CurrentOrdersListBox.TabIndex = 0;
+            CurrentOrdersListBox.SelectedIndexChanged += CurrentOrdersListBox_SelectedIndexChanged;
             CurrentOrdersListBox.Format += CurrentOrdersListBox_Format;
             // 
             // OrderItemsGroupBox
@@ -498,6 +499,7 @@
             OrderRecievedBtn.TabIndex = 6;
             OrderRecievedBtn.Text = "Order Recieved";
             OrderRecievedBtn.UseVisualStyleBackColor = true;
+            OrderRecievedBtn.Click += OrderRecievedBtn_Click;
             // 
             // MainForm
             // 
