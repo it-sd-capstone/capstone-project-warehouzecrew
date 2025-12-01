@@ -1,122 +1,135 @@
-﻿using ReorderPointSystem.Models;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
+using ReorderPointSystem.Models;
 
 namespace ReorderPointSystem.Data
 {
     internal class ItemRepository
     {
-        public List<Item> GetAll(SQLiteDataReader reader)
+        public List<Item> GetAll()
         {
-            var items = new List<Item>();
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM items";
+
+            List<Item> items = new List<Item>();
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                items.Add(MapReaderToItem(reader));
+            }
+
+            return items;
+        }
+
+        public List<Item> Search(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return new List<Item>();
+
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM items WHERE Name LIKE @searchTerm";
+            command.Parameters.AddWithValue("@searchTerm", $"%{searchTerm}%");
+
+            List<Item> items = new List<Item>();
+            using var reader = command.ExecuteReader();
+
             while (reader.Read())
             {
                 items.Add(MapReaderToItem(reader));
             }
             return items;
         }
-        /// <summary><list type="table">
-        /// <item>by default the searchString indicates that an items name should contain the given string</item>
-        /// <item>by "ALL" will skip filtering and just return a list of all items</item>
-        /// <item>if it starts with [@], it will trigger special cases, which can be stacked in any way one after the other, where all must be true for a given item to pass</item>
-        /// <item>use "[@]name " for the rest of the search string until the next [@] to apply to the item name</item>
-        /// <item>use "[@]desc " for the rest of the search string until the next [@] to apply to the item description</item>
-        /// <item>use "[@]cat " for the rest of the search string until the next [@] to apply to the item category</item>
-        /// <item>use "[@]above " for the rest of the search string until the next [@] to indicate the item should have more than that many items</item>
-        /// <item>use "[@]below " for the rest of the search string until the next [@] to indicate the item should have less than that many items</item>
-        /// <item>advanced example: "[@]cat food[@]above 1700" returns all items in category food whos current stock is >= 1700</item>
-        /// </list></summary>
-        public List<Item> Search(string searchString)
-        {
-            string search = searchString == "ALL" ? @"select * from items" : @"select i.* from items as i join categories as c on i.category_id = c.id where";
-            if (searchString != "ALL")
-            {
-                if (searchString.StartsWith("[@]"))
-                {
-                    bool first = true;
-                    foreach (string s in searchString.Split("[@]"))
-                    {
-                        if (first) { first = false; }
-                        else { search += " and "; }
-                        switch (s.Split()[0])
-                        {
-                            case "name": search += "i.name like '%" + s.Trim().Substring(5) + "%'"; break;
-                            case "desc": search += "i.description like '%" + s.Trim().Substring(5) + "%'"; break;
-                            case "cat": search += "c.name like '%" + s.Trim().Substring(4) + "%'"; break;
-                            case "above": search += "i.current_amount > " + s.Trim().Substring(6); break;
-                            case "below": search += "i.current_amount < " + s.Trim().Substring(6); break;
-                            default: throw new Exception("Search tag " + s.Trim().Split()[0] + " not implemented");
-                        }
-                    }
-                }
-                else
-                {
-                    search += " i.name = " + searchString;
-                }
-            }
-            SQLiteConnection con = Database.GetConnection();
-            using var query = new SQLiteCommand(search, con);
-            var reader = query.ExecuteReader();
-            return GetAll(reader);
-        }
+
         public Item? GetById(int id)
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = @"select * from items where id={id}";
-            command.Parameters.AddWithValue("{id}", id);
+            command.CommandText = "SELECT * FROM items WHERE id = @Id";
+            command.Parameters.AddWithValue("@Id", id);
+
             using var reader = command.ExecuteReader();
-            if (reader.Read())
+            if (!reader.Read()) return null;
+            return MapReaderToItem(reader);
+        }
+
+        public Item Add(Item item)
+        {
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at)
+                VALUES (@CategoryId, @Name, @Description, @CurrentAmount, @ReorderPoint, @MaxAmount, @CreatedAt, @LastUpdatedAt);
+
+                SELECT last_insert_rowid();
+            ";
+
+            var currentDateTime = DateTime.Now;
+            command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
+            command.Parameters.AddWithValue("@Name", item.Name);
+            command.Parameters.AddWithValue("@Description", item.Description);
+            command.Parameters.AddWithValue("@CurrentAmount", item.CurrentAmount);
+            command.Parameters.AddWithValue("@ReorderPoint", item.ReorderPoint);
+            command.Parameters.AddWithValue("@MaxAmount", item.MaxAmount);
+            command.Parameters.AddWithValue("@CreatedAt", currentDateTime);
+            command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
+
+            int newId = Convert.ToInt32(command.ExecuteScalar());
+            return new Item
             {
-                return MapReaderToItem(reader);
-            }
-            return null;
+                Id = newId,
+                CategoryId = item.CategoryId,
+                Name = item.Name,
+                Description = item.Description,
+                CurrentAmount = item.CurrentAmount,
+                ReorderPoint = item.ReorderPoint,
+                MaxAmount = item.MaxAmount,
+                CreatedAt = currentDateTime,
+                LastUpdatedAt = currentDateTime
+            };
         }
-        public int Add(Item item)
+
+        public bool Update(Item item)
         {
-            string addCommand = @"insert into items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at) 
-values (@cat, @name, @desc, @current, @reorder, @max, @created, @updated)";
-            SQLiteConnection con = Database.GetConnection();
-            using var command = new SQLiteCommand(addCommand, con);
-            command.Prepare();
-            command.Parameters.AddWithValue("cat", item.CategoryId);
-            command.Parameters.AddWithValue("name", item.Name);
-            command.Parameters.AddWithValue("desc", item.Description);
-            command.Parameters.AddWithValue("current", item.CurrentAmount);
-            command.Parameters.AddWithValue("reorder", item.ReorderPoint);
-            command.Parameters.AddWithValue("max", item.MaxAmount);
-            command.Parameters.AddWithValue("created", item.CreatedAt);
-            command.Parameters.AddWithValue("updated", item.LastUpdatedAt);
-            int rows = command.ExecuteNonQuery();
-            con.Close();
-            return rows;
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                UPDATE items
+                SET category_id = @CategoryId,
+                    name = @Name,
+                    description = @Description,
+                    current_amount = @CurrentAmount,
+                    reorder_point = @ReorderPoint,
+                    max_amount = @MaxAmount,
+                    updated_at = @LastUpdatedAt
+                WHERE id = @Id;
+            ";
+            var currentDateTime = DateTime.Now;
+            command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
+            command.Parameters.AddWithValue("@Name", item.Name);
+            command.Parameters.AddWithValue("@Description", item.Description);
+            command.Parameters.AddWithValue("@CurrentAmount", item.CurrentAmount);
+            command.Parameters.AddWithValue("@ReorderPoint", item.ReorderPoint);
+            command.Parameters.AddWithValue("@MaxAmount", item.MaxAmount);
+            command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
+            command.Parameters.AddWithValue("@Id", item.Id);
+
+            // Returns true if successful
+            return command.ExecuteNonQuery() > 0;
         }
-        public void Update(Item item)
+
+        public bool Delete(int id)
         {
-            item.LastUpdatedAt = DateTime.Now;
-            string updateCommand = @"update items category_id = '@cat', name = '@name', description = '@desc', current_amout = '@current'
-, reorder_point = '@reorder', max_amount = '@max', created_at = '@created', updated_at = '@updated' where id = @id";
-            SQLiteConnection con = Database.GetConnection();
-            using var command = new SQLiteCommand(updateCommand, con);
-            command.Prepare();
-            command.Parameters.Add(item.CategoryId);
-            command.Parameters.Add(item.Name);
-            command.Parameters.Add(item.Description);
-            command.Parameters.Add(item.CurrentAmount);
-            command.Parameters.Add(item.ReorderPoint);
-            command.Parameters.Add(item.MaxAmount);
-            command.Parameters.Add(item.CreatedAt);
-            command.Parameters.Add(item.LastUpdatedAt);
-            int rows = command.ExecuteNonQuery();
-            con.Close();
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = "DELETE FROM items WHERE id = @Id";
+            command.Parameters.AddWithValue("@Id", id);
+
+            // Returns true if successful
+            return command.ExecuteNonQuery() > 0;
         }
-        public void Delete(int id)
-        {
-            string deleteCommand = @"delete from items where id = " + id;
-            SQLiteConnection con = Database.GetConnection();
-            using var command = new SQLiteCommand(deleteCommand, con);
-            command.ExecuteNonQuery();
-            con.Close();
-        }
+
         public Item MapReaderToItem(SQLiteDataReader reader)
         {
             Item item = new Item();
