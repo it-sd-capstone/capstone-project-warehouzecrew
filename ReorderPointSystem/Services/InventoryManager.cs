@@ -40,13 +40,10 @@ namespace ReorderPointSystem.Services
 
         public List<Item> GetAllItems()
         {
-            // TODO re-work itemRepo and fix this method
-            // return _itemRepo.GetAll();
-            // _itemRepo.GetAll() should be no-argument, current requires a SQLiteDataReader
-            return null;
+            return _itemRepo.GetAll();
         }
 
-        public int addItem(Item item)
+        public Item addItem(Item item)
         {
             return _itemRepo.Add(item);
         }
