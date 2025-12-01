@@ -155,7 +155,7 @@ namespace ReorderPointSystem.Services
             List<Item> itemsOut = new List<Item>();
             foreach (Item item in itemsIn) 
             { 
-                if (item.ReorderPoint > item.CurrentAmount)
+                if (item.NeedsReorder())
                 {
                     itemsOut.Add(item);
                 }

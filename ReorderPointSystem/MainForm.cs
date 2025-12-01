@@ -26,8 +26,10 @@ namespace ReorderPointSystem
         private void SetupGridColumns()
         {
             ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             ItemsGridView.Columns.Clear();
+            OrderItemsDataGrid.Columns.Clear();
 
             // Create columns on percentages or total element space
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
@@ -45,10 +47,33 @@ namespace ReorderPointSystem
             qtyColumn.HeaderText = "Quantity";
             qtyColumn.FillWeight = 30; // 30% of total width
 
+            DataGridViewTextBoxColumn orderItemIdColumn = new DataGridViewTextBoxColumn();
+            orderItemIdColumn.Name = "Id";
+            orderItemIdColumn.HeaderText = "Item ID";
+            orderItemIdColumn.FillWeight = 20; // 20% of total width
+
+            DataGridViewTextBoxColumn OrderItemNameColumn = new DataGridViewTextBoxColumn();
+            OrderItemNameColumn.Name = "Name";
+            OrderItemNameColumn.HeaderText = "Name";
+            OrderItemNameColumn.FillWeight = 50; // 50% of total width
+
+            DataGridViewTextBoxColumn OrderItemQtyColumn = new DataGridViewTextBoxColumn();
+            OrderItemQtyColumn.Name = "ReorderQty";
+            OrderItemQtyColumn.HeaderText = "Order Amount";
+            OrderItemQtyColumn.FillWeight = 30; // 30% of total width
+
             // Add columns to grid
             ItemsGridView.Columns.Add(idColumn);
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
+
+            OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
+            OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
+            OrderItemsDataGrid.Columns.Add(OrderItemQtyColumn);
+
+
+
+
         }
 
         // Helper function to disable editing item information
@@ -390,8 +415,11 @@ namespace ReorderPointSystem
                 {
                     Item copy = selectedItem;
                     pendingOrder.Add(copy);
-                    OrderItemsListBox.DataSource = null;
-                    OrderItemsListBox.DataSource = pendingOrder;
+                    OrderItemsDataGrid.Rows.Clear();
+                    foreach (Item item in pendingOrder)
+                    {
+                        OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                    }
                 }
                 else
                 {
@@ -414,8 +442,7 @@ namespace ReorderPointSystem
                 PendingOrderListBox.SelectedIndex = -1;
                 PendingOrderListBox.Refresh();
                 pendingOrder.Clear();
-                OrderItemsListBox.DataSource = null;
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
             }
             else
             {
@@ -426,16 +453,20 @@ namespace ReorderPointSystem
         // Edit the amount of an item to be ordered, from within a pending order
         private void EditOrderAmtBtn_Click(object sender, EventArgs e)
         {
-            if (OrderItemsListBox.SelectedIndex != -1)
+            if (OrderItemsDataGrid.SelectedRows.Count == 1)
             {
                 int qty;
                 bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
                 if (validQty)
                 {
-                    pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount = qty;
+                    var row = OrderItemsDataGrid.SelectedRows[0];
+                    pendingOrder[row.Index].MaxAmount = qty;
                 }
-                OrderItemsListBox.DataSource = null;
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                }
             }
             else
             {
@@ -496,30 +527,15 @@ namespace ReorderPointSystem
         {
             if (PendingOrderListBox.SelectedIndex != -1)
             {
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                }
             }
             else
             {
                 MessageBox.Show("Error: no selected index");
-            }
-        }
-
-        private void OrderItemsListBox_Format(object sender, ListControlConvertEventArgs e)
-        {
-            String name = ((Item)e.ListItem).Name;
-            String id = ((Item)e.ListItem).Id.ToString();
-            String qty = ((Item)e.ListItem).MaxAmount.ToString();
-
-            e.Value = name.ToUpper() + "     ID=" + id + "      OrderQTY=" + qty;
-        }
-
-        private void OrderItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (OrderItemsListBox.SelectedIndex != -1)
-            {
-                EditOrderAmtBtn.Enabled = true;
-                EditOrderAmtTextBox.Enabled = true;
-                EditOrderAmtTextBox.Text = pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount.ToString();
             }
         }
 
@@ -555,5 +571,16 @@ namespace ReorderPointSystem
                 ItemsGridView.Rows[0].Selected = true;
         }
 
+        private void OrderItemsDataGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            if (OrderItemsDataGrid.SelectedRows.Count > 0)
+            {
+                var row = OrderItemsDataGrid.SelectedRows[0];
+                EditOrderAmtBtn.Enabled = true;
+                EditOrderAmtTextBox.Enabled = true;
+                EditOrderAmtTextBox.Text = row.Cells["ReorderQty"].Value.ToString();
+
+            }
+        }
     }
 }
