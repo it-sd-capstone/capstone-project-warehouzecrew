@@ -23,6 +23,7 @@ namespace ReorderPointSystem
 
             //Sets up GridView 
             SetupGridColumns();
+            
         }
         private void SetupGridColumns()
         {
@@ -81,8 +82,22 @@ namespace ReorderPointSystem
             OrderItemsDataGrid.Columns.Add(OrderItemQtyColumn);
 
 
+        }
 
+        // Create "cue banner" placeholder text for textboxes 
+        private void SetPlaceholder()
+        {
+            if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
+            {
+                NewCategoryTextBox.Text = "Enter new category name";
+                NewCategoryTextBox.ForeColor = Color.Gray;
+            }
 
+            if (string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            {
+                ItemNameTextBox.Text = "Enter item name";
+                ItemNameTextBox.ForeColor = Color.Gray;
+            }
         }
 
         // Helper function to disable editing item information
@@ -117,6 +132,7 @@ namespace ReorderPointSystem
         {
             itemsList = controller.LoadItems();
             DisplayItems(itemsList);
+            SetPlaceholder();
         }
 
         // recursive helper function to continue checking for reorder items
@@ -181,6 +197,7 @@ namespace ReorderPointSystem
             LoadOrders();
             CheckReorders();
             ClearFieldsBtn_Click(sender, e);
+            SetPlaceholder();
         }
 
         // Display or hide the Simulation buttons
@@ -694,6 +711,7 @@ namespace ReorderPointSystem
             {
                 NewCategoryTextBox.Visible = true;
                 SubmitNewCategoryBtn.Visible = true;
+                NewCategoryNameLabel.Visible = true;
 
                 // Prevent user from picking another existing category
                 CategoryComboBox.Enabled = false;
@@ -702,6 +720,7 @@ namespace ReorderPointSystem
             {
                 NewCategoryTextBox.Visible = false;
                 SubmitNewCategoryBtn.Visible = false;
+                NewCategoryNameLabel.Visible = false;
 
                 // Re-enable the category combo box
                 CategoryComboBox.Enabled = true;
@@ -709,7 +728,40 @@ namespace ReorderPointSystem
                 // Clear any leftover text in the new category text box
                 NewCategoryTextBox.Text = String.Empty;
             }
+            SetPlaceholder();
         }
-    
+
+        // Placeholder text logic for textboxes
+        private void ItemNameTextBox_Enter(object sender, EventArgs e)
+        {
+            {
+                if (ItemNameTextBox.ForeColor == Color.Gray)
+                {
+                    ItemNameTextBox.Text = "";
+                    ItemNameTextBox.ForeColor = Color.Black;
+                }
+            }
+        }
+
+        private void ItemNameTextBox_Leave(object sender, EventArgs e)
+        {
+            SetPlaceholder();
+        }
+
+        private void NewCategoryTextBox_Enter(object sender, EventArgs e)
+        {
+            {
+                if (NewCategoryTextBox.ForeColor == Color.Gray)
+                {
+                    NewCategoryTextBox.Text = "";
+                    NewCategoryTextBox.ForeColor = Color.Black;
+                }
+            }
+        }
+
+        private void NewCategoryTextBox_Leave(object sender, EventArgs e)
+        {
+            SetPlaceholder();
+        }
     }
 }

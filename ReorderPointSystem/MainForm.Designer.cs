@@ -193,8 +193,9 @@
             NewCategoryTextBox.Name = "NewCategoryTextBox";
             NewCategoryTextBox.Size = new Size(287, 29);
             NewCategoryTextBox.TabIndex = 16;
-            NewCategoryTextBox.Text = "Enter New Category Name...";
             NewCategoryTextBox.Visible = false;
+            NewCategoryTextBox.Enter += NewCategoryTextBox_Enter;
+            NewCategoryTextBox.Leave += NewCategoryTextBox_Leave;
             // 
             // CategoryComboBoxLabel
             // 
@@ -339,6 +340,8 @@
             ItemNameTextBox.Name = "ItemNameTextBox";
             ItemNameTextBox.Size = new Size(287, 29);
             ItemNameTextBox.TabIndex = 1;
+            ItemNameTextBox.Enter += ItemNameTextBox_Enter;
+            ItemNameTextBox.Leave += ItemNameTextBox_Leave;
             // 
             // ItemNameLabel
             // 
