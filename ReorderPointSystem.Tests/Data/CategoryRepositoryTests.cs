@@ -11,20 +11,6 @@ namespace ReorderPointSystem.Tests.Data
         }
 
         [Fact]
-        public void GetAll_ShouldReturnEmptyList_WhenNoCategoriesExist()
-        {
-            // Arrange
-            var repo = new CategoryRepository();
-
-            // Act
-            List<Category> results = repo.GetAll();
-
-            // Assert
-            Assert.NotNull(results);
-            Assert.Empty(results);
-        }
-
-        [Fact]
         public void GetAll_ShouldReturnCategoryList_WhenCategoriesExist()
         {
             // Arrange
@@ -37,7 +23,7 @@ namespace ReorderPointSystem.Tests.Data
 
             // Assert
             Assert.NotNull(results);
-            Assert.Equal(2, results.Count);
+            Assert.Equal(3, results.Count); // Also includes the default 'General' category
         }
 
         [Fact]
@@ -54,8 +40,9 @@ namespace ReorderPointSystem.Tests.Data
 
             // Assert
             Assert.Equal("Apple", results[0].Name);
-            Assert.Equal("Mango", results[1].Name);
-            Assert.Equal("Zebra", results[2].Name);
+            Assert.Equal("General", results[1].Name); // Created by default
+            Assert.Equal("Mango", results[2].Name);
+            Assert.Equal("Zebra", results[3].Name);
         }
 
         [Fact]
@@ -69,7 +56,7 @@ namespace ReorderPointSystem.Tests.Data
             List<Category> results = repo.GetAll();
 
             // Assert
-            Category category = results.First();
+            Category category = results[1]; // Result following the default category
             Assert.True(category.Id > 0);
             Assert.Equal("Hardware", category.Name);
         }
