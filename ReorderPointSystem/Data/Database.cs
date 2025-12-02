@@ -77,6 +77,9 @@ namespace ReorderPointSystem.Data
 	                PRIMARY KEY(id AUTOINCREMENT),
 	                FOREIGN KEY(item_id) REFERENCES items(id)
                 );
+                INSERT INTO categories (name)
+                SELECT 'General'
+                WHERE NOT EXISTS (SELECT 1 FROM Categories);
             ";
 
             using var command = new SQLiteCommand(createTablesQuery, connection);
