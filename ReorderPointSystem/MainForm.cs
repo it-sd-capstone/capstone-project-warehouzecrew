@@ -43,11 +43,18 @@ namespace ReorderPointSystem
             nameColumn.HeaderText = "Name";
             nameColumn.FillWeight = 50; // 50% of total width
 
+            DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
+            catColumn.Name = "Category";               
+            catColumn.HeaderText = "Category";        
+            catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
+            catColumn.FillWeight = 20;// 20% of total width
+
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
             qtyColumn.Name = "CurrentAmount";
             qtyColumn.HeaderText = "Quantity";
-            qtyColumn.FillWeight = 30; // 30% of total width
+            qtyColumn.FillWeight = 10; // 10% of total width
 
+            //Order Items Grid Columns
             DataGridViewTextBoxColumn orderItemIdColumn = new DataGridViewTextBoxColumn();
             orderItemIdColumn.Name = "Id";
             orderItemIdColumn.HeaderText = "Item ID";
@@ -67,6 +74,7 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Add(idColumn);
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
+            ItemsGridView.Columns.Add(catColumn);
 
             OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
@@ -289,14 +297,16 @@ namespace ReorderPointSystem
                 bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
                 bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
                 bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
+                String description = ItemDescriptionTextBox.Text;
                 if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
                 {
-                    String sql = "UPDATE items SET name = \'" + name +
-                        "\', current_amount = \'" + curAmt +
-                        "\', reorder_point = \'" + reorderPt +
-                        "\', max_amount = \'" + maxAmt +
-                        "\', updated_at = DATETIME(\'now\'), category_id = \'" + CategoryComboBox.SelectedValue +
-                        "\' WHERE id = \'" + id + "\'";
+                    String sql = "UPDATE items SET name = '" + name +
+                        ", current_amount = '" + curAmt +
+                        "', reorder_point = '" + reorderPt +
+                        "', max_amount = '" + maxAmt +
+                        "', description = '" + ItemDescriptionTextBox.Text + "'" +
+                        "', updated_at = DATETIME('now'), category_id = '" + CategoryComboBox.SelectedValue +
+                        "' WHERE id = '" + id + "'";
                     SQLiteConnection conn = Database.GetConnection();
                     SQLiteCommand cmd = new SQLiteCommand(sql, conn);
                     cmd.ExecuteNonQuery();
@@ -312,7 +322,7 @@ namespace ReorderPointSystem
                 int reorderPt;
                 int maxAmt;
                 String name = ItemNameTextBox.Text;
-                String description = ItemDescriptionLabel.Text;
+                String description = ItemDescriptionTextBox.Text;
                 bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
                 bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
                 bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
@@ -345,7 +355,7 @@ namespace ReorderPointSystem
             {
                 ItemInfoGroupBox.Enabled = true;
             }
-            CategoryComboBox.SelectedIndex = 1;
+            CategoryComboBox.SelectedIndex = 0;
             ItemNameTextBox.Text = string.Empty;
             EnableReorderChkbx.Checked = false;
             CurrentQtyTextBox.Text = string.Empty;
@@ -412,7 +422,7 @@ namespace ReorderPointSystem
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
                     ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
-                    ItemDescriptionLabel.Text = selectedItem.Description;
+                    ItemDescriptionTextBox.Text = selectedItem.Description;
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
 
                     // Enable editing controls
@@ -545,7 +555,7 @@ namespace ReorderPointSystem
                         CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                         ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
                         ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
-                        ItemDescriptionLabel.Text = selectedItem.Description;
+                        ItemDescriptionTextBox.Text = selectedItem.Description;
                         CategoryComboBox.SelectedValue = selectedItem.CategoryId;
                     }
                 }
