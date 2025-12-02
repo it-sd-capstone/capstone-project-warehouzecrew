@@ -15,6 +15,7 @@ namespace ReorderPointSystem
         private List<Category> categories;
         private List<Reorder> reorders;
         private Item selectedItem;
+        private Reorder selectedReorder;
         private UIController controller = new UIController(new InventoryManager());
         public MainForm()
         {
@@ -26,8 +27,10 @@ namespace ReorderPointSystem
         private void SetupGridColumns()
         {
             ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             ItemsGridView.Columns.Clear();
+            OrderItemsDataGrid.Columns.Clear();
 
             // Create columns on percentages or total element space
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
@@ -45,10 +48,33 @@ namespace ReorderPointSystem
             qtyColumn.HeaderText = "Quantity";
             qtyColumn.FillWeight = 30; // 30% of total width
 
+            DataGridViewTextBoxColumn orderItemIdColumn = new DataGridViewTextBoxColumn();
+            orderItemIdColumn.Name = "Id";
+            orderItemIdColumn.HeaderText = "Item ID";
+            orderItemIdColumn.FillWeight = 20; // 20% of total width
+
+            DataGridViewTextBoxColumn OrderItemNameColumn = new DataGridViewTextBoxColumn();
+            OrderItemNameColumn.Name = "Name";
+            OrderItemNameColumn.HeaderText = "Name";
+            OrderItemNameColumn.FillWeight = 50; // 50% of total width
+
+            DataGridViewTextBoxColumn OrderItemQtyColumn = new DataGridViewTextBoxColumn();
+            OrderItemQtyColumn.Name = "ReorderQty";
+            OrderItemQtyColumn.HeaderText = "Order Amount";
+            OrderItemQtyColumn.FillWeight = 30; // 30% of total width
+
             // Add columns to grid
             ItemsGridView.Columns.Add(idColumn);
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
+
+            OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
+            OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
+            OrderItemsDataGrid.Columns.Add(OrderItemQtyColumn);
+
+
+
+
         }
 
         // Helper function to disable editing item information
@@ -88,8 +114,23 @@ namespace ReorderPointSystem
         // recursive helper function to continue checking for reorder items
         private async Task CheckReorders()
         {
+            List<Item> oldOrder = null;
             await Task.Delay(5000);
-            pendingOrder = controller.ProcessLowStockReorders(itemsList);
+            if (pendingOrder != null)
+            {
+                oldOrder = pendingOrder;
+            }
+            pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
+            if (oldOrder != null)
+            {
+                foreach (Item item in oldOrder)
+                {
+                    if (!pendingOrder.Contains(item))
+                    {
+                        pendingOrder.Add(item);
+                    }
+                }
+            }
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
             {
                 String searchStr = "SELECT COUNT(\'id\') FROM reorders";
@@ -97,7 +138,7 @@ namespace ReorderPointSystem
                 SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
                 int orderID;
                 int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                PendingOrderListBox.Items.Add("WIP Order ID: " + orderID);
+                PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
             }
             CheckReorders();
         }
@@ -117,6 +158,7 @@ namespace ReorderPointSystem
         private void LoadOrders()
         {
             reorders = controller.LoadOrders();
+            CurrentOrdersListBox.DataSource = null;
             CurrentOrdersListBox.DataSource = reorders;
             CurrentOrdersListBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "ItemId";
@@ -130,6 +172,7 @@ namespace ReorderPointSystem
             LoadCategories();
             LoadOrders();
             CheckReorders();
+            ClearFieldsBtn_Click(sender, e);
         }
 
         // Display or hide the Simulation buttons
@@ -389,9 +432,25 @@ namespace ReorderPointSystem
                 if (selectedItem != null)
                 {
                     Item copy = selectedItem;
+                    if (PendingOrderListBox.Items.Count == 0)
+                    {
+                        String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                        SQLiteConnection conn = Database.GetConnection();
+                        SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                        int orderID;
+                        int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                        PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
+                    }
+                    if (pendingOrder == null)
+                    {
+                        pendingOrder = new List<Item> { };
+                    }
                     pendingOrder.Add(copy);
-                    OrderItemsListBox.DataSource = null;
-                    OrderItemsListBox.DataSource = pendingOrder;
+                    OrderItemsDataGrid.Rows.Clear();
+                    foreach (Item item in pendingOrder)
+                    {
+                        OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                    }
                 }
                 else
                 {
@@ -414,8 +473,7 @@ namespace ReorderPointSystem
                 PendingOrderListBox.SelectedIndex = -1;
                 PendingOrderListBox.Refresh();
                 pendingOrder.Clear();
-                OrderItemsListBox.DataSource = null;
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
             }
             else
             {
@@ -426,16 +484,22 @@ namespace ReorderPointSystem
         // Edit the amount of an item to be ordered, from within a pending order
         private void EditOrderAmtBtn_Click(object sender, EventArgs e)
         {
-            if (OrderItemsListBox.SelectedIndex != -1)
+            if (OrderItemsDataGrid.SelectedRows.Count == 1)
             {
                 int qty;
                 bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
                 if (validQty)
                 {
-                    pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount = qty;
+                    var row = OrderItemsDataGrid.SelectedRows[0];
+                    pendingOrder[row.Index].MaxAmount = qty;
                 }
-                OrderItemsListBox.DataSource = null;
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                }
+                EditOrderAmtBtn.Enabled = false;
+                EditOrderAmtTextBox.Enabled = false;
             }
             else
             {
@@ -487,48 +551,30 @@ namespace ReorderPointSystem
             }
         }
 
-        private void ItemsListBox_Format(object sender, ListControlConvertEventArgs e)
-        {
-            String name = ((Item)e.ListItem).Name;
-            String id = ((Item)e.ListItem).Id.ToString();
-            String qty = ((Item)e.ListItem).CurrentAmount.ToString();
-
-            e.Value = name.ToUpper() + "     ID=" + id + "      QTY=" + qty;
-        }
-
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
-            // TODO DB structure needs to be revisited to allow for PK/FK matching in reorder table before completing
+            foreach (Item item in pendingOrder)
+            {
+                Reorder reorder = new Reorder(item.Id, item.MaxAmount);
+                controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+            }
+            LoadOrders();
+            DeletePendingOrderBtn_Click(sender, e);
         }
 
         private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (PendingOrderListBox.SelectedIndex != -1)
             {
-                OrderItemsListBox.DataSource = pendingOrder;
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                }
             }
             else
             {
                 MessageBox.Show("Error: no selected index");
-            }
-        }
-
-        private void OrderItemsListBox_Format(object sender, ListControlConvertEventArgs e)
-        {
-            String name = ((Item)e.ListItem).Name;
-            String id = ((Item)e.ListItem).Id.ToString();
-            String qty = ((Item)e.ListItem).MaxAmount.ToString();
-
-            e.Value = name.ToUpper() + "     ID=" + id + "      OrderQTY=" + qty;
-        }
-
-        private void OrderItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (OrderItemsListBox.SelectedIndex != -1)
-            {
-                EditOrderAmtBtn.Enabled = true;
-                EditOrderAmtTextBox.Enabled = true;
-                EditOrderAmtTextBox.Text = pendingOrder[OrderItemsListBox.SelectedIndex].MaxAmount.ToString();
             }
         }
 
@@ -564,5 +610,66 @@ namespace ReorderPointSystem
                 ItemsGridView.Rows[0].Selected = true;
         }
 
+        private void OrderItemsDataGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            if (OrderItemsDataGrid.SelectedRows.Count > 0)
+            {
+                var row = OrderItemsDataGrid.SelectedRows[0];
+                EditOrderAmtBtn.Enabled = true;
+                EditOrderAmtTextBox.Enabled = true;
+                EditOrderAmtTextBox.Text = row.Cells["ReorderQty"].Value.ToString();
+
+            }
+        }
+
+        private void CurrentOrdersListBox_Format(object sender, ListControlConvertEventArgs e)
+        {
+            int id = ((Reorder)e.ListItem).Id;
+            int itemId = ((Reorder)e.ListItem).ItemId;
+            int qty = ((Reorder)e.ListItem).Quantity;
+            DateTime created = ((Reorder)e.ListItem).CreatedAt;
+            String status = ((Reorder)e.ListItem).Status;
+
+            e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
+        }
+
+        private void CurrentOrdersListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CurrentOrdersListBox.Items.Count > 0 && CurrentOrdersListBox.SelectedIndex != -1)
+            {
+                selectedReorder = reorders[CurrentOrdersListBox.SelectedIndex];
+            }
+            OrderRecievedBtn.Enabled = true;
+        }
+
+        private void OrderRecievedBtn_Click(object sender, EventArgs e)
+        {
+            if (selectedReorder != null)
+            {
+                if (selectedReorder.Status.Equals("Pending approval"))
+                {
+
+                    selectedReorder.MarkComplete();
+                    Item item = itemsList.Find(x => x.Id == selectedReorder.ItemId);
+                    if (item != null)
+                    {
+                        item.AddStock(selectedReorder.Quantity);
+                        controller.GetInventoryManager().GetItemRepository().Update(item);
+                        controller.GetInventoryManager().GetReorderRepository().Update(selectedReorder);
+                    }
+                    DisplayItems(itemsList);
+                    LoadOrders();
+
+                } 
+                else
+                {
+                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already recieved");
+                }
+            } 
+            else
+            {
+                MessageBox.Show("You must select an order before you can recieve it.", "Error - no order selected");
+            }
+        }
     }
 }

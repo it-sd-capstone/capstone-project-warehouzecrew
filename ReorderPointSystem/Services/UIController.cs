@@ -68,25 +68,8 @@ namespace ReorderPointSystem.Services
         public List<Reorder> LoadOrders()
         {
             List<Reorder> orders = new List<Reorder>();
-            ReorderRepository repository = new ReorderRepository();
-            orders = repository.GetAll();
+            orders = _inventoryManager.GetReorderRepository().GetAll();
             return orders;
-        }
-
-
-        public void AddNewItem(Item item)
-        {
-            // TODO integrate this method into MainForm
-        }
-
-        public void UpdateExistingItem(Item item)
-        {
-            // TODO integrate this method into MainForm
-        }
-
-        public void DeleteItem(int itemID) 
-        {
-            // TODO integrate this method into MainForm
         }
 
         // Inventory list sorting function
@@ -150,18 +133,46 @@ namespace ReorderPointSystem.Services
             return items;
         }
 
-        public List<Item> ProcessLowStockReorders(List<Item> itemsIn)
+        public List<Item> ProcessLowStockReorders(List<Item> itemsIn, List<Reorder> reorders)
         {
             List<Item> itemsOut = new List<Item>();
             foreach (Item item in itemsIn) 
             { 
-                if (item.ReorderPoint > item.CurrentAmount)
+                if (item.NeedsReorder())
                 {
-                    itemsOut.Add(item);
+                    List<Reorder> matchedOrders = reorders.FindAll(x => findMatchedId(x, item));
+                    bool onOrder = false;
+                    foreach (Reorder reorder in matchedOrders)
+                    {
+                        if (reorder.Status.Equals("In process") || reorder.Status.Equals("Pending approval"))
+                        {
+                            onOrder = true;
+                        }
+                    }
+                    if (!onOrder)
+                    {
+                        itemsOut.Add(item);
+                    }
                 }
             }
             return itemsOut;
         }
 
+        public InventoryManager GetInventoryManager()
+        {
+            return _inventoryManager;
+        }
+
+        private bool findMatchedId(Reorder o, Item item)
+        {
+            if (o.ItemId == item.Id)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
