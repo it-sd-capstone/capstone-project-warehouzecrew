@@ -1,16 +1,11 @@
 ﻿using ReorderPointSystem.Data;
 using ReorderPointSystem.Models;
-using System;
 using System.Data.SQLite;
-using Xunit;
-using Assert = Xunit.Assert;
 
 namespace ReorderPointSystem.Tests.Data
 {
     public class InventoryLogRepositoryTests : TestBase
     {
-        private readonly string _connectionString = $"Data Source={TestDbFilePath};Version=3;";
-
         private void SeedFakeItem()
         {
             using var conn = Database.GetConnection();
@@ -29,16 +24,15 @@ namespace ReorderPointSystem.Tests.Data
         public void Add_ShouldInsertNewLog()
         {
             SeedFakeItem();
-            var repo = new InventoryLogRepository(_connectionString);
+            var repo = new InventoryLogRepository();
             var log = new InventoryLog(1, 5, "IN");
 
-            int id = repo.Add(log);
-            var inserted = repo.GetById(id);
+            InventoryLog newLog = repo.Add(log);
 
-            Assert.NotNull(inserted);
-            Assert.Equal(1, inserted!.ItemId);
-            Assert.Equal(5, inserted.QuantityChange);
-            Assert.Equal("IN", inserted.Type);
+            Assert.NotNull(newLog);
+            Assert.Equal(1, newLog!.ItemId);
+            Assert.Equal(5, newLog.QuantityChange);
+            Assert.Equal("IN", newLog.Type);
         }
 
         // ------------------------------------------------------
@@ -48,7 +42,7 @@ namespace ReorderPointSystem.Tests.Data
         public void GetById_ShouldReturnNull_WhenNotFound()
         {
             SeedFakeItem();
-            var repo = new InventoryLogRepository(_connectionString);
+            var repo = new InventoryLogRepository();
 
             var result = repo.GetById(9999);
 
@@ -62,7 +56,7 @@ namespace ReorderPointSystem.Tests.Data
         public void GetAll_ShouldReturnAllLogs_InDescendingDateOrder()
         {
             SeedFakeItem();
-            var repo = new InventoryLogRepository(_connectionString);
+            var repo = new InventoryLogRepository();
 
             repo.Add(new InventoryLog(1, -3, "OUT"));
             System.Threading.Thread.Sleep(20);
@@ -81,16 +75,15 @@ namespace ReorderPointSystem.Tests.Data
         public void Add_ShouldPersistCorrectTimestamp()
         {
             SeedFakeItem();
-            var repo = new InventoryLogRepository(_connectionString);
+            var repo = new InventoryLogRepository();
 
             var before = DateTime.Now;
-            int id = repo.Add(new InventoryLog(1, 7, "IN"));
-            var inserted = repo.GetById(id);
+            InventoryLog newLog = repo.Add(new InventoryLog(1, 7, "IN"));
 
-            Assert.NotNull(inserted);
+            Assert.NotNull(newLog);
 
             // Allow 1 second timestamp drift due to SQLite string-based timestamps
-            Assert.InRange(inserted!.CreatedAt,
+            Assert.InRange(newLog!.CreatedAt,
                 before.AddSeconds(-1),
                 DateTime.Now.AddSeconds(1));
         }
@@ -101,7 +94,7 @@ namespace ReorderPointSystem.Tests.Data
         [Fact]
         public void Constructor_ShouldCreateTableIfNotExists()
         {
-            var repo = new InventoryLogRepository(_connectionString);
+            var repo = new InventoryLogRepository();
             var all = repo.GetAll();
 
             Assert.NotNull(all);

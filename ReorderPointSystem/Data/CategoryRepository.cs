@@ -46,7 +46,7 @@ namespace ReorderPointSystem.Data
             return null;
         }
 
-        public int Add(Category category)
+        public Category Add(Category category)
         {
             using var connection = Database.GetConnection();
             using var command = new SQLiteCommand(
@@ -56,10 +56,14 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@name", category.Name);
 
             long insertedId = (long)command.ExecuteScalar();
-            return (int)insertedId;
+            return new Category
+            {
+                Id = (int)insertedId,
+                Name = category.Name
+            };
         }
 
-        public void Update(Category category)
+        public bool Update(Category category)
         {
             using var connection = Database.GetConnection();
             using var command = new SQLiteCommand(
@@ -69,10 +73,10 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@name", category.Name);
             command.Parameters.AddWithValue("@id", category.Id);
 
-            command.ExecuteNonQuery();
+            return command.ExecuteNonQuery() > 0;
         }
 
-        public void Delete(int categoryId)
+        public bool Delete(int categoryId)
         {
             using var connection = Database.GetConnection();
             using var command = new SQLiteCommand(
@@ -81,7 +85,7 @@ namespace ReorderPointSystem.Data
 
             command.Parameters.AddWithValue("@id", categoryId);
 
-            command.ExecuteNonQuery();
+            return command.ExecuteNonQuery() > 0;
         }
     }
 }
