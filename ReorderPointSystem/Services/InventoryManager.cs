@@ -20,7 +20,7 @@ namespace ReorderPointSystem.Services
         {
             _itemRepo = new ItemRepository();
             _reorderRepo = new ReorderRepository();
-            _inventoryLogRepo = new InventoryLogRepository($"Data Source=rps.db;Version=3;");
+            _inventoryLogRepo = new InventoryLogRepository();
         }
 
         public ItemRepository GetItemRepository()

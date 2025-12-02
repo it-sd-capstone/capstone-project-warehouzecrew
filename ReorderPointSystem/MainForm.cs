@@ -345,6 +345,7 @@ namespace ReorderPointSystem
             {
                 ItemInfoGroupBox.Enabled = true;
             }
+            CategoryComboBox.SelectedIndex = 1;
             ItemNameTextBox.Text = string.Empty;
             EnableReorderChkbx.Checked = false;
             CurrentQtyTextBox.Text = string.Empty;
