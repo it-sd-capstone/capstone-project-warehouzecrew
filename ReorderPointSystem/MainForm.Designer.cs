@@ -50,13 +50,13 @@
             ItemNameTextBox = new TextBox();
             ItemNameLabel = new Label();
             ItemsListGroupBox = new GroupBox();
+            ItemsGridView = new DataGridView();
             SortByComboBox = new ComboBox();
             RefreshButton = new Button();
             AddToOrderBtn = new Button();
             EditItemBtn = new Button();
             ItemSearchTextBox = new TextBox();
             SearchBtn = new Button();
-            ItemsListBox = new ListBox();
             PendingOrdersGroupBox = new GroupBox();
             SubmitPendingOrderButton = new Button();
             DeletePendingOrderBtn = new Button();
@@ -71,6 +71,7 @@
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ItemsGridView).BeginInit();
             PendingOrdersGroupBox.SuspendLayout();
             CurrentOrdersGroupBox.SuspendLayout();
             OrderItemsGroupBox.SuspendLayout();
@@ -288,19 +289,36 @@
             // 
             // ItemsListGroupBox
             // 
+            ItemsListGroupBox.Controls.Add(ItemsGridView);
             ItemsListGroupBox.Controls.Add(SortByComboBox);
             ItemsListGroupBox.Controls.Add(RefreshButton);
             ItemsListGroupBox.Controls.Add(AddToOrderBtn);
             ItemsListGroupBox.Controls.Add(EditItemBtn);
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
-            ItemsListGroupBox.Controls.Add(ItemsListBox);
             ItemsListGroupBox.Location = new Point(423, 12);
             ItemsListGroupBox.Name = "ItemsListGroupBox";
             ItemsListGroupBox.Size = new Size(405, 732);
             ItemsListGroupBox.TabIndex = 4;
             ItemsListGroupBox.TabStop = false;
             ItemsListGroupBox.Text = "Items List";
+            // 
+            // ItemsGridView
+            // 
+            ItemsGridView.AllowUserToAddRows = false;
+            ItemsGridView.AllowUserToDeleteRows = false;
+            ItemsGridView.AllowUserToResizeColumns = false;
+            ItemsGridView.AllowUserToResizeRows = false;
+            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ItemsGridView.BackgroundColor = SystemColors.Window;
+            ItemsGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            ItemsGridView.Location = new Point(6, 46);
+            ItemsGridView.MultiSelect = false;
+            ItemsGridView.Name = "ItemsGridView";
+            ItemsGridView.ReadOnly = true;
+            ItemsGridView.Size = new Size(393, 588);
+            ItemsGridView.TabIndex = 7;
+            ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
             // 
             // SortByComboBox
             // 
@@ -361,17 +379,6 @@
             SearchBtn.Text = "Search";
             SearchBtn.UseVisualStyleBackColor = true;
             SearchBtn.Click += SearchBtn_Click;
-            // 
-            // ItemsListBox
-            // 
-            ItemsListBox.FormattingEnabled = true;
-            ItemsListBox.ItemHeight = 15;
-            ItemsListBox.Location = new Point(6, 54);
-            ItemsListBox.Name = "ItemsListBox";
-            ItemsListBox.Size = new Size(393, 574);
-            ItemsListBox.TabIndex = 0;
-            ItemsListBox.SelectedIndexChanged += ItemsListBox_SelectedIndexChanged;
-            ItemsListBox.Format += ItemsListBox_Format;
             // 
             // PendingOrdersGroupBox
             // 
@@ -510,6 +517,7 @@
             ItemDescriptionGroupBox.ResumeLayout(false);
             ItemsListGroupBox.ResumeLayout(false);
             ItemsListGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
             PendingOrdersGroupBox.ResumeLayout(false);
             CurrentOrdersGroupBox.ResumeLayout(false);
             OrderItemsGroupBox.ResumeLayout(false);
@@ -539,7 +547,6 @@
         private Button ClearFieldsBtn;
         private Button SubmitItemBtn;
         private Label ItemDescriptionLabel;
-        private ListBox ItemsListBox;
         private TextBox ItemSearchTextBox;
         private Button SearchBtn;
         private Button EditItemBtn;
@@ -559,5 +566,6 @@
         private Button OrderRecievedBtn;
         private Label CategoryComboBoxLabel;
         private ComboBox CategoryComboBox;
+        private DataGridView ItemsGridView;
     }
 }

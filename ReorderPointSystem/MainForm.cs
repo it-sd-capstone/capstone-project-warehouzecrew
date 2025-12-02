@@ -19,6 +19,36 @@ namespace ReorderPointSystem
         public MainForm()
         {
             InitializeComponent();
+
+            //Sets up GridView 
+            SetupGridColumns();
+        }
+        private void SetupGridColumns()
+        {
+            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            ItemsGridView.Columns.Clear();
+
+            // Create columns on percentages or total element space
+            DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
+            idColumn.Name = "Id";
+            idColumn.HeaderText = "ID";
+            idColumn.FillWeight = 20; // 20% of total width
+
+            DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
+            nameColumn.Name = "Name";
+            nameColumn.HeaderText = "Name";
+            nameColumn.FillWeight = 50; // 50% of total width
+
+            DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
+            qtyColumn.Name = "CurrentAmount";
+            qtyColumn.HeaderText = "Quantity";
+            qtyColumn.FillWeight = 30; // 30% of total width
+
+            // Add columns to grid
+            ItemsGridView.Columns.Add(idColumn);
+            ItemsGridView.Columns.Add(nameColumn);
+            ItemsGridView.Columns.Add(qtyColumn);
         }
 
         // Helper function to disable editing item information
@@ -285,7 +315,7 @@ namespace ReorderPointSystem
         // Remove the selected item from the Items DB, If an item is selected
         private void DeleteItemBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.CurrentRow != null)
             {
                 String sql = "DELETE FROM items WHERE id = \'" + selectedItem.Id + "\'";
                 Console.WriteLine(sql);
@@ -303,31 +333,47 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            ItemsListBox.DataSource = null;
-            itemsList = controller.SearchItems(ItemSearchTextBox.Text.ToString());
-            ItemsListBox.DataSource = itemsList;
-            ClearFieldsBtn_Click(sender, e);
-            if (!ItemsListBox.Size.IsEmpty)
+            itemsList = controller.SearchItems(ItemSearchTextBox.Text);
+            ItemsGridView.Rows.Clear();
+
+            foreach (var item in itemsList)
             {
-                ItemsListBox.SelectedIndex = 0;
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
             }
 
+            ClearFieldsBtn_Click(sender, e);
+            if (ItemsGridView.Rows.Count > 0)
+            {
+                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
+                int id = (int)ItemsGridView.Rows[0].Cells["Id"].Value;
+                selectedItem = itemsList.FirstOrDefault(x => x.Id == id);
+            }
         }
 
         // Enables the controls in the ItemInfoGroupBox for editing
         private void EditItemBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.SelectedRows.Count > 0)
             {
-                int index = ItemsListBox.SelectedIndex;
-                selectedItem = itemsList[index];
-                ItemNameTextBox.Text = itemsList[index].Name;
-                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
-                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
-                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
-                ItemDescriptionLabel.Text = itemsList[index].Description;
-                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
-                EnableProductInfoOptions();
+                var row = ItemsGridView.SelectedRows[0];
+
+                int id = (int)row.Cells["Id"].Value;
+
+                selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
+
+                // If the item exists, populate the fields and enable editing
+                if (selectedItem != null)
+                {
+                    ItemNameTextBox.Text = selectedItem.Name;
+                    CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
+                    ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
+                    ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
+                    ItemDescriptionLabel.Text = selectedItem.Description;
+                    CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+
+                    // Enable editing controls
+                    EnableProductInfoOptions();
+                }
             }
             else
             {
@@ -338,7 +384,7 @@ namespace ReorderPointSystem
         // Add the highlighted item to a pending order. If no pending orders exist, also create a new pending order
         private void AddToOrderBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.CurrentRow != null)
             {
                 if (selectedItem != null)
                 {
@@ -399,29 +445,45 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
-            ItemsListBox.DataSource = null;
-            ItemsListBox.DataSource = items;
-            ItemsListBox.DisplayMember = "Name";
-            if (ItemsListBox.Items.Count > 0)
+            ItemsGridView.Rows.Clear();
+
+            foreach (var item in items)
             {
-                ItemsListBox.SelectedIndex = 0;
-                selectedItem = itemsList[ItemsListBox.SelectedIndex];
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+            }
+
+            // Select the first row if available
+            if (ItemsGridView.Rows.Count > 0)
+            {
+                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
+                int id = (int)ItemsGridView.Rows[0].Cells["Id"].Value;
+                selectedItem = items.FirstOrDefault(x => x.Id == id);
             }
         }
 
-        private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ItemsGridView_SelectionChanged(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedIndex != -1)
+            if (ItemsGridView.SelectedRows.Count > 0)
             {
-                int index = ItemsListBox.SelectedIndex;
-                selectedItem = itemsList[index];
-                DisableProductInfoOptions();
-                ItemNameTextBox.Text = itemsList[index].Name;
-                CurrentQtyTextBox.Text = itemsList[index].CurrentAmount.ToString();
-                ReorderPointTextBox.Text = itemsList[index].ReorderPoint.ToString();
-                ReorderMaxTextBox.Text = itemsList[index].MaxAmount.ToString();
-                ItemDescriptionLabel.Text = itemsList[index].Description;
-                CategoryComboBox.SelectedValue = itemsList[index].CategoryId;
+                var row = ItemsGridView.SelectedRows[0];
+
+                // Safely get the ID value
+                if (row.Cells["Id"].Value != null)
+                {
+                    int id = Convert.ToInt32(row.Cells["Id"].Value);
+                    selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
+
+                    if (selectedItem != null)
+                    {
+                        DisableProductInfoOptions();
+                        ItemNameTextBox.Text = selectedItem.Name;
+                        CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
+                        ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
+                        ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
+                        ItemDescriptionLabel.Text = selectedItem.Description;
+                        CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+                    }
+                }
             }
         }
 
@@ -473,37 +535,34 @@ namespace ReorderPointSystem
         private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Utilizing this method from the UI controller
-            // UpdatesItemsDisplay();
+            UpdateItemsDisplay();
 
         }
 
         private void RefreshButtonClick(object sender, EventArgs e)
         {
-            //     var items = UIController.LoadItems();
+            var items = controller.LoadItems();
 
-            /* Re-force alphabetical sorting no matter what
-            items = UIController.SortItems(items, "Alphabetical (A to Z)");
-
-            DisplayItems(items); */
+            DisplayItems(items);
         }
-        /*
-         * 
-         * Sort update 
+
         private void UpdateItemsDisplay()
         {
-            // Load all items from controller
-            var items = UIController.LoadItems();
+            var items = controller.LoadItems();
 
-            // Apply sorting only if something is selected
             if (SortByComboBox.SelectedItem is string sortCriteria)
+                items = controller.SortItems(items, sortCriteria);
+
+            // Clear rows and add only the relevant columns
+            ItemsGridView.Rows.Clear();
+            foreach (var item in items)
             {
-                items = UIController.SortItems(items, sortCriteria);
+                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
             }
 
-            // Display sorted items
-            ItemsListBox.Items.Clear();
-            foreach (var item in items)
-                ItemsListBox.Items.Add(item.Name);
-        } */
+            if (ItemsGridView.Rows.Count > 0)
+                ItemsGridView.Rows[0].Selected = true;
+        }
+
     }
 }
