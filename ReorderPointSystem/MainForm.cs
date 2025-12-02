@@ -44,8 +44,8 @@ namespace ReorderPointSystem
             nameColumn.FillWeight = 50; // 50% of total width
 
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
-            catColumn.Name = "Category";               
-            catColumn.HeaderText = "Category";        
+            catColumn.Name = "Category";
+            catColumn.HeaderText = "Category";
             catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
             catColumn.FillWeight = 20;// 20% of total width
 
@@ -671,16 +671,45 @@ namespace ReorderPointSystem
                     DisplayItems(itemsList);
                     LoadOrders();
 
-                } 
+                }
                 else
                 {
                     MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already recieved");
                 }
-            } 
+            }
             else
             {
                 MessageBox.Show("You must select an order before you can recieve it.", "Error - no order selected");
             }
         }
+
+        private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddNewCategory_CheckChanged(object sender, EventArgs e)
+        {
+            if (AddNewCatCheckBox.Checked)
+            {
+                NewCategoryTextBox.Visible = true;
+                SubmitNewCategoryBtn.Visible = true;
+
+                // Prevent user from picking another existing category
+                CategoryComboBox.Enabled = false;
+            }
+            else
+            {
+                NewCategoryTextBox.Visible = false;
+                SubmitNewCategoryBtn.Visible = false;
+
+                // Re-enable the category combo box
+                CategoryComboBox.Enabled = true;
+
+                // Clear any leftover text in the new category text box
+                NewCategoryTextBox.Text = String.Empty;
+            }
+        }
+    
     }
 }

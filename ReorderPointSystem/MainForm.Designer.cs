@@ -173,6 +173,7 @@
             AddNewCatCheckBox.Size = new Size(15, 14);
             AddNewCatCheckBox.TabIndex = 7;
             AddNewCatCheckBox.UseVisualStyleBackColor = true;
+            AddNewCatCheckBox.CheckedChanged += AddNewCategory_CheckChanged;
             // 
             // SubmitNewCategoryBtn
             // 
@@ -183,6 +184,7 @@
             SubmitNewCategoryBtn.Text = "Submit New Category";
             SubmitNewCategoryBtn.UseVisualStyleBackColor = true;
             SubmitNewCategoryBtn.Visible = false;
+            SubmitNewCategoryBtn.Click += SubmitNewCategoryBtn_Click;
             // 
             // NewCategoryTextBox
             // 
