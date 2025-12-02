@@ -69,13 +69,18 @@ namespace ReorderPointSystem.Data
 	                FOREIGN KEY(category_id) REFERENCES categories(id)
                 );
                 CREATE TABLE IF NOT EXISTS reorders (
-	                id	        INTEGER NOT NULL UNIQUE,
-	                item_id	    INTEGER NOT NULL,
-	                quantity	INTEGER NOT NULL,
-	                status	    TEXT NOT NULL,
+	                id	INTEGER NOT NULL UNIQUE,
+	                status	TEXT NOT NULL,
 	                created_at	TEXT NOT NULL,
-	                PRIMARY KEY(id AUTOINCREMENT),
-	                FOREIGN KEY(item_id) REFERENCES items(id)
+	                PRIMARY KEY(id AUTOINCREMENT)
+                );
+                CREATE TABLE IF NOT EXISTS reorder_items (
+	                reorder_id	INTEGER NOT NULL,
+	                item_id	INTEGER NOT NULL,
+	                quantity	INTEGER NOT NULL,
+	                PRIMARY KEY(reorder_id,item_id),
+                    FOREIGN KEY(reorder_id) REFERENCES reorders(id),
+                    FOREIGN KEY(item_id) REFERENCES items(id)
                 );
                 INSERT INTO categories (name)
                 SELECT 'General'
