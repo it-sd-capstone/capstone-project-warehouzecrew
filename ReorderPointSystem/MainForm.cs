@@ -43,6 +43,11 @@ namespace ReorderPointSystem
             nameColumn.HeaderText = "Name";
             nameColumn.FillWeight = 50; // 50% of total width
 
+            DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
+            catColumn.Name = "Category";               
+            catColumn.HeaderText = "Category";        
+            catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
+            catColumn.FillWeight = 20;// 20% of total width
 
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
             qtyColumn.Name = "CurrentAmount";
@@ -69,6 +74,7 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Add(idColumn);
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
+            ItemsGridView.Columns.Add(catColumn);
 
             OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
