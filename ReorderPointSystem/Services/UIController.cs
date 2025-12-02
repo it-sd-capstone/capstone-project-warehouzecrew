@@ -165,14 +165,19 @@ namespace ReorderPointSystem.Services
 
         private bool findMatchedId(Reorder o, Item item)
         {
-            if (o.ItemId == item.Id)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // Alan 12/2/2025
+            // Please refactor. Reorder.ItemId no longer exists and instead lives inside
+            // Reorder.Items which is a list of ReorderItem which includes ItemId.
+
+            //if (o.ItemId == item.Id)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+            return false;
         }
     }
 }
