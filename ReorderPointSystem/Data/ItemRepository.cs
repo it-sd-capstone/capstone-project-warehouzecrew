@@ -131,5 +131,10 @@ values (@cat, @name, @desc, @current, @reorder, @max, @created, @updated)";
             item.LastUpdatedAt = reader.GetDateTime(8);
             return item;
         }
+
+        internal List<Item> GetAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

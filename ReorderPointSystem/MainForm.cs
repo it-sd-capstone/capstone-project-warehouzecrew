@@ -107,13 +107,15 @@ namespace ReorderPointSystem
         {
             if (EnableTestModeChkbx.Checked == true)
             {
-                AddTestDataBtn.Visible = true;
                 SimDayBtn.Visible = true;
+                AddTestDataBtn.Visible = true;
+                panelDefaultMode.Visible = false;
             }
             else
             {
-                AddTestDataBtn.Visible = false;
+                panelDefaultMode.Visible = true;
                 SimDayBtn.Visible = false;
+                AddTestDataBtn.Visible = false;
             }
         }
 
@@ -486,24 +488,61 @@ namespace ReorderPointSystem
 
             DisplayItems(items); */
         }
-        /*
-         * 
-         * Sort update 
-        private void UpdateItemsDisplay()
+
+        private void ExportCSVBtn_Click(object sender, EventArgs e)
         {
-            // Load all items from controller
-            var items = UIController.LoadItems();
-
-            // Apply sorting only if something is selected
-            if (SortByComboBox.SelectedItem is string sortCriteria)
+            try
             {
-                items = UIController.SortItems(items, sortCriteria);
-            }
+                // 1. Pull data from repository
+                var repo = new ItemRepository();
+                var items = repo.GetAll();
 
-            // Display sorted items
-            ItemsListBox.Items.Clear();
-            foreach (var item in items)
-                ItemsListBox.Items.Add(item.Name);
-        } */
+                // 2. Generate CSV from your CSVExport service
+                string csv = CSVExport.ExportItems(items);
+
+                // 3. Ask user where to save the file
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "CSV Files (*.csv)|*.csv";
+                saveDialog.Title = "Export Items to CSV";
+                saveDialog.FileName = "items_export.csv";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // 4. Write CSV to selected file
+                    File.WriteAllText(saveDialog.FileName, csv);
+
+                    MessageBox.Show("CSV export successful!",
+                        "Export Complete",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Export failed:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        /*
+* 
+* Sort update 
+private void UpdateItemsDisplay()
+{
+   // Load all items from controller
+   var items = UIController.LoadItems();
+
+   // Apply sorting only if something is selected
+   if (SortByComboBox.SelectedItem is string sortCriteria)
+   {
+       items = UIController.SortItems(items, sortCriteria);
+   }
+
+   // Display sorted items
+   ItemsListBox.Items.Clear();
+   foreach (var item in items)
+       ItemsListBox.Items.Add(item.Name);
+} */
     }
 }
