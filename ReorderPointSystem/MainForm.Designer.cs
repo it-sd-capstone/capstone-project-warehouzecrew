@@ -32,6 +32,11 @@
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
             ItemInfoGroupBox = new GroupBox();
+            NewCategoryNameLabel = new Label();
+            AddNewCatLabel = new Label();
+            AddNewCatCheckBox = new CheckBox();
+            SubmitNewCategoryBtn = new Button();
+            NewCategoryTextBox = new TextBox();
             CategoryComboBoxLabel = new Label();
             CategoryComboBox = new ComboBox();
             EnableReorderLabel = new Label();
@@ -40,7 +45,7 @@
             ClearFieldsBtn = new Button();
             SubmitItemBtn = new Button();
             ItemDescriptionGroupBox = new GroupBox();
-            ItemDescriptionLabel = new Label();
+            ItemDescriptionTextBox = new TextBox();
             ReorderMaxTextBox = new TextBox();
             ReorderPointTextBox = new TextBox();
             CurrentQtyTextBox = new TextBox();
@@ -68,11 +73,6 @@
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
             OrderRecievedBtn = new Button();
-            NewCategoryTextBox = new TextBox();
-            SubmitNewCategoryBtn = new Button();
-            AddNewCatCheckBox = new CheckBox();
-            AddNewCatLabel = new Label();
-            NewCategoryNameLabel = new Label();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -146,6 +146,54 @@
             ItemInfoGroupBox.TabStop = false;
             ItemInfoGroupBox.Text = "Item Info";
             // 
+            // NewCategoryNameLabel
+            // 
+            NewCategoryNameLabel.AutoSize = true;
+            NewCategoryNameLabel.Location = new Point(7, 119);
+            NewCategoryNameLabel.Name = "NewCategoryNameLabel";
+            NewCategoryNameLabel.Size = new Size(93, 15);
+            NewCategoryNameLabel.TabIndex = 20;
+            NewCategoryNameLabel.Text = "Category Name:";
+            NewCategoryNameLabel.Visible = false;
+            // 
+            // AddNewCatLabel
+            // 
+            AddNewCatLabel.AutoSize = true;
+            AddNewCatLabel.Location = new Point(433, 85);
+            AddNewCatLabel.Name = "AddNewCatLabel";
+            AddNewCatLabel.Size = new Size(108, 15);
+            AddNewCatLabel.TabIndex = 19;
+            AddNewCatLabel.Text = "Add new category?";
+            // 
+            // AddNewCatCheckBox
+            // 
+            AddNewCatCheckBox.AutoSize = true;
+            AddNewCatCheckBox.Location = new Point(412, 85);
+            AddNewCatCheckBox.Name = "AddNewCatCheckBox";
+            AddNewCatCheckBox.Size = new Size(15, 14);
+            AddNewCatCheckBox.TabIndex = 7;
+            AddNewCatCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // SubmitNewCategoryBtn
+            // 
+            SubmitNewCategoryBtn.Location = new Point(412, 110);
+            SubmitNewCategoryBtn.Name = "SubmitNewCategoryBtn";
+            SubmitNewCategoryBtn.Size = new Size(140, 29);
+            SubmitNewCategoryBtn.TabIndex = 17;
+            SubmitNewCategoryBtn.Text = "Submit New Category";
+            SubmitNewCategoryBtn.UseVisualStyleBackColor = true;
+            SubmitNewCategoryBtn.Visible = false;
+            // 
+            // NewCategoryTextBox
+            // 
+            NewCategoryTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            NewCategoryTextBox.Location = new Point(102, 110);
+            NewCategoryTextBox.Name = "NewCategoryTextBox";
+            NewCategoryTextBox.Size = new Size(287, 29);
+            NewCategoryTextBox.TabIndex = 16;
+            NewCategoryTextBox.Text = "Enter New Category Name...";
+            NewCategoryTextBox.Visible = false;
+            // 
             // CategoryComboBoxLabel
             // 
             CategoryComboBoxLabel.AutoSize = true;
@@ -214,7 +262,7 @@
             // 
             // ItemDescriptionGroupBox
             // 
-            ItemDescriptionGroupBox.Controls.Add(ItemDescriptionLabel);
+            ItemDescriptionGroupBox.Controls.Add(ItemDescriptionTextBox);
             ItemDescriptionGroupBox.Location = new Point(6, 145);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
             ItemDescriptionGroupBox.Size = new Size(676, 138);
@@ -222,13 +270,14 @@
             ItemDescriptionGroupBox.TabStop = false;
             ItemDescriptionGroupBox.Text = "Item Description";
             // 
-            // ItemDescriptionLabel
+            // ItemDescriptionTextBox
             // 
-            ItemDescriptionLabel.BackColor = SystemColors.AppWorkspace;
-            ItemDescriptionLabel.Location = new Point(6, 19);
-            ItemDescriptionLabel.Name = "ItemDescriptionLabel";
-            ItemDescriptionLabel.Size = new Size(664, 109);
-            ItemDescriptionLabel.TabIndex = 0;
+            ItemDescriptionTextBox.Location = new Point(6, 19);
+            ItemDescriptionTextBox.MaxLength = 250;
+            ItemDescriptionTextBox.Multiline = true;
+            ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
+            ItemDescriptionTextBox.Size = new Size(663, 113);
+            ItemDescriptionTextBox.TabIndex = 0;
             // 
             // ReorderMaxTextBox
             // 
@@ -512,54 +561,6 @@
             OrderRecievedBtn.UseVisualStyleBackColor = true;
             OrderRecievedBtn.Click += OrderRecievedBtn_Click;
             // 
-            // NewCategoryTextBox
-            // 
-            NewCategoryTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            NewCategoryTextBox.Location = new Point(102, 110);
-            NewCategoryTextBox.Name = "NewCategoryTextBox";
-            NewCategoryTextBox.Size = new Size(287, 29);
-            NewCategoryTextBox.TabIndex = 16;
-            NewCategoryTextBox.Text = "Enter New Category Name...";
-            NewCategoryTextBox.Visible = false;
-            // 
-            // SubmitNewCategoryBtn
-            // 
-            SubmitNewCategoryBtn.Location = new Point(412, 110);
-            SubmitNewCategoryBtn.Name = "SubmitNewCategoryBtn";
-            SubmitNewCategoryBtn.Size = new Size(140, 29);
-            SubmitNewCategoryBtn.TabIndex = 17;
-            SubmitNewCategoryBtn.Text = "Submit New Category";
-            SubmitNewCategoryBtn.UseVisualStyleBackColor = true;
-            SubmitNewCategoryBtn.Visible = false;
-            // 
-            // AddNewCatCheckBox
-            // 
-            AddNewCatCheckBox.AutoSize = true;
-            AddNewCatCheckBox.Location = new Point(412, 85);
-            AddNewCatCheckBox.Name = "AddNewCatCheckBox";
-            AddNewCatCheckBox.Size = new Size(15, 14);
-            AddNewCatCheckBox.TabIndex = 7;
-            AddNewCatCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // AddNewCatLabel
-            // 
-            AddNewCatLabel.AutoSize = true;
-            AddNewCatLabel.Location = new Point(433, 85);
-            AddNewCatLabel.Name = "AddNewCatLabel";
-            AddNewCatLabel.Size = new Size(108, 15);
-            AddNewCatLabel.TabIndex = 19;
-            AddNewCatLabel.Text = "Add new category?";
-            // 
-            // NewCategoryNameLabel
-            // 
-            NewCategoryNameLabel.AutoSize = true;
-            NewCategoryNameLabel.Location = new Point(7, 119);
-            NewCategoryNameLabel.Name = "NewCategoryNameLabel";
-            NewCategoryNameLabel.Size = new Size(93, 15);
-            NewCategoryNameLabel.TabIndex = 20;
-            NewCategoryNameLabel.Text = "Category Name:";
-            NewCategoryNameLabel.Visible = false;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -584,6 +585,7 @@
             ItemInfoGroupBox.ResumeLayout(false);
             ItemInfoGroupBox.PerformLayout();
             ItemDescriptionGroupBox.ResumeLayout(false);
+            ItemDescriptionGroupBox.PerformLayout();
             ItemsListGroupBox.ResumeLayout(false);
             ItemsListGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
@@ -616,7 +618,6 @@
         private Button DeleteItemBtn;
         private Button ClearFieldsBtn;
         private Button SubmitItemBtn;
-        private Label ItemDescriptionLabel;
         private TextBox ItemSearchTextBox;
         private Button SearchBtn;
         private Button EditItemBtn;
@@ -642,5 +643,6 @@
         private Button SubmitNewCategoryBtn;
         private TextBox NewCategoryTextBox;
         private Label NewCategoryNameLabel;
+        private TextBox ItemDescriptionTextBox;
     }
 }
