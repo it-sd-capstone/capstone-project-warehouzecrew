@@ -1,4 +1,4 @@
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using ReorderPointSystem.Data;
@@ -17,6 +17,8 @@ namespace ReorderPointSystem
         private Item selectedItem;
         private Reorder selectedReorder;
         private UIController controller = new UIController(new InventoryManager());
+
+        private bool isEditingItemName = false;
         public MainForm()
         {
             InitializeComponent();
@@ -84,7 +86,6 @@ namespace ReorderPointSystem
 
         }
 
-        // Create "cue banner" placeholder text for textboxes 
         private void SetPlaceholder()
         {
             if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
@@ -93,12 +94,14 @@ namespace ReorderPointSystem
                 NewCategoryTextBox.ForeColor = Color.Gray;
             }
 
-            if (string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            // Disables placeholder ONLY when editing ItemName
+            if (!isEditingItemName && string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
             {
                 ItemNameTextBox.Text = "Enter item name";
                 ItemNameTextBox.ForeColor = Color.Gray;
             }
         }
+
 
         // Helper function to disable editing item information
         private void DisableProductInfoOptions()
@@ -432,17 +435,20 @@ namespace ReorderPointSystem
 
                 selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
 
-                // If the item exists, populate the fields and enable editing
                 if (selectedItem != null)
                 {
+                    // Only disable placeholder for THIS textbox
+                    isEditingItemName = true;
+
                     ItemNameTextBox.Text = selectedItem.Name;
+                    ItemNameTextBox.ForeColor = Color.Black;
+
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
                     ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
                     ItemDescriptionTextBox.Text = selectedItem.Description;
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
 
-                    // Enable editing controls
                     EnableProductInfoOptions();
                 }
             }
@@ -734,19 +740,22 @@ namespace ReorderPointSystem
         // Placeholder text logic for textboxes
         private void ItemNameTextBox_Enter(object sender, EventArgs e)
         {
+            if (isEditingItemName)
+                return;
+
+            if (ItemNameTextBox.ForeColor == Color.Gray)
             {
-                if (ItemNameTextBox.ForeColor == Color.Gray)
-                {
-                    ItemNameTextBox.Text = "";
-                    ItemNameTextBox.ForeColor = Color.Black;
-                }
+                ItemNameTextBox.Text = "";
+                ItemNameTextBox.ForeColor = Color.Black;
             }
         }
 
         private void ItemNameTextBox_Leave(object sender, EventArgs e)
         {
-            SetPlaceholder();
+            if (!isEditingItemName)
+                SetPlaceholder();
         }
+
 
         private void NewCategoryTextBox_Enter(object sender, EventArgs e)
         {
