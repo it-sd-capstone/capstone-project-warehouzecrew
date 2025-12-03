@@ -355,7 +355,16 @@ namespace ReorderPointSystem
             {
                 ItemInfoGroupBox.Enabled = true;
             }
+<<<<<<< HEAD
             CategoryComboBox.SelectedIndex = 0;
+=======
+
+            if (CategoryComboBox.Items.Count >= 1)
+                CategoryComboBox.SelectedIndex = 0; // General category
+            else
+                CategoryComboBox.SelectedIndex = -1;
+
+>>>>>>> 4ddaff19659794184b7f1e5e1ed416bc5809f43d
             ItemNameTextBox.Text = string.Empty;
             EnableReorderChkbx.Checked = false;
             CurrentQtyTextBox.Text = string.Empty;
@@ -564,11 +573,14 @@ namespace ReorderPointSystem
 
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
+            // Add all items into a single reorder
+            Reorder reorder = new Reorder();
             foreach (Item item in pendingOrder)
             {
-                Reorder reorder = new Reorder(item.Id, item.MaxAmount);
-                controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+                reorder.Items.Add(new ReorderItem(item.Id, item.MaxAmount));
             }
+            controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+
             LoadOrders();
             DeletePendingOrderBtn_Click(sender, e);
         }
@@ -636,12 +648,17 @@ namespace ReorderPointSystem
         private void CurrentOrdersListBox_Format(object sender, ListControlConvertEventArgs e)
         {
             int id = ((Reorder)e.ListItem).Id;
-            int itemId = ((Reorder)e.ListItem).ItemId;
-            int qty = ((Reorder)e.ListItem).Quantity;
+            // Alan 12/2/2025
+            // I commented this out as Reorder now has an Items property with a list of ReorderItem
+            // These items should be listed in "Items in selected order"
+
+            //int itemId = ((Reorder)e.ListItem).ItemId;
+            //int qty = ((Reorder)e.ListItem).Quantity;
             DateTime created = ((Reorder)e.ListItem).CreatedAt;
             String status = ((Reorder)e.ListItem).Status;
 
-            e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
+            //e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
+            e.Value = id + " - " + ": " + created + " --- " + status + " [Refactor]";
         }
 
         private void CurrentOrdersListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -661,15 +678,21 @@ namespace ReorderPointSystem
                 {
 
                     selectedReorder.MarkComplete();
-                    Item item = itemsList.Find(x => x.Id == selectedReorder.ItemId);
-                    if (item != null)
-                    {
-                        item.AddStock(selectedReorder.Quantity);
-                        controller.GetInventoryManager().GetItemRepository().Update(item);
-                        controller.GetInventoryManager().GetReorderRepository().Update(selectedReorder);
-                    }
-                    DisplayItems(itemsList);
-                    LoadOrders();
+                    // Alan 12/2/2025
+                    // Please refactor the following commented code. 
+                    // `selectedReorder.Items` will contain List<ReorderItem>
+
+                    //Item item = itemsList.Find(x => x.Id == selectedReorder.ItemId);
+                    //if (item != null)
+                    //{
+                    //    item.AddStock(selectedReorder.Quantity);
+                    //    controller.GetInventoryManager().GetItemRepository().Update(item);
+                    //    controller.GetInventoryManager().GetReorderRepository().Update(selectedReorder);
+                    //}
+                    //DisplayItems(itemsList);
+                    //LoadOrders();
+
+                    MessageBox.Show("Alan 12/2/2025 | Please refactor", "Refactor the commented code in MainForm.cs/OrderRecievedBtn_Click");
 
                 } 
                 else

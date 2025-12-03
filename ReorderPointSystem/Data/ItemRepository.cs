@@ -59,8 +59,8 @@ namespace ReorderPointSystem.Data
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at)
-                VALUES (@CategoryId, @Name, @Description, @CurrentAmount, @ReorderPoint, @MaxAmount, @CreatedAt, @LastUpdatedAt);
+                INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, reorder_enabled, created_at, updated_at)
+                VALUES (@CategoryId, @Name, @Description, @CurrentAmount, @ReorderPoint, @MaxAmount, @ReorderEnabled, @CreatedAt, @LastUpdatedAt);
 
                 SELECT last_insert_rowid();
             ";
@@ -72,6 +72,7 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@CurrentAmount", item.CurrentAmount);
             command.Parameters.AddWithValue("@ReorderPoint", item.ReorderPoint);
             command.Parameters.AddWithValue("@MaxAmount", item.MaxAmount);
+            command.Parameters.AddWithValue("@ReorderEnabled", item.ReorderEnabled);
             command.Parameters.AddWithValue("@CreatedAt", currentDateTime);
             command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
 
@@ -85,6 +86,7 @@ namespace ReorderPointSystem.Data
                 CurrentAmount = item.CurrentAmount,
                 ReorderPoint = item.ReorderPoint,
                 MaxAmount = item.MaxAmount,
+                ReorderEnabled = item.ReorderEnabled,
                 CreatedAt = currentDateTime,
                 LastUpdatedAt = currentDateTime
             };
@@ -102,6 +104,7 @@ namespace ReorderPointSystem.Data
                     current_amount = @CurrentAmount,
                     reorder_point = @ReorderPoint,
                     max_amount = @MaxAmount,
+                    reorder_enabled = @ReorderEnabled,
                     updated_at = @LastUpdatedAt
                 WHERE id = @Id;
             ";
@@ -112,6 +115,7 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@CurrentAmount", item.CurrentAmount);
             command.Parameters.AddWithValue("@ReorderPoint", item.ReorderPoint);
             command.Parameters.AddWithValue("@MaxAmount", item.MaxAmount);
+            command.Parameters.AddWithValue("@ReorderEnabled", item.ReorderEnabled);
             command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
             command.Parameters.AddWithValue("@Id", item.Id);
 
@@ -140,8 +144,9 @@ namespace ReorderPointSystem.Data
             item.CurrentAmount = reader.GetInt32(4);
             item.ReorderPoint = reader.GetInt32(5);
             item.MaxAmount = reader.GetInt32(6);
-            item.CreatedAt = reader.GetDateTime(7);
-            item.LastUpdatedAt = reader.GetDateTime(8);
+            item.ReorderEnabled = reader.GetBoolean(7);
+            item.CreatedAt = reader.GetDateTime(8);
+            item.LastUpdatedAt = reader.GetDateTime(9);
             return item;
         }
     }

@@ -22,6 +22,7 @@ namespace ReorderPointSystem.Tests.Data
                     current_amount,
                     reorder_point,
                     max_amount,
+                    reorder_enabled,
                     created_at,
                     updated_at
                 ) VALUES (
@@ -31,6 +32,7 @@ namespace ReorderPointSystem.Tests.Data
                     10,
                     5,
                     50,
+                    1,
                     datetime('now'),
                     datetime('now')
                 );
@@ -42,6 +44,7 @@ namespace ReorderPointSystem.Tests.Data
                     current_amount,
                     reorder_point,
                     max_amount,
+                    reorder_enabled,
                     created_at,
                     updated_at
                 ) VALUES (
@@ -51,6 +54,7 @@ namespace ReorderPointSystem.Tests.Data
                     20,
                     10,
                     100,
+                    0,
                     datetime('now'),
                     datetime('now')
                 );";
@@ -67,7 +71,8 @@ namespace ReorderPointSystem.Tests.Data
                 Description = "Test Description",
                 CurrentAmount = 10,
                 ReorderPoint = 5,
-                MaxAmount = 50
+                MaxAmount = 50,
+                ReorderEnabled = true
             };
         }
 
@@ -119,6 +124,7 @@ namespace ReorderPointSystem.Tests.Data
             Assert.Equal(10, item.CurrentAmount);
             Assert.Equal(5, item.ReorderPoint);
             Assert.Equal(50, item.MaxAmount);
+            Assert.True(item.ReorderEnabled);
         }
 
         [Fact]
@@ -390,6 +396,7 @@ namespace ReorderPointSystem.Tests.Data
             item.CurrentAmount = 20;
             item.ReorderPoint = 10;
             item.MaxAmount = 100;
+            item.ReorderEnabled = false;
 
             // Act
             repo.Update(item);
@@ -403,6 +410,7 @@ namespace ReorderPointSystem.Tests.Data
             Assert.Equal(20, updatedItem.CurrentAmount);
             Assert.Equal(10, updatedItem.ReorderPoint);
             Assert.Equal(100, updatedItem.MaxAmount);
+            Assert.True(!updatedItem.ReorderEnabled);
         }
 
         [Fact]

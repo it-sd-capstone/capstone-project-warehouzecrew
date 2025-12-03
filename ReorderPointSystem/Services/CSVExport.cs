@@ -71,13 +71,16 @@ namespace ReorderPointSystem.Services
         {
             var sb = new StringBuilder();
             sb.AppendLine("Id,ItemId,Quantity,Status,CreatedAt");
+            // Alan 12/2/2025
+            // Please refactor the following commented code.
+            // Reorders were refactored. Review Reorder.cs and ReorderItem.cs
 
             foreach (var r in reorders)
             {
                 sb.AppendLine(
                     $"{r.Id}," +
-                    $"{r.ItemId}," +
-                    $"{r.Quantity}," +
+                    //$"{r.ItemId}," +
+                    //$"{r.Quantity}," +
                     $"{Escape(r.Status)}," +
                     $"{r.CreatedAt:yyyy-MM-dd HH:mm:ss}"
                 );

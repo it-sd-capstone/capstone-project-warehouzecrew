@@ -9,6 +9,10 @@ namespace ReorderPointSystem.Data
 {
     internal class ReorderRepository
     {
+        // Does NOT return a list of ReorderItem per Reorder!
+        // This is for memory/performance reasons, if you want more details from a specific Reorder,
+        // use GetById to get a list of reorder items.
+        // Note: If we want this reverted, just uncomment line 32
         public List<Reorder> GetAll()
         {
             using var connection = Database.GetConnection();
@@ -23,10 +27,9 @@ namespace ReorderPointSystem.Data
                 reorders.Add(new Reorder
                 {
                     Id = reader.GetInt32(0),
-                    ItemId = reader.GetInt32(1),
-                    Quantity = reader.GetInt32(2),
-                    Status = reader.GetString(3),
-                    CreatedAt = reader.GetDateTime(4)
+                    Status = reader.GetString(1),
+                    CreatedAt = reader.GetDateTime(2),
+                    //Items = GetReorderItems(reader.GetInt32(0))
                 });
             }
 
@@ -46,40 +49,71 @@ namespace ReorderPointSystem.Data
             return new Reorder
             {
                 Id = reader.GetInt32(0),
-                ItemId = reader.GetInt32(1),
-                Quantity = reader.GetInt32(2),
-                Status = reader.GetString(3),
-                CreatedAt = reader.GetDateTime(4)
+                Status = reader.GetString(1),
+                CreatedAt = reader.GetDateTime(2),
+                Items = GetReorderItems(reader.GetInt32(0))
             };
+        }
+
+        private List<ReorderItem> GetReorderItems(int reorderId)
+        {
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT item_id, quantity FROM reorder_items WHERE reorder_id = @ReorderId";
+            command.Parameters.AddWithValue("@ReorderId", reorderId);
+
+            List<ReorderItem> items = new List<ReorderItem>();
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                items.Add(new ReorderItem
+                {
+                    ItemId = reader.GetInt32(0),
+                    Quantity = reader.GetInt32(1)
+                });
+            }
+            return items;
         }
 
         public Reorder Add(Reorder reorderEntry)
         {
             using var connection = Database.GetConnection();
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO reorders (item_id, quantity, status, created_at)
-                VALUES (@ItemId, @Quantity, @Status, @CreatedAt);
 
-                SELECT last_insert_rowid();
-            ";
+            // Create reorder entry
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+                    INSERT INTO reorders (status, created_at)
+                    VALUES (@Status, @CreatedAt);
 
-            var createdAt = DateTime.Now;
+                    SELECT last_insert_rowid();
+                ";
+                reorderEntry.CreatedAt = DateTime.Now;
+                command.Parameters.AddWithValue("@Status", reorderEntry.Status);
+                command.Parameters.AddWithValue("@CreatedAt", reorderEntry.CreatedAt);
 
-            command.Parameters.AddWithValue("@ItemId", reorderEntry.ItemId);
-            command.Parameters.AddWithValue("@Quantity", reorderEntry.Quantity);
-            command.Parameters.AddWithValue("@Status", reorderEntry.Status);
-            command.Parameters.AddWithValue("@CreatedAt", createdAt);
+                reorderEntry.Id = Convert.ToInt32(command.ExecuteScalar());
+            }
+                
+            // Create reorder item entries
+            foreach (ReorderItem item in reorderEntry.Items)
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        INSERT INTO reorder_items (reorder_id, item_id, quantity)
+                        VALUES (@ReorderId, @ItemId, @Quantity);
+                    ";
+                    command.Parameters.AddWithValue("@ReorderId", reorderEntry.Id);
+                    command.Parameters.AddWithValue("@ItemId", item.ItemId);
+                    command.Parameters.AddWithValue("@Quantity", item.Quantity);
 
-            int newId = Convert.ToInt32(command.ExecuteScalar());
+                    command.ExecuteNonQuery();
+                }
+            }
 
-            return new Reorder(
-                newId,
-                reorderEntry.ItemId,
-                reorderEntry.Quantity,
-                reorderEntry.Status,
-                createdAt
-            );
+            return reorderEntry;
         }
 
         public bool Update(Reorder reorderEntry)
@@ -88,13 +122,9 @@ namespace ReorderPointSystem.Data
             using var command = connection.CreateCommand();
             command.CommandText = @"
                 UPDATE reorders
-                SET item_id = @ItemId,
-                    quantity = @Quantity,
-                    status = @Status
+                SET status = @Status
                 WHERE id = @Id;
             ";
-            command.Parameters.AddWithValue("@ItemId", reorderEntry.ItemId);
-            command.Parameters.AddWithValue("@Quantity", reorderEntry.Quantity);
             command.Parameters.AddWithValue("@Status", reorderEntry.Status);
             command.Parameters.AddWithValue("@Id", reorderEntry.Id);
 
@@ -105,12 +135,21 @@ namespace ReorderPointSystem.Data
         public bool Delete(int reorderId)
         {
             using var connection = Database.GetConnection();
+            using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM reorders WHERE id = @Id";
+
+            command.Transaction = transaction;
+            command.CommandText = @"
+                DELETE FROM reorder_items WHERE reorder_id = @Id;
+                DELETE FROM reorders WHERE id = @Id;
+            ";
             command.Parameters.AddWithValue("@Id", reorderId);
 
+            int affected = command.ExecuteNonQuery();
+            transaction.Commit();
+
             // Returns true if successful
-            return command.ExecuteNonQuery() > 0;
+            return affected > 0;
         }
     }
 }
