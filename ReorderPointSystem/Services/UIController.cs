@@ -22,44 +22,7 @@ namespace ReorderPointSystem.Services
 
         public List<Item> LoadItems()
         {
-            /*
-            using var conn = Database.GetConnection();
-            string sqlQuery = "SELECT * FROM items";
-            SQLiteCommand cmd = new SQLiteCommand(sqlQuery, conn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
-            try
-            {
-                while (reader.Read())
-                {
-                    int id = reader.GetInt16(reader.GetOrdinal("id"));
-                    int categoryID = reader.GetInt16(reader.GetOrdinal("category_id"));
-                    string name = reader.GetString(reader.GetOrdinal("name"));
-                    string description = reader.GetString(reader.GetOrdinal("description"));
-                    int currAmt = reader.GetInt16(reader.GetOrdinal("current_amount"));
-                    int reorderPt = reader.GetInt16(reader.GetOrdinal("reorder_point"));
-                    int maxAmt = reader.GetInt16(reader.GetOrdinal("max_amount"));
-                    String created = reader.GetString(reader.GetOrdinal("created_at")).ToString();
-                    String updated = reader.GetString(reader.GetOrdinal("updated_at")).ToString();
-                    bool reorderEnabled = reader.GetBoolean(reader.GetOrdinal("reorder_enabled"));
-                    Item item = new Item(id, categoryID, name, description, currAmt, reorderPt, maxAmt, reorderEnabled);
-                    DateTime result;
-                    DateTime.TryParse(created, out result);
-                    item.CreatedAt = result;
-                    DateTime.TryParse(updated, out result);
-                    item.LastUpdatedAt = result;
-                    items.Add(item);
-                }
-            }
-            catch (Exception ex) 
-            { 
-                MessageBox.Show("Data Loading Error", ex.Message);
-            }
-            cmd.Dispose();
-            conn.Close();
-            */
-
             List<Item> items = _inventoryManager.GetItemRepository().GetAll();
-            Debug.WriteLine("called LoadItems");
             return items;
         }
 
