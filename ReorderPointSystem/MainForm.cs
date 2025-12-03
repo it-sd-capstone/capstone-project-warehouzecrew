@@ -732,14 +732,13 @@ namespace ReorderPointSystem
         {
             string newCategoryName = NewCategoryTextBox.Text.Trim();
 
-            // 1. Validate input
             if (string.IsNullOrWhiteSpace(newCategoryName))
             {
                 MessageBox.Show("Please enter a category name.", "Invalid Input");
                 return;
             }
 
-            // 2. Open DB connection
+            // Open DB connection
             using (SQLiteConnection conn = Database.GetConnection())
             {
                 // Check if category already exists
@@ -765,18 +764,14 @@ namespace ReorderPointSystem
                 }
             }
 
-            // 3. Reload categories into the ComboBox
             LoadCategories();
 
-            // 4. Automatically select the new category if there is already an item name
             if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
             {
                 CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
             }
 
-            // 5. Clear the NewCategoryTextBox for next input
             AddNewCatCheckBox.Checked = false;
-
 
             MessageBox.Show($"Category '{newCategoryName}' added successfully!", "Success");
         }
