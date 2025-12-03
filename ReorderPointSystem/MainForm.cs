@@ -730,8 +730,57 @@ namespace ReorderPointSystem
 
         private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
         {
+            string newCategoryName = NewCategoryTextBox.Text.Trim();
 
+            // 1. Validate input
+            if (string.IsNullOrWhiteSpace(newCategoryName))
+            {
+                MessageBox.Show("Please enter a category name.", "Invalid Input");
+                return;
+            }
+
+            // 2. Open DB connection
+            using (SQLiteConnection conn = Database.GetConnection())
+            {
+                // Check if category already exists
+                string checkSql = "SELECT COUNT(*) FROM categories WHERE name = @name";
+                using (SQLiteCommand checkCmd = new SQLiteCommand(checkSql, conn))
+                {
+                    checkCmd.Parameters.AddWithValue("@name", newCategoryName);
+                    long count = (long)checkCmd.ExecuteScalar();
+
+                    if (count > 0)
+                    {
+                        MessageBox.Show("Category already exists.", "Duplicate Category");
+                        return;
+                    }
+                }
+
+                // Insert new category
+                string insertSql = "INSERT INTO categories (name) VALUES (@name)";
+                using (SQLiteCommand insertCmd = new SQLiteCommand(insertSql, conn))
+                {
+                    insertCmd.Parameters.AddWithValue("@name", newCategoryName);
+                    insertCmd.ExecuteNonQuery();
+                }
+            }
+
+            // 3. Reload categories into the ComboBox
+            LoadCategories();
+
+            // 4. Automatically select the new category if there is already an item name
+            if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            {
+                CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
+            }
+
+            // 5. Clear the NewCategoryTextBox for next input
+            AddNewCatCheckBox.Checked = false;
+
+
+            MessageBox.Show($"Category '{newCategoryName}' added successfully!", "Success");
         }
+
 
         private void AddNewCategory_CheckChanged(object sender, EventArgs e)
         {
