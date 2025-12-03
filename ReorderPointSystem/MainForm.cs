@@ -614,7 +614,6 @@ namespace ReorderPointSystem
                         ItemDescriptionTextBox.Text = selectedItem.Description;
                         CategoryComboBox.SelectedValue = selectedItem.CategoryId;
                         EnableReorderChkbx.Checked = selectedItem.ReorderEnabled;
-                        Debug.WriteLine(selectedItem.Name + " " + selectedItem.ReorderEnabled);
                     }
                 }
             }
