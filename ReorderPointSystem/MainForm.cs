@@ -19,9 +19,13 @@ namespace ReorderPointSystem
         private UIController controller = new UIController(new InventoryManager());
 
         private bool isEditingItemName = false;
+        private Dictionary<int, string> categoryLookup;
+
         public MainForm()
         {
             InitializeComponent();
+
+            LoadCategories();
 
             //Sets up GridView 
             SetupGridColumns();
@@ -29,7 +33,10 @@ namespace ReorderPointSystem
         }
         private void SetupGridColumns()
         {
-            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            ItemsGridView.MultiSelect = false;
+            ItemsGridView.ColumnCount = 4;
+
             OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             ItemsGridView.Columns.Clear();
@@ -39,22 +46,24 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
             idColumn.Name = "Id";
             idColumn.HeaderText = "ID";
+            idColumn.DataPropertyName = "Id";
             idColumn.FillWeight = 20; // 20% of total width
 
             DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
             nameColumn.Name = "Name";
             nameColumn.HeaderText = "Name";
+            nameColumn.DataPropertyName = "Name";
             nameColumn.FillWeight = 50; // 50% of total width
 
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
             catColumn.Name = "Category";
             catColumn.HeaderText = "Category";
-            catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
             catColumn.FillWeight = 20;// 20% of total width
 
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
             qtyColumn.Name = "CurrentAmount";
             qtyColumn.HeaderText = "Quantity";
+            qtyColumn.DataPropertyName = "CurrentAmount";
             qtyColumn.FillWeight = 10; // 10% of total width
 
             //Order Items Grid Columns
@@ -78,6 +87,7 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
             ItemsGridView.Columns.Add(catColumn);
+            
 
             OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
@@ -175,10 +185,14 @@ namespace ReorderPointSystem
         {
             CategoryRepository cats = new CategoryRepository();
             categories = cats.GetAll();
-            CategoryComboBox.Items.Clear();
-            CategoryComboBox.DataSource = categories;
-            CategoryComboBox.ValueMember = "Id";
+
             CategoryComboBox.DisplayMember = "Name";
+            CategoryComboBox.ValueMember = "Id";
+            CategoryComboBox.DataSource = categories;
+
+            // Build a dictionary to connect CategoryID to CategoryName
+
+            categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
         }
 
         // Helper function to load Orders on form load
@@ -543,11 +557,25 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
+            if (categoryLookup == null)
+                LoadCategories();
+
             ItemsGridView.Rows.Clear();
 
             foreach (var item in items)
             {
-                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+                // Retrieve the Category Name from lookup
+                string categoryName = categoryLookup.ContainsKey(item.CategoryId)
+                                        ? categoryLookup[item.CategoryId]
+                                        : "Unknown";
+
+                // Add the categoryName instead of CategoryId
+                ItemsGridView.Rows.Add(
+                    item.Id,
+                    item.Name,
+                    item.CurrentAmount,
+                    categoryName       
+                );
             }
 
             // Select the first row if available
