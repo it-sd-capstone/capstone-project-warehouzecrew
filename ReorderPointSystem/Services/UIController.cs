@@ -138,6 +138,21 @@ namespace ReorderPointSystem.Services
         public List<Item> ProcessLowStockReorders(List<Item> itemsIn, List<Reorder> reorders)
         {
             List<Item> itemsOut = new List<Item>();
+            List<ReorderItem> reorderItems = itemsOnOrder();
+
+            foreach (Item item in itemsIn)
+            {
+                if (item.NeedsReorder())
+                {
+                    if (reorderItems.Find(x => x.ItemId == item.Id) == null)
+                    {
+                        itemsOut.Add(item);
+                    }
+                }
+            }
+            return itemsOut;
+
+            /*
             foreach (Item item in itemsIn) 
             { 
                 if (item.NeedsReorder())
@@ -157,7 +172,7 @@ namespace ReorderPointSystem.Services
                     }
                 }
             }
-            return itemsOut;
+            */
         }
 
         public InventoryManager GetInventoryManager()
@@ -167,9 +182,6 @@ namespace ReorderPointSystem.Services
 
         private bool findMatchedId(Reorder o, Item item)
         {
-            // Alan 12/2/2025
-            // Please refactor. Reorder.ItemId no longer exists and instead lives inside
-            // Reorder.Items which is a list of ReorderItem which includes ItemId.
 
             foreach (ReorderItem orderItem in o.Items)
             {
@@ -181,5 +193,23 @@ namespace ReorderPointSystem.Services
 
             return false;
         }
+
+        private List<ReorderItem> itemsOnOrder()
+        {
+            List<Reorder> reorders = _inventoryManager.GetReorderRepository().GetAll();
+            List<ReorderItem> reorderItems = new List<ReorderItem>();
+            foreach (Reorder reorder in  reorders)
+            {
+                List<ReorderItem> items = _inventoryManager.GetReorderRepository().GetById(reorder.Id).Items;
+                foreach (ReorderItem item in items)
+                {
+                    if (!reorderItems.Contains(item) && !reorder.Status.Equals("Complete")) {
+                        reorderItems.Add(item);
+                    }
+                }
+            }
+            return reorderItems;
+        }
+
     }
 }

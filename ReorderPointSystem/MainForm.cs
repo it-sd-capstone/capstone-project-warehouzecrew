@@ -12,6 +12,7 @@ namespace ReorderPointSystem
 
         private List<Item> itemsList;
         private List<Item> pendingOrder;
+        private List<Item> manualOrderItems;
         private List<Category> categories;
         private List<Reorder> reorders;
         private Item selectedItem;
@@ -144,22 +145,14 @@ namespace ReorderPointSystem
         // recursive helper function to continue checking for reorder items
         private async Task CheckReorders()
         {
-            await Task.Delay(4500);
-            List<Item> oldOrder = null;
-            if (pendingOrder != null)
-            {
-                oldOrder = pendingOrder;
-            }
+            await Task.Delay(7000);
+            
             pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
-            await Task.Delay(100);
-            if (oldOrder != null)
+            if (manualOrderItems != null && manualOrderItems.Count > 0)
             {
-                foreach (Item item in oldOrder)
+                foreach (Item item in manualOrderItems)
                 {
-                    if (!pendingOrder.Contains(item))
-                    {
-                        pendingOrder.Add(item);
-                    }
+                    pendingOrder.Add(item);
                 }
             }
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
@@ -507,6 +500,11 @@ namespace ReorderPointSystem
                         pendingOrder = new List<Item> { };
                     }
                     pendingOrder.Add(copy);
+                    if (manualOrderItems == null)
+                    {
+                        manualOrderItems = new List<Item> { };
+                    }
+                    manualOrderItems.Add(copy);
                     OrderItemsDataGrid.Rows.Clear();
                     foreach (Item item in pendingOrder)
                     {
@@ -534,6 +532,7 @@ namespace ReorderPointSystem
                 PendingOrderListBox.SelectedIndex = -1;
                 PendingOrderListBox.Refresh();
                 pendingOrder.Clear();
+                manualOrderItems = null;
                 OrderItemsDataGrid.Rows.Clear();
             }
             else
