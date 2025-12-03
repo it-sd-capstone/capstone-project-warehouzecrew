@@ -171,14 +171,14 @@ namespace ReorderPointSystem.Services
             // Please refactor. Reorder.ItemId no longer exists and instead lives inside
             // Reorder.Items which is a list of ReorderItem which includes ItemId.
 
-            //if (o.ItemId == item.Id)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
+            foreach (ReorderItem orderItem in o.Items)
+            {
+                if (orderItem.ItemId == item.Id)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
     }

@@ -67,7 +67,7 @@
             DeletePendingOrderBtn = new Button();
             PendingOrderListBox = new ListBox();
             CurrentOrdersGroupBox = new GroupBox();
-            CurrentOrdersListBox = new ListBox();
+            PastOrderDataGridView = new DataGridView();
             OrderItemsGroupBox = new GroupBox();
             OrderItemsDataGrid = new DataGridView();
             EditOrderAmtTextBox = new TextBox();
@@ -79,6 +79,7 @@
             ((System.ComponentModel.ISupportInitialize)ItemsGridView).BeginInit();
             PendingOrdersGroupBox.SuspendLayout();
             CurrentOrdersGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PastOrderDataGridView).BeginInit();
             OrderItemsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)OrderItemsDataGrid).BeginInit();
             SuspendLayout();
@@ -217,9 +218,9 @@
             EnableReorderLabel.AutoSize = true;
             EnableReorderLabel.Location = new Point(433, 64);
             EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(173, 15);
+            EnableReorderLabel.Size = new Size(161, 15);
             EnableReorderLabel.TabIndex = 13;
-            EnableReorderLabel.Text = "Prevent from being re-ordered?";
+            EnableReorderLabel.Text = "Allow automated reordering?";
             // 
             // EnableReorderChkbx
             // 
@@ -485,7 +486,7 @@
             // 
             // CurrentOrdersGroupBox
             // 
-            CurrentOrdersGroupBox.Controls.Add(CurrentOrdersListBox);
+            CurrentOrdersGroupBox.Controls.Add(PastOrderDataGridView);
             CurrentOrdersGroupBox.Location = new Point(834, 157);
             CurrentOrdersGroupBox.Name = "CurrentOrdersGroupBox";
             CurrentOrdersGroupBox.Size = new Size(405, 369);
@@ -493,16 +494,22 @@
             CurrentOrdersGroupBox.TabStop = false;
             CurrentOrdersGroupBox.Text = "Past Orders";
             // 
-            // CurrentOrdersListBox
+            // PastOrderDataGridView
             // 
-            CurrentOrdersListBox.FormattingEnabled = true;
-            CurrentOrdersListBox.ItemHeight = 15;
-            CurrentOrdersListBox.Location = new Point(6, 22);
-            CurrentOrdersListBox.Name = "CurrentOrdersListBox";
-            CurrentOrdersListBox.Size = new Size(393, 334);
-            CurrentOrdersListBox.TabIndex = 0;
-            CurrentOrdersListBox.SelectedIndexChanged += CurrentOrdersListBox_SelectedIndexChanged;
-            CurrentOrdersListBox.Format += CurrentOrdersListBox_Format;
+            PastOrderDataGridView.AllowUserToAddRows = false;
+            PastOrderDataGridView.AllowUserToDeleteRows = false;
+            PastOrderDataGridView.AllowUserToResizeColumns = false;
+            PastOrderDataGridView.AllowUserToResizeRows = false;
+            PastOrderDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            PastOrderDataGridView.BackgroundColor = SystemColors.Window;
+            PastOrderDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            PastOrderDataGridView.Location = new Point(6, 19);
+            PastOrderDataGridView.MultiSelect = false;
+            PastOrderDataGridView.Name = "PastOrderDataGridView";
+            PastOrderDataGridView.ReadOnly = true;
+            PastOrderDataGridView.Size = new Size(393, 344);
+            PastOrderDataGridView.TabIndex = 9;
+            PastOrderDataGridView.SelectionChanged += PastOrderDataGridView_SelectionChanged;
             // 
             // OrderItemsGroupBox
             // 
@@ -591,6 +598,7 @@
             ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
             PendingOrdersGroupBox.ResumeLayout(false);
             CurrentOrdersGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)PastOrderDataGridView).EndInit();
             OrderItemsGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)OrderItemsDataGrid).EndInit();
             ResumeLayout(false);
@@ -629,7 +637,6 @@
         private TextBox EditOrderAmtTextBox;
         private GroupBox OrderItemsGroupBox;
         private Button AddToOrderBtn;
-        private ListBox CurrentOrdersListBox;
         private Button RefreshButton;
         private ComboBox SortByComboBox;
         private Button SubmitPendingOrderButton;
@@ -644,5 +651,6 @@
         private TextBox NewCategoryTextBox;
         private Label NewCategoryNameLabel;
         private TextBox ItemDescriptionTextBox;
+        private DataGridView PastOrderDataGridView;
     }
 }
