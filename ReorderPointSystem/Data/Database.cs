@@ -63,6 +63,7 @@ namespace ReorderPointSystem.Data
 	                current_amount	INTEGER NOT NULL,
 	                reorder_point	INTEGER NOT NULL,
 	                max_amount	    INTEGER NOT NULL,
+	                reorder_enabled	INTEGER NOT NULL,
 	                created_at	    TEXT,
 	                updated_at	    TEXT,
 	                PRIMARY KEY(id AUTOINCREMENT),
