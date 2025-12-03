@@ -321,66 +321,60 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-            if (selectedItem != null)
+            int curAmt, reorderPt, maxAmt;
+            string name = ItemNameTextBox.Text;
+            string description = ItemDescriptionTextBox.Text;
+
+            bool isValidCur = int.TryParse(CurrentQtyTextBox.Text, out curAmt);
+            bool isValidReorder = int.TryParse(ReorderPointTextBox.Text, out reorderPt);
+            bool isValidMax = int.TryParse(ReorderMaxTextBox.Text, out maxAmt);
+
+            if (!isValidCur || !isValidReorder || !isValidMax || string.IsNullOrWhiteSpace(name))
             {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                int id = selectedItem.Id;
-                String name = ItemNameTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                String description = ItemDescriptionTextBox.Text;
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
+                MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                return;
+            }
+
+            using (SQLiteConnection conn = Database.GetConnection())
+            using (SQLiteCommand cmd = new SQLiteCommand(conn))
+            {
+                if (selectedItem != null)
                 {
-                    String sql = "UPDATE items SET name = '" + name +
-                        ", current_amount = '" + curAmt +
-                        "', reorder_point = '" + reorderPt +
-                        "', max_amount = '" + maxAmt +
-                        "', description = '" + ItemDescriptionTextBox.Text + "'" +
-                        "', updated_at = DATETIME('now'), category_id = '" + CategoryComboBox.SelectedValue +
-                        "' WHERE id = '" + id + "'";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
+                    // Update existing item
+                    cmd.CommandText = @"UPDATE items 
+                                SET name = @name,
+                                    current_amount = @curAmt,
+                                    reorder_point = @reorderPt,
+                                    max_amount = @maxAmt,
+                                    description = @desc,
+                                    updated_at = DATETIME('now'),
+                                    category_id = (SELECT id FROM categories WHERE name = @categoryName)
+                                WHERE id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", selectedItem.Id);
                 }
                 else
                 {
-                    MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                    // Insert new item
+                    cmd.CommandText = @"INSERT INTO items 
+                                (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at)
+                                VALUES 
+                                ((SELECT id FROM categories WHERE name = @categoryName), @name, @desc, @curAmt, @reorderPt, @maxAmt, DATETIME('now'), DATETIME('now'))";
                 }
+
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@desc", description);
+                cmd.Parameters.AddWithValue("@curAmt", curAmt);
+                cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
+                cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
+                cmd.Parameters.AddWithValue("@categoryName", CategoryComboBox.Text.Trim());
+
+                cmd.ExecuteNonQuery();
             }
-            else
-            {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                String name = ItemNameTextBox.Text;
-                String description = ItemDescriptionTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
-                {
-                    String sql = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at) " +
-                    "VALUES (\'" + CategoryComboBox.SelectedValue +
-                    "\', \'" + name +
-                    "\', \'" + description +
-                    "\', \'" + curAmt +
-                    "\', \'" + reorderPt +
-                    "\', \'" + maxAmt +
-                    "\', DATETIME(\'now\'), DATETIME(\'now\'))";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                }
-            }
+
             ReloadDB();
         }
+
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
         private void ClearFieldsBtn_Click(object sender, EventArgs e)
