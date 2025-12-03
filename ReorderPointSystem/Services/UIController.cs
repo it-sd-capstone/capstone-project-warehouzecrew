@@ -22,9 +22,7 @@ namespace ReorderPointSystem.Services
 
         public List<Item> LoadItems()
         {
-             
-            List<Item> items = new List<Item>();
-            
+            /*
             using var conn = Database.GetConnection();
             string sqlQuery = "SELECT * FROM items";
             SQLiteCommand cmd = new SQLiteCommand(sqlQuery, conn);
@@ -58,11 +56,10 @@ namespace ReorderPointSystem.Services
             }
             cmd.Dispose();
             conn.Close();
-
-            /*
-            ItemRepository repository = new ItemRepository();
-            items = repository.GetAll();
             */
+
+            List<Item> items = _inventoryManager.GetItemRepository().GetAll();
+            Debug.WriteLine("called LoadItems");
             return items;
         }
 
