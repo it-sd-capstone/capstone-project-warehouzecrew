@@ -13,11 +13,11 @@ namespace ReorderPointSystem.Tests.Data
             command.CommandText = @"
                 INSERT INTO items (
                     category_id, name, description, current_amount,
-                    reorder_point, max_amount, created_at, updated_at
+                    reorder_point, max_amount, reorder_enabled, created_at, updated_at
                 ) VALUES 
-                    (1, 'TestItem1', 'Description1', 5, 10, 15, '2024-01-01', '2024-01-01'),
-                    (1, 'TestItem2', 'Description2', 3, 8, 12, '2024-01-01', '2024-01-01'),
-                    (1, 'TestItem3', 'Description3', 2, 6, 10, '2024-01-01', '2024-01-01');
+                    (1, 'TestItem1', 'Description1', 5, 10, 15, 1, '2024-01-01', '2024-01-01'),
+                    (1, 'TestItem2', 'Description2', 3, 8, 12, 0, '2024-01-01', '2024-01-01'),
+                    (1, 'TestItem3', 'Description3', 2, 6, 10, 1, '2024-01-01', '2024-01-01');
             ";
             command.ExecuteNonQuery();
         }

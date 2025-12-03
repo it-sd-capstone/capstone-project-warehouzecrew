@@ -42,7 +42,8 @@ namespace ReorderPointSystem.Services
                     int maxAmt = reader.GetInt16(reader.GetOrdinal("max_amount"));
                     String created = reader.GetString(reader.GetOrdinal("created_at")).ToString();
                     String updated = reader.GetString(reader.GetOrdinal("updated_at")).ToString();
-                    Item item = new Item(id, categoryID, name, description, currAmt, reorderPt, maxAmt);
+                    bool reorderEnabled = reader.GetBoolean(reader.GetOrdinal("reorder_enabled"));
+                    Item item = new Item(id, categoryID, name, description, currAmt, reorderPt, maxAmt, reorderEnabled);
                     DateTime result;
                     DateTime.TryParse(created, out result);
                     item.CreatedAt = result;
@@ -119,7 +120,8 @@ namespace ReorderPointSystem.Services
                 int maxAmt = reader.GetInt16(reader.GetOrdinal("max_amount"));
                 String created = reader.GetString(reader.GetOrdinal("created_at")).ToString();
                 String updated = reader.GetString(reader.GetOrdinal("updated_at")).ToString();
-                Item item = new Item(id, categoryID, itemName, description, currAmt, reorderPt, maxAmt);
+                bool reorderEnabled = reader.GetBoolean(reader.GetOrdinal("reorder_enabled"));
+                Item item = new Item(id, categoryID, itemName, description, currAmt, reorderPt, maxAmt, reorderEnabled);
                 DateTime result;
                 DateTime.TryParse(created, out result);
                 item.CreatedAt = result;

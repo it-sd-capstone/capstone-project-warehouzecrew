@@ -11,8 +11,8 @@ namespace ReorderPointSystem.Tests.Data
             using var conn = Database.GetConnection();
             using var cmd = new SQLiteCommand(
                 @"INSERT INTO categories (name) VALUES ('TestCategory'); 
-          INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at)
-          VALUES (1, 'TestItem', 'Fake', 10, 5, 20, datetime('now'), datetime('now'));",
+          INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at)
+          VALUES (1, 'TestItem', 'Fake', 10, 5, 20, 1, datetime('now'), datetime('now'));",
                 conn);
             cmd.ExecuteNonQuery();
         }
