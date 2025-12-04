@@ -471,6 +471,8 @@ namespace ReorderPointSystem
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
 
                     EnableProductInfoOptions();
+
+                    ItemNameTextBox.Focus();
                 }
             }
             else
