@@ -29,7 +29,6 @@ namespace ReorderPointSystem
 
             LoadCategories();
 
-            //Sets up GridView 
             SetupGridColumns();
             
         }
@@ -193,7 +192,7 @@ namespace ReorderPointSystem
             CategoryComboBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "Name";
 
-            // Build category → name lookup correctly
+            // Build category, essential for proper name lookup 
             categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
         }
 
@@ -573,7 +572,7 @@ namespace ReorderPointSystem
 
             foreach (var item in items)
             {
-                // Retrieve the Category Name from lookup
+                // Retrieve the Category Name from lookup (Connecting on CategoryId)
                 string categoryName = categoryLookup.ContainsKey(item.CategoryId)
                     ? categoryLookup[item.CategoryId]
                     : "Unknown";
@@ -602,7 +601,6 @@ namespace ReorderPointSystem
             {
                 var row = ItemsGridView.SelectedRows[0];
 
-                // Safely get the ID value
                 if (row.Cells["Id"].Value != null)
                 {
                     int id = Convert.ToInt32(row.Cells["Id"].Value);
@@ -649,37 +647,26 @@ namespace ReorderPointSystem
             }
         }
 
-        private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Utilizing this method from the UI controller
-            UpdateItemsDisplay();
+        // Leave for future implementations of specified sorting (like on isolation on Category-specific sorts)
+        //private void UpdateItemsDisplay()
+        //{
+        //    var items = controller.LoadItems();
 
-        }
+        //    ItemsGridView.Rows.Clear();
 
-        private void RefreshButtonClick(object sender, EventArgs e)
-        {
-            var items = controller.LoadItems();
+        //    foreach (var item in items)
+        //    {
+        //        ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+        //    }
 
-            DisplayItems(items);
-        }
+        //    if (ItemsGridView.Rows.Count > 0)
+        //        ItemsGridView.Rows[0].Selected = true;
 
-        private void UpdateItemsDisplay()
-        {
-            var items = controller.LoadItems();
-
-            if (SortByComboBox.SelectedItem is string sortCriteria)
-                items = controller.SortItems(items, sortCriteria);
-
-            // Clear rows and add only the relevant columns
-            ItemsGridView.Rows.Clear();
-            foreach (var item in items)
-            {
-                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
-            }
-
-            if (ItemsGridView.Rows.Count > 0)
-                ItemsGridView.Rows[0].Selected = true;
-        }
+        //    foreach (DataGridViewColumn column in ItemsGridView.Columns)
+        //    {
+        //        column.SortMode = DataGridViewColumnSortMode.Automatic;
+        //    }
+        //}
 
         private void OrderItemsDataGrid_SelectionChanged(object sender, EventArgs e)
         {
@@ -753,10 +740,8 @@ namespace ReorderPointSystem
                 return;
             }
 
-            // Open DB connection
             using (SQLiteConnection conn = Database.GetConnection())
             {
-                // Check if category already exists
                 string checkSql = "SELECT COUNT(*) FROM categories WHERE name = @name";
                 using (SQLiteCommand checkCmd = new SQLiteCommand(checkSql, conn))
                 {
@@ -770,7 +755,6 @@ namespace ReorderPointSystem
                     }
                 }
 
-                // Insert new category
                 string insertSql = "INSERT INTO categories (name) VALUES (@name)";
                 using (SQLiteCommand insertCmd = new SQLiteCommand(insertSql, conn))
                 {
@@ -800,7 +784,6 @@ namespace ReorderPointSystem
                 SubmitNewCategoryBtn.Visible = true;
                 NewCategoryNameLabel.Visible = true;
 
-                // Prevent user from picking another existing category
                 CategoryComboBox.Enabled = false;
             }
             else
@@ -809,10 +792,8 @@ namespace ReorderPointSystem
                 SubmitNewCategoryBtn.Visible = false;
                 NewCategoryNameLabel.Visible = false;
 
-                // Re-enable the category combo box
                 CategoryComboBox.Enabled = true;
 
-                // Clear any leftover text in the new category text box
                 NewCategoryTextBox.Text = String.Empty;
             }
             SetPlaceholder();
