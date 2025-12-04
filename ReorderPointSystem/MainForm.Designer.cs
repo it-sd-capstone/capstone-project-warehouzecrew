@@ -382,6 +382,7 @@
             ItemsGridView.MultiSelect = false;
             ItemsGridView.Name = "ItemsGridView";
             ItemsGridView.ReadOnly = true;
+            ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ItemsGridView.Size = new Size(804, 321);
             ItemsGridView.TabIndex = 7;
             ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
