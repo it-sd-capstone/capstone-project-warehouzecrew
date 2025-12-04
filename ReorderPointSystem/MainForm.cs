@@ -1,4 +1,4 @@
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using ReorderPointSystem.Data;
@@ -19,16 +19,27 @@ namespace ReorderPointSystem
         private String orderSelection = "";
 
         private UIController controller = new UIController(new InventoryManager());
+
+        private bool isEditingItemName = false;
+        private Dictionary<int, string> categoryLookup;
+
         public MainForm()
         {
+            Database.Initialize();
+
             InitializeComponent();
 
-            //Sets up GridView 
+            LoadCategories();
+
             SetupGridColumns();
+            
         }
         private void SetupGridColumns()
         {
-            ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            ItemsGridView.MultiSelect = false;
+            ItemsGridView.ColumnCount = 4;
+
             OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             PastOrderDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
@@ -40,11 +51,13 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
             idColumn.Name = "Id";
             idColumn.HeaderText = "ID";
+            idColumn.DataPropertyName = "Id";
             idColumn.FillWeight = 20; // 20% of total width
 
             DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
             nameColumn.Name = "Name";
             nameColumn.HeaderText = "Name";
+            nameColumn.DataPropertyName = "Name";
             nameColumn.FillWeight = 50; // 50% of total width
 
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
@@ -56,6 +69,7 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
             qtyColumn.Name = "CurrentAmount";
             qtyColumn.HeaderText = "Quantity";
+            qtyColumn.DataPropertyName = "CurrentAmount";
             qtyColumn.FillWeight = 10; // 10% of total width
 
             //Order Items Grid Columns
@@ -95,6 +109,7 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
             ItemsGridView.Columns.Add(catColumn);
+            
 
             OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
@@ -105,6 +120,23 @@ namespace ReorderPointSystem
             PastOrderDataGridView.Columns.Add(pastOrderStatusColumn);
 
         }
+
+        private void SetPlaceholder()
+        {
+            if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
+            {
+                NewCategoryTextBox.Text = "Enter new category name";
+                NewCategoryTextBox.ForeColor = Color.Gray;
+            }
+
+            // Disables placeholder ONLY when editing ItemName
+            if (!isEditingItemName && string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            {
+                ItemNameTextBox.Text = "Enter item name";
+                ItemNameTextBox.ForeColor = Color.Gray;
+            }
+        }
+
 
         // Helper function to disable editing item information
         private void DisableProductInfoOptions()
@@ -140,6 +172,7 @@ namespace ReorderPointSystem
         {
             itemsList = controller.LoadItems();
             DisplayItems(itemsList);
+            SetPlaceholder();
         }
 
         // recursive helper function to continue checking for reorder items
@@ -170,13 +203,18 @@ namespace ReorderPointSystem
         // helper function to load all current categories on form load
         private void LoadCategories()
         {
-            CategoryRepository cats = new CategoryRepository();
-            categories = cats.GetAll();
-            CategoryComboBox.Items.Clear();
+            CategoryRepository repo = new CategoryRepository();
+            categories = repo.GetAll();
+
+            CategoryComboBox.DataSource = null;
             CategoryComboBox.DataSource = categories;
             CategoryComboBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "Name";
+
+            // Build category, essential for proper name lookup 
+            categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
         }
+
 
         // Helper function to load Orders on form load
         private void LoadOrders()
@@ -193,12 +231,12 @@ namespace ReorderPointSystem
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Database.Initialize();
             ReloadDB();
             LoadCategories();
             LoadOrders();
             CheckReorders();
             ClearFieldsBtn_Click(sender, e);
+            SetPlaceholder();
         }
 
         // Display or hide the Simulation buttons
@@ -219,21 +257,31 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            SQLiteConnection conn = Database.GetConnection();
-            Random rand = new Random();
-            foreach (Item item in itemsList)
+            using (SQLiteConnection conn = Database.GetConnection())
             {
-                int num = rand.Next(100);
-                if (num >= 50)
+                Random rand = new Random();
+
+                foreach (Item item in itemsList)
                 {
-                    int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
-                    String updateStr = "UPDATE items SET current_amount = \'" + decrease + "\' WHERE id = \'" + item.Id + "\'";
-                    SQLiteCommand cmd = new SQLiteCommand(updateStr, conn);
-                    cmd.ExecuteNonQuery();
+                    int num = rand.Next(100);
+                    if (num >= 50)
+                    {
+                        int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
+                        string updateStr = "UPDATE items SET current_amount = @decrease WHERE id = @id";
+                        using (SQLiteCommand cmd = new SQLiteCommand(updateStr, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@decrease", decrease);
+                            cmd.Parameters.AddWithValue("@id", item.Id);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
+
+            LoadCategories();
             ReloadDB();
         }
+
 
         // Insert dummy records into the DB for testing purposes
         private void AddTestDataBtn_Click(object sender, EventArgs e)
@@ -388,8 +436,10 @@ namespace ReorderPointSystem
                     MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
                 }
             }
+
             ReloadDB();
         }
+
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
         private void ClearFieldsBtn_Click(object sender, EventArgs e)
@@ -458,18 +508,23 @@ namespace ReorderPointSystem
 
                 selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
 
-                // If the item exists, populate the fields and enable editing
                 if (selectedItem != null)
                 {
+                    // Only disable placeholder for THIS textbox
+                    isEditingItemName = true;
+
                     ItemNameTextBox.Text = selectedItem.Name;
+                    ItemNameTextBox.ForeColor = Color.Black;
+
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
                     ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
                     ItemDescriptionTextBox.Text = selectedItem.Description;
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
 
-                    // Enable editing controls
                     EnableProductInfoOptions();
+
+                    ItemNameTextBox.Focus();
                 }
             }
             else
@@ -576,11 +631,25 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
+            if (categoryLookup == null || categoryLookup.Count == 0)
+            LoadCategories();
+
             ItemsGridView.Rows.Clear();
 
             foreach (var item in items)
             {
-                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+                // Retrieve the Category Name from lookup (Connecting on CategoryId)
+                string categoryName = categoryLookup.ContainsKey(item.CategoryId)
+                    ? categoryLookup[item.CategoryId]
+                    : "Unknown";
+
+                // Add the categoryName instead of CategoryId
+                ItemsGridView.Rows.Add(
+                    item.Id,
+                    item.Name,
+                    item.CurrentAmount,
+                    categoryName       
+                );
             }
 
             // Select the first row if available
@@ -598,7 +667,6 @@ namespace ReorderPointSystem
             {
                 var row = ItemsGridView.SelectedRows[0];
 
-                // Safely get the ID value
                 if (row.Cells["Id"].Value != null)
                 {
                     int id = Convert.ToInt32(row.Cells["Id"].Value);
@@ -650,37 +718,26 @@ namespace ReorderPointSystem
             }
         }
 
-        private void SortByComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Utilizing this method from the UI controller
-            UpdateItemsDisplay();
+        // Leave for future implementations of specified sorting (like on isolation on Category-specific sorts)
+        //private void UpdateItemsDisplay()
+        //{
+        //    var items = controller.LoadItems();
 
-        }
+        //    ItemsGridView.Rows.Clear();
 
-        private void RefreshButtonClick(object sender, EventArgs e)
-        {
-            var items = controller.LoadItems();
+        //    foreach (var item in items)
+        //    {
+        //        ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
+        //    }
 
-            DisplayItems(items);
-        }
+        //    if (ItemsGridView.Rows.Count > 0)
+        //        ItemsGridView.Rows[0].Selected = true;
 
-        private void UpdateItemsDisplay()
-        {
-            var items = controller.LoadItems();
-
-            if (SortByComboBox.SelectedItem is string sortCriteria)
-                items = controller.SortItems(items, sortCriteria);
-
-            // Clear rows and add only the relevant columns
-            ItemsGridView.Rows.Clear();
-            foreach (var item in items)
-            {
-                ItemsGridView.Rows.Add(item.Id, item.Name, item.CurrentAmount);
-            }
-
-            if (ItemsGridView.Rows.Count > 0)
-                ItemsGridView.Rows[0].Selected = true;
-        }
+        //    foreach (DataGridViewColumn column in ItemsGridView.Columns)
+        //    {
+        //        column.SortMode = DataGridViewColumnSortMode.Automatic;
+        //    }
+        //}
 
         private void OrderItemsDataGrid_SelectionChanged(object sender, EventArgs e)
         {
@@ -768,6 +825,110 @@ namespace ReorderPointSystem
                     OrderRecievedBtn.Enabled = false;
                 }
             }
+        }
+        private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
+        {
+            string newCategoryName = NewCategoryTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newCategoryName))
+            {
+                MessageBox.Show("Please enter a category name.", "Invalid Input");
+                return;
+            }
+
+            using (SQLiteConnection conn = Database.GetConnection())
+            {
+                string checkSql = "SELECT COUNT(*) FROM categories WHERE name = @name";
+                using (SQLiteCommand checkCmd = new SQLiteCommand(checkSql, conn))
+                {
+                    checkCmd.Parameters.AddWithValue("@name", newCategoryName);
+                    long count = (long)checkCmd.ExecuteScalar();
+
+                    if (count > 0)
+                    {
+                        MessageBox.Show("Category already exists.", "Duplicate Category");
+                        return;
+                    }
+                }
+
+                string insertSql = "INSERT INTO categories (name) VALUES (@name)";
+                using (SQLiteCommand insertCmd = new SQLiteCommand(insertSql, conn))
+                {
+                    insertCmd.Parameters.AddWithValue("@name", newCategoryName);
+                    insertCmd.ExecuteNonQuery();
+                }
+            }
+
+            LoadCategories();
+
+            if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            {
+                CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
+            }
+
+            AddNewCatCheckBox.Checked = false;
+
+            MessageBox.Show($"Category '{newCategoryName}' added successfully!", "Success");
+        }
+
+
+        private void AddNewCategory_CheckChanged(object sender, EventArgs e)
+        {
+            if (AddNewCatCheckBox.Checked)
+            {
+                NewCategoryTextBox.Visible = true;
+                SubmitNewCategoryBtn.Visible = true;
+                NewCategoryNameLabel.Visible = true;
+
+                CategoryComboBox.Enabled = false;
+            }
+            else
+            {
+                NewCategoryTextBox.Visible = false;
+                SubmitNewCategoryBtn.Visible = false;
+                NewCategoryNameLabel.Visible = false;
+
+                CategoryComboBox.Enabled = true;
+
+                NewCategoryTextBox.Text = String.Empty;
+            }
+            SetPlaceholder();
+        }
+
+        // Placeholder text logic for textboxes
+        private void ItemNameTextBox_Enter(object sender, EventArgs e)
+        {
+            if (isEditingItemName)
+                return;
+
+            if (ItemNameTextBox.ForeColor == Color.Gray)
+            {
+                ItemNameTextBox.Text = "";
+                ItemNameTextBox.ForeColor = Color.Black;
+            }
+        }
+
+        private void ItemNameTextBox_Leave(object sender, EventArgs e)
+        {
+            if (!isEditingItemName)
+                SetPlaceholder();
+        }
+
+
+        private void NewCategoryTextBox_Enter(object sender, EventArgs e)
+        {
+            {
+                if (NewCategoryTextBox.ForeColor == Color.Gray)
+                {
+                    NewCategoryTextBox.Text = "";
+                    NewCategoryTextBox.ForeColor = Color.Black;
+                }
+            }
+        }
+
+        private void NewCategoryTextBox_Leave(object sender, EventArgs e)
+        {
+            SetPlaceholder();
         }
     }
 }

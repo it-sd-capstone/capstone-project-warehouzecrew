@@ -36,6 +36,7 @@
             AddNewCatLabel = new Label();
             AddNewCatCheckBox = new CheckBox();
             SubmitNewCategoryBtn = new Button();
+            EditItemBtn = new Button();
             NewCategoryTextBox = new TextBox();
             CategoryComboBoxLabel = new Label();
             CategoryComboBox = new ComboBox();
@@ -56,10 +57,7 @@
             ItemNameLabel = new Label();
             ItemsListGroupBox = new GroupBox();
             ItemsGridView = new DataGridView();
-            SortByComboBox = new ComboBox();
-            RefreshButton = new Button();
             AddToOrderBtn = new Button();
-            EditItemBtn = new Button();
             ItemSearchTextBox = new TextBox();
             SearchBtn = new Button();
             PendingOrdersGroupBox = new GroupBox();
@@ -123,6 +121,7 @@
             ItemInfoGroupBox.Controls.Add(AddNewCatLabel);
             ItemInfoGroupBox.Controls.Add(AddNewCatCheckBox);
             ItemInfoGroupBox.Controls.Add(SubmitNewCategoryBtn);
+            ItemInfoGroupBox.Controls.Add(EditItemBtn);
             ItemInfoGroupBox.Controls.Add(NewCategoryTextBox);
             ItemInfoGroupBox.Controls.Add(CategoryComboBoxLabel);
             ItemInfoGroupBox.Controls.Add(CategoryComboBox);
@@ -142,7 +141,7 @@
             ItemInfoGroupBox.Controls.Add(ItemNameLabel);
             ItemInfoGroupBox.Location = new Point(12, 12);
             ItemInfoGroupBox.Name = "ItemInfoGroupBox";
-            ItemInfoGroupBox.Size = new Size(816, 291);
+            ItemInfoGroupBox.Size = new Size(816, 277);
             ItemInfoGroupBox.TabIndex = 3;
             ItemInfoGroupBox.TabStop = false;
             ItemInfoGroupBox.Text = "Item Info";
@@ -174,6 +173,7 @@
             AddNewCatCheckBox.Size = new Size(15, 14);
             AddNewCatCheckBox.TabIndex = 7;
             AddNewCatCheckBox.UseVisualStyleBackColor = true;
+            AddNewCatCheckBox.CheckedChanged += AddNewCategory_CheckChanged;
             // 
             // SubmitNewCategoryBtn
             // 
@@ -184,6 +184,17 @@
             SubmitNewCategoryBtn.Text = "Submit New Category";
             SubmitNewCategoryBtn.UseVisualStyleBackColor = true;
             SubmitNewCategoryBtn.Visible = false;
+            SubmitNewCategoryBtn.Click += SubmitNewCategoryBtn_Click;
+            // 
+            // EditItemBtn
+            // 
+            EditItemBtn.Location = new Point(691, 119);
+            EditItemBtn.Name = "EditItemBtn";
+            EditItemBtn.Size = new Size(114, 46);
+            EditItemBtn.TabIndex = 3;
+            EditItemBtn.Text = "Edit Item";
+            EditItemBtn.UseVisualStyleBackColor = true;
+            EditItemBtn.Click += EditItemBtn_Click;
             // 
             // NewCategoryTextBox
             // 
@@ -192,8 +203,9 @@
             NewCategoryTextBox.Name = "NewCategoryTextBox";
             NewCategoryTextBox.Size = new Size(287, 29);
             NewCategoryTextBox.TabIndex = 16;
-            NewCategoryTextBox.Text = "Enter New Category Name...";
             NewCategoryTextBox.Visible = false;
+            NewCategoryTextBox.Enter += NewCategoryTextBox_Enter;
+            NewCategoryTextBox.Leave += NewCategoryTextBox_Leave;
             // 
             // CategoryComboBoxLabel
             // 
@@ -233,9 +245,9 @@
             // 
             // DeleteItemBtn
             // 
-            DeleteItemBtn.Location = new Point(691, 224);
+            DeleteItemBtn.Location = new Point(691, 223);
             DeleteItemBtn.Name = "DeleteItemBtn";
-            DeleteItemBtn.Size = new Size(114, 59);
+            DeleteItemBtn.Size = new Size(114, 46);
             DeleteItemBtn.TabIndex = 11;
             DeleteItemBtn.Text = "Delete Item";
             DeleteItemBtn.UseVisualStyleBackColor = true;
@@ -243,9 +255,9 @@
             // 
             // ClearFieldsBtn
             // 
-            ClearFieldsBtn.Location = new Point(691, 159);
+            ClearFieldsBtn.Location = new Point(691, 171);
             ClearFieldsBtn.Name = "ClearFieldsBtn";
-            ClearFieldsBtn.Size = new Size(114, 59);
+            ClearFieldsBtn.Size = new Size(114, 46);
             ClearFieldsBtn.TabIndex = 10;
             ClearFieldsBtn.Text = "Clear Fields";
             ClearFieldsBtn.UseVisualStyleBackColor = true;
@@ -253,9 +265,9 @@
             // 
             // SubmitItemBtn
             // 
-            SubmitItemBtn.Location = new Point(691, 94);
+            SubmitItemBtn.Location = new Point(691, 67);
             SubmitItemBtn.Name = "SubmitItemBtn";
-            SubmitItemBtn.Size = new Size(114, 59);
+            SubmitItemBtn.Size = new Size(114, 46);
             SubmitItemBtn.TabIndex = 9;
             SubmitItemBtn.Text = "Submit Item";
             SubmitItemBtn.UseVisualStyleBackColor = true;
@@ -266,7 +278,7 @@
             ItemDescriptionGroupBox.Controls.Add(ItemDescriptionTextBox);
             ItemDescriptionGroupBox.Location = new Point(6, 145);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
-            ItemDescriptionGroupBox.Size = new Size(676, 138);
+            ItemDescriptionGroupBox.Size = new Size(676, 124);
             ItemDescriptionGroupBox.TabIndex = 8;
             ItemDescriptionGroupBox.TabStop = false;
             ItemDescriptionGroupBox.Text = "Item Description";
@@ -277,7 +289,7 @@
             ItemDescriptionTextBox.MaxLength = 250;
             ItemDescriptionTextBox.Multiline = true;
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
-            ItemDescriptionTextBox.Size = new Size(663, 113);
+            ItemDescriptionTextBox.Size = new Size(663, 96);
             ItemDescriptionTextBox.TabIndex = 0;
             // 
             // ReorderMaxTextBox
@@ -338,6 +350,8 @@
             ItemNameTextBox.Name = "ItemNameTextBox";
             ItemNameTextBox.Size = new Size(287, 29);
             ItemNameTextBox.TabIndex = 1;
+            ItemNameTextBox.Enter += ItemNameTextBox_Enter;
+            ItemNameTextBox.Leave += ItemNameTextBox_Leave;
             // 
             // ItemNameLabel
             // 
@@ -352,15 +366,12 @@
             // ItemsListGroupBox
             // 
             ItemsListGroupBox.Controls.Add(ItemsGridView);
-            ItemsListGroupBox.Controls.Add(SortByComboBox);
-            ItemsListGroupBox.Controls.Add(RefreshButton);
             ItemsListGroupBox.Controls.Add(AddToOrderBtn);
-            ItemsListGroupBox.Controls.Add(EditItemBtn);
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
-            ItemsListGroupBox.Location = new Point(12, 309);
+            ItemsListGroupBox.Location = new Point(12, 295);
             ItemsListGroupBox.Name = "ItemsListGroupBox";
-            ItemsListGroupBox.Size = new Size(816, 408);
+            ItemsListGroupBox.Size = new Size(816, 422);
             ItemsListGroupBox.TabIndex = 4;
             ItemsListGroupBox.TabStop = false;
             ItemsListGroupBox.Text = "Items List";
@@ -378,36 +389,14 @@
             ItemsGridView.MultiSelect = false;
             ItemsGridView.Name = "ItemsGridView";
             ItemsGridView.ReadOnly = true;
+            ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ItemsGridView.Size = new Size(804, 321);
             ItemsGridView.TabIndex = 7;
             ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
             // 
-            // SortByComboBox
-            // 
-            SortByComboBox.FormattingEnabled = true;
-            SortByComboBox.Items.AddRange(new object[] { "Alphabetical (A to Z)", "Alphabetical (Z to A)", "Quantity (Low to High)", "Quantity (High to Low)", "Date Added (Newest)", "Date Added (Oldest)" });
-            SortByComboBox.Location = new Point(430, 16);
-            SortByComboBox.Margin = new Padding(3, 2, 3, 2);
-            SortByComboBox.Name = "SortByComboBox";
-            SortByComboBox.Size = new Size(297, 23);
-            SortByComboBox.TabIndex = 6;
-            SortByComboBox.Text = "Sort By";
-            SortByComboBox.SelectedIndexChanged += SortByComboBox_SelectedIndexChanged;
-            // 
-            // RefreshButton
-            // 
-            RefreshButton.Location = new Point(733, 17);
-            RefreshButton.Margin = new Padding(3, 2, 3, 2);
-            RefreshButton.Name = "RefreshButton";
-            RefreshButton.Size = new Size(75, 22);
-            RefreshButton.TabIndex = 5;
-            RefreshButton.Text = "Refresh";
-            RefreshButton.UseVisualStyleBackColor = true;
-            RefreshButton.Click += RefreshButtonClick;
-            // 
             // AddToOrderBtn
             // 
-            AddToOrderBtn.Location = new Point(417, 373);
+            AddToOrderBtn.Location = new Point(213, 373);
             AddToOrderBtn.Name = "AddToOrderBtn";
             AddToOrderBtn.Size = new Size(393, 23);
             AddToOrderBtn.TabIndex = 4;
@@ -415,26 +404,16 @@
             AddToOrderBtn.UseVisualStyleBackColor = true;
             AddToOrderBtn.Click += AddToOrderBtn_Click;
             // 
-            // EditItemBtn
-            // 
-            EditItemBtn.Location = new Point(6, 373);
-            EditItemBtn.Name = "EditItemBtn";
-            EditItemBtn.Size = new Size(393, 23);
-            EditItemBtn.TabIndex = 3;
-            EditItemBtn.Text = "Edit The Highlighted Item";
-            EditItemBtn.UseVisualStyleBackColor = true;
-            EditItemBtn.Click += EditItemBtn_Click;
-            // 
             // ItemSearchTextBox
             // 
-            ItemSearchTextBox.Location = new Point(6, 16);
+            ItemSearchTextBox.Location = new Point(213, 16);
             ItemSearchTextBox.Name = "ItemSearchTextBox";
             ItemSearchTextBox.Size = new Size(312, 23);
             ItemSearchTextBox.TabIndex = 2;
             // 
             // SearchBtn
             // 
-            SearchBtn.Location = new Point(324, 17);
+            SearchBtn.Location = new Point(531, 17);
             SearchBtn.Name = "SearchBtn";
             SearchBtn.Size = new Size(75, 23);
             SearchBtn.TabIndex = 1;
@@ -637,8 +616,7 @@
         private TextBox EditOrderAmtTextBox;
         private GroupBox OrderItemsGroupBox;
         private Button AddToOrderBtn;
-        private Button RefreshButton;
-        private ComboBox SortByComboBox;
+        private ListBox CurrentOrdersListBox;
         private Button SubmitPendingOrderButton;
         private Button OrderRecievedBtn;
         private Label CategoryComboBoxLabel;
