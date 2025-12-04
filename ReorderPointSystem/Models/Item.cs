@@ -16,6 +16,7 @@ namespace ReorderPointSystem.Models
         public int CurrentAmount { get; set; }
         public int ReorderPoint { get; set; }
         public int MaxAmount { get; set; }
+        public bool ReorderEnabled { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
        
@@ -29,11 +30,12 @@ namespace ReorderPointSystem.Models
             CurrentAmount = -1;
             ReorderPoint = -1;
             MaxAmount = -1;
+            ReorderEnabled = false;
             CreatedAt = DateTime.MinValue;
             LastUpdatedAt = DateTime.MinValue;
         }
 
-        public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount)
+        public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount, bool enableReorder = false)
         {
             Id = id;
             CategoryId = categoryId;
@@ -42,11 +44,12 @@ namespace ReorderPointSystem.Models
             CurrentAmount = currentAmount;
             ReorderPoint = reorderPoint;
             MaxAmount = maxAmount;
+            ReorderEnabled = enableReorder;
             CreatedAt = DateTime.Now;
             LastUpdatedAt = DateTime.Now;
         }
 
-        public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount, DateTime createdAt, DateTime updatedAt)
+        public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount, bool enableReorder, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             CategoryId = categoryId;
@@ -55,6 +58,7 @@ namespace ReorderPointSystem.Models
             CurrentAmount = currentAmount;
             ReorderPoint = reorderPoint;
             MaxAmount = maxAmount;
+            ReorderEnabled = enableReorder;
             CreatedAt = createdAt;
             LastUpdatedAt = updatedAt;
         }
@@ -62,7 +66,14 @@ namespace ReorderPointSystem.Models
         // Methods
         public bool NeedsReorder()
         {
-            return CurrentAmount < ReorderPoint;
+            if (ReorderEnabled)
+            {
+                return CurrentAmount < ReorderPoint;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public int AddStock(int amount)
