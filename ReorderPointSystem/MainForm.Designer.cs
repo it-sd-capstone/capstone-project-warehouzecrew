@@ -293,7 +293,7 @@
             // 
             // ReorderMaxTextBox
             // 
-            ReorderMaxTextBox.Location = new Point(688, 38);
+            ReorderMaxTextBox.Location = new Point(691, 38);
             ReorderMaxTextBox.Name = "ReorderMaxTextBox";
             ReorderMaxTextBox.Size = new Size(114, 23);
             ReorderMaxTextBox.TabIndex = 4;
@@ -301,7 +301,7 @@
             // 
             // ReorderPointTextBox
             // 
-            ReorderPointTextBox.Location = new Point(548, 38);
+            ReorderPointTextBox.Location = new Point(552, 38);
             ReorderPointTextBox.Name = "ReorderPointTextBox";
             ReorderPointTextBox.Size = new Size(114, 23);
             ReorderPointTextBox.TabIndex = 3;
@@ -389,13 +389,13 @@
             ItemsGridView.Name = "ItemsGridView";
             ItemsGridView.ReadOnly = true;
             ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            ItemsGridView.Size = new Size(804, 321);
+            ItemsGridView.Size = new Size(804, 341);
             ItemsGridView.TabIndex = 7;
             ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
             // 
             // AddToOrderBtn
             // 
-            AddToOrderBtn.Location = new Point(213, 373);
+            AddToOrderBtn.Location = new Point(213, 393);
             AddToOrderBtn.Name = "AddToOrderBtn";
             AddToOrderBtn.Size = new Size(393, 23);
             AddToOrderBtn.TabIndex = 4;
@@ -513,15 +513,15 @@
             // EditOrderAmtTextBox
             // 
             EditOrderAmtTextBox.Enabled = false;
-            EditOrderAmtTextBox.Location = new Point(840, 721);
+            EditOrderAmtTextBox.Location = new Point(834, 720);
             EditOrderAmtTextBox.Name = "EditOrderAmtTextBox";
-            EditOrderAmtTextBox.Size = new Size(78, 23);
+            EditOrderAmtTextBox.Size = new Size(102, 23);
             EditOrderAmtTextBox.TabIndex = 2;
             // 
             // EditOrderAmtBtn
             // 
             EditOrderAmtBtn.Enabled = false;
-            EditOrderAmtBtn.Location = new Point(924, 720);
+            EditOrderAmtBtn.Location = new Point(942, 720);
             EditOrderAmtBtn.Name = "EditOrderAmtBtn";
             EditOrderAmtBtn.Size = new Size(173, 23);
             EditOrderAmtBtn.TabIndex = 3;
@@ -532,7 +532,7 @@
             // OrderRecievedBtn
             // 
             OrderRecievedBtn.Enabled = false;
-            OrderRecievedBtn.Location = new Point(1103, 720);
+            OrderRecievedBtn.Location = new Point(1121, 720);
             OrderRecievedBtn.Name = "OrderRecievedBtn";
             OrderRecievedBtn.Size = new Size(118, 23);
             OrderRecievedBtn.TabIndex = 6;
