@@ -258,7 +258,6 @@ namespace ReorderPointSystem
             }
 
             LoadCategories();
-
             ReloadDB();
         }
 
