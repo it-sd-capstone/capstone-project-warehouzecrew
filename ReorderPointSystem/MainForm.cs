@@ -12,10 +12,12 @@ namespace ReorderPointSystem
 
         private List<Item> itemsList;
         private List<Item> pendingOrder;
+        private List<Item> manualOrderItems;
         private List<Category> categories;
         private List<Reorder> reorders;
         private Item selectedItem;
-        private Reorder selectedReorder;
+        private String orderSelection = "";
+
         private UIController controller = new UIController(new InventoryManager());
 
         private bool isEditingItemName = false;
@@ -39,9 +41,11 @@ namespace ReorderPointSystem
             ItemsGridView.ColumnCount = 4;
 
             OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            PastOrderDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             ItemsGridView.Columns.Clear();
             OrderItemsDataGrid.Columns.Clear();
+            PastOrderDataGridView.Columns.Clear();
 
             // Create columns on percentages or total element space
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();
@@ -59,6 +63,7 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
             catColumn.Name = "Category";
             catColumn.HeaderText = "Category";
+            catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
             catColumn.FillWeight = 20;// 20% of total width
 
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
@@ -83,6 +88,22 @@ namespace ReorderPointSystem
             OrderItemQtyColumn.HeaderText = "Order Amount";
             OrderItemQtyColumn.FillWeight = 30; // 30% of total width
 
+            //Past Orders grid columns
+            DataGridViewTextBoxColumn pastOrderIDColumn = new DataGridViewTextBoxColumn();
+            pastOrderIDColumn.Name = "Id";
+            pastOrderIDColumn.HeaderText = "Order ID";
+            pastOrderIDColumn.FillWeight = 20; // 20% of total width
+
+            DataGridViewTextBoxColumn pastOrderDateColumn = new DataGridViewTextBoxColumn();
+            pastOrderDateColumn.Name = "Created";
+            pastOrderDateColumn.HeaderText = "Date Submitted";
+            pastOrderDateColumn.FillWeight = 40; // 40% of total width
+
+            DataGridViewTextBoxColumn pastOrderStatusColumn = new DataGridViewTextBoxColumn();
+            pastOrderStatusColumn.Name = "Status";
+            pastOrderStatusColumn.HeaderText = "Status";
+            pastOrderStatusColumn.FillWeight = 40; // 40% of total width
+
             // Add columns to grid
             ItemsGridView.Columns.Add(idColumn);
             ItemsGridView.Columns.Add(nameColumn);
@@ -94,6 +115,9 @@ namespace ReorderPointSystem
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemQtyColumn);
 
+            PastOrderDataGridView.Columns.Add(pastOrderIDColumn);
+            PastOrderDataGridView.Columns.Add(pastOrderDateColumn);
+            PastOrderDataGridView.Columns.Add(pastOrderStatusColumn);
 
         }
 
@@ -126,6 +150,7 @@ namespace ReorderPointSystem
             DeleteItemBtn.Enabled = false;
             CategoryComboBox.Enabled = false;
             ClearFieldsBtn.Enabled = true;
+            AddNewCatCheckBox.Enabled = false;
         }
 
         // Helper function to enable editing item information
@@ -139,6 +164,7 @@ namespace ReorderPointSystem
             SubmitItemBtn.Enabled = true;
             DeleteItemBtn.Enabled = true;
             CategoryComboBox.Enabled = true;
+            AddNewCatCheckBox.Enabled = true;
         }
 
         // Helper function to reload data from the DB after an edit/delete has been made
@@ -152,21 +178,14 @@ namespace ReorderPointSystem
         // recursive helper function to continue checking for reorder items
         private async Task CheckReorders()
         {
-            List<Item> oldOrder = null;
-            await Task.Delay(5000);
-            if (pendingOrder != null)
-            {
-                oldOrder = pendingOrder;
-            }
+            await Task.Delay(7000);
+            
             pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
-            if (oldOrder != null)
+            if (manualOrderItems != null && manualOrderItems.Count > 0)
             {
-                foreach (Item item in oldOrder)
+                foreach (Item item in manualOrderItems)
                 {
-                    if (!pendingOrder.Contains(item))
-                    {
-                        pendingOrder.Add(item);
-                    }
+                    pendingOrder.Add(item);
                 }
             }
             if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
@@ -201,10 +220,12 @@ namespace ReorderPointSystem
         private void LoadOrders()
         {
             reorders = controller.LoadOrders();
-            CurrentOrdersListBox.DataSource = null;
-            CurrentOrdersListBox.DataSource = reorders;
-            CurrentOrdersListBox.ValueMember = "Id";
-            CategoryComboBox.DisplayMember = "ItemId";
+            PastOrderDataGridView.Rows.Clear();
+            foreach (Reorder order in reorders)
+            {
+                PastOrderDataGridView.Rows.Add(order.Id, order.CreatedAt, order.Status);
+            }
+
         }
 
         // Form load events, all will happen before the form displays to the user
@@ -296,6 +317,7 @@ namespace ReorderPointSystem
             int[] itemCurrAmt = new int[] { 10, 3000, 5, 100, 5, 27, 95, 200, 4570, 46 };
             int[] itemReorderPoint = new int[] { 5, 1000, 2, 50, 3, 20, 50, 120, 2000, 25 };
             int[] itemReorderAmt = new int[] { 20, 4000, 8, 200, 12, 80, 200, 480, 8000, 100 };
+            int reorderEnabled = 1;
 
             // add sample items if they dont already exist
             for (int i = 0; i < itemNames.Length; i++)
@@ -307,15 +329,16 @@ namespace ReorderPointSystem
                 if (!reader2.HasRows)
                 {
 
-                    String insertCommand2 = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at) VALUES " +
+                    String insertCommand2 = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, max_amount, reorder_enabled, created_at, updated_at) VALUES " +
                         "(\'" + itemCategoryID[i] + "\', " +
                         "\'" + itemNames[i] + "\', " +
                         "\'" + itemDescription[i] + "\', " +
                         "\'" + itemCurrAmt[i] + "\', " +
                         "\'" + itemReorderPoint[i] + "\', " +
                         "\'" + itemReorderAmt[i] + "\', " +
-                        "\'" + DateTime.Now + "\', " +
-                        "\'" + DateTime.Now + "\')";
+                        "\'" + reorderEnabled + "\', " +
+                        "\'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\', " +
+                        "\'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\')";
                     SQLiteCommand insertCMD2 = new SQLiteCommand(insertCommand2, conn);
                     insertCMD2.ExecuteNonQuery();
                     insertCMD2.Dispose();
@@ -332,55 +355,86 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-            int curAmt, reorderPt, maxAmt;
-            string name = ItemNameTextBox.Text;
-            string description = ItemDescriptionTextBox.Text;
-
-            bool isValidCur = int.TryParse(CurrentQtyTextBox.Text, out curAmt);
-            bool isValidReorder = int.TryParse(ReorderPointTextBox.Text, out reorderPt);
-            bool isValidMax = int.TryParse(ReorderMaxTextBox.Text, out maxAmt);
-
-            if (!isValidCur || !isValidReorder || !isValidMax || string.IsNullOrWhiteSpace(name))
+            if (selectedItem != null)
             {
-                MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                return;
-            }
-
-            using (SQLiteConnection conn = Database.GetConnection())
-            using (SQLiteCommand cmd = new SQLiteCommand(conn))
-            {
-                if (selectedItem != null)
+                int curAmt;
+                int reorderPt;
+                int maxAmt;
+                int reorderEnabled;
+                int id = selectedItem.Id;
+                String name = ItemNameTextBox.Text;
+                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
+                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
+                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
+                String description = ItemDescriptionTextBox.Text;
+                if (EnableReorderChkbx.Checked)
                 {
-                    // Update existing item
-                    cmd.CommandText = @"UPDATE items 
-                                SET name = @name,
-                                    current_amount = @curAmt,
-                                    reorder_point = @reorderPt,
-                                    max_amount = @maxAmt,
-                                    description = @desc,
-                                    updated_at = DATETIME('now'),
-                                    category_id = (SELECT id FROM categories WHERE name = @categoryName)
-                                WHERE id = @id";
-
-                    cmd.Parameters.AddWithValue("@id", selectedItem.Id);
+                    reorderEnabled = 1;
                 }
                 else
                 {
-                    // Insert new item
-                    cmd.CommandText = @"INSERT INTO items 
-                                (category_id, name, description, current_amount, reorder_point, max_amount, created_at, updated_at)
-                                VALUES 
-                                ((SELECT id FROM categories WHERE name = @categoryName), @name, @desc, @curAmt, @reorderPt, @maxAmt, DATETIME('now'), DATETIME('now'))";
+                    reorderEnabled = 0;
                 }
-
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@desc", description);
-                cmd.Parameters.AddWithValue("@curAmt", curAmt);
-                cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
-                cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
-                cmd.Parameters.AddWithValue("@categoryName", CategoryComboBox.Text.Trim());
-
-                cmd.ExecuteNonQuery();
+                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
+                {
+                    String sql = "UPDATE items SET name = '" + name +
+                        "', current_amount = '" + curAmt +
+                        "', reorder_point = '" + reorderPt +
+                        "', max_amount = '" + maxAmt +
+                        "', reorder_enabled = '" + reorderEnabled +
+                        "', description = '" + ItemDescriptionTextBox.Text +
+                        "', updated_at = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                        "', category_id = '" + CategoryComboBox.SelectedValue +
+                        "' WHERE id = '" + id + "'";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                }
+            }
+            else
+            {
+                int curAmt;
+                int reorderPt;
+                int maxAmt;
+                int reorderEnabled;
+                String name = ItemNameTextBox.Text;
+                String description = ItemDescriptionTextBox.Text;
+                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
+                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
+                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
+                if (EnableReorderChkbx.Checked)
+                {
+                    reorderEnabled = 1;
+                }
+                else
+                {
+                    reorderEnabled = 0;
+                }
+                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
+                {
+                    String sql = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at) " +
+                    "VALUES ('" + CategoryComboBox.SelectedValue +
+                    "', '" + name +
+                    "', '" + description +
+                    "', '" + curAmt +
+                    "', '" + reorderPt +
+                    "', '" + reorderEnabled +
+                    "', '" + maxAmt +
+                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                    "');";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                }
             }
 
             ReloadDB();
@@ -501,6 +555,11 @@ namespace ReorderPointSystem
                         pendingOrder = new List<Item> { };
                     }
                     pendingOrder.Add(copy);
+                    if (manualOrderItems == null)
+                    {
+                        manualOrderItems = new List<Item> { };
+                    }
+                    manualOrderItems.Add(copy);
                     OrderItemsDataGrid.Rows.Clear();
                     foreach (Item item in pendingOrder)
                     {
@@ -528,6 +587,7 @@ namespace ReorderPointSystem
                 PendingOrderListBox.SelectedIndex = -1;
                 PendingOrderListBox.Refresh();
                 pendingOrder.Clear();
+                manualOrderItems = null;
                 OrderItemsDataGrid.Rows.Clear();
             }
             else
@@ -541,20 +601,27 @@ namespace ReorderPointSystem
         {
             if (OrderItemsDataGrid.SelectedRows.Count == 1)
             {
-                int qty;
-                bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
-                if (validQty)
+                if (!orderSelection.Equals("") && !orderSelection.Equals("Past"))
                 {
-                    var row = OrderItemsDataGrid.SelectedRows[0];
-                    pendingOrder[row.Index].MaxAmount = qty;
+                    int qty;
+                    bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
+                    if (validQty)
+                    {
+                        var row = OrderItemsDataGrid.SelectedRows[0];
+                        pendingOrder[row.Index].MaxAmount = qty;
+                    }
+                    OrderItemsDataGrid.Rows.Clear();
+                    foreach (Item item in pendingOrder)
+                    {
+                        OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                    }
+                    EditOrderAmtBtn.Enabled = false;
+                    EditOrderAmtTextBox.Enabled = false;
                 }
-                OrderItemsDataGrid.Rows.Clear();
-                foreach (Item item in pendingOrder)
+                else
                 {
-                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                    MessageBox.Show("You cannot change the quantity on a past order.", "Error - can't edit past order");
                 }
-                EditOrderAmtBtn.Enabled = false;
-                EditOrderAmtTextBox.Enabled = false;
             }
             else
             {
@@ -614,6 +681,7 @@ namespace ReorderPointSystem
                         ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
                         ItemDescriptionTextBox.Text = selectedItem.Description;
                         CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+                        EnableReorderChkbx.Checked = selectedItem.ReorderEnabled;
                     }
                 }
             }
@@ -621,11 +689,14 @@ namespace ReorderPointSystem
 
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
+            // Add all items into a single reorder
+            Reorder reorder = new Reorder();
             foreach (Item item in pendingOrder)
             {
-                Reorder reorder = new Reorder(item.Id, item.MaxAmount);
-                controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+                reorder.Items.Add(new ReorderItem(item.Id, item.MaxAmount));
             }
+            controller.GetInventoryManager().GetReorderRepository().Add(reorder);
+
             LoadOrders();
             DeletePendingOrderBtn_Click(sender, e);
         }
@@ -634,6 +705,7 @@ namespace ReorderPointSystem
         {
             if (PendingOrderListBox.SelectedIndex != -1)
             {
+                orderSelection = "Pending";
                 OrderItemsDataGrid.Rows.Clear();
                 foreach (Item item in pendingOrder)
                 {
@@ -682,45 +754,45 @@ namespace ReorderPointSystem
         private void CurrentOrdersListBox_Format(object sender, ListControlConvertEventArgs e)
         {
             int id = ((Reorder)e.ListItem).Id;
-            int itemId = ((Reorder)e.ListItem).ItemId;
-            int qty = ((Reorder)e.ListItem).Quantity;
+
             DateTime created = ((Reorder)e.ListItem).CreatedAt;
             String status = ((Reorder)e.ListItem).Status;
 
-            e.Value = id + " - " + qty + "x " + itemsList.Find(x => x.Id.Equals(itemId)).Name + ": " + created + " --- " + status;
-        }
-
-        private void CurrentOrdersListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (CurrentOrdersListBox.Items.Count > 0 && CurrentOrdersListBox.SelectedIndex != -1)
-            {
-                selectedReorder = reorders[CurrentOrdersListBox.SelectedIndex];
-            }
-            OrderRecievedBtn.Enabled = true;
+            e.Value = "Order " + id + ": " + created + " --- " + status;
         }
 
         private void OrderRecievedBtn_Click(object sender, EventArgs e)
         {
-            if (selectedReorder != null)
+            if (PastOrderDataGridView.SelectedRows.Count > 0)
             {
-                if (selectedReorder.Status.Equals("Pending approval"))
-                {
+                var row = PastOrderDataGridView.SelectedRows[0];
 
-                    selectedReorder.MarkComplete();
-                    Item item = itemsList.Find(x => x.Id == selectedReorder.ItemId);
-                    if (item != null)
+                if (!row.Cells["Status"].Value.Equals("Complete"))
+                {
+                    int id;
+                    int.TryParse(row.Cells["Id"].Value.ToString(), out id);
+                    Reorder reorder = controller.GetInventoryManager().GetReorderRepository().GetById(id);
+                    if (reorder != null)
                     {
-                        item.AddStock(selectedReorder.Quantity);
-                        controller.GetInventoryManager().GetItemRepository().Update(item);
-                        controller.GetInventoryManager().GetReorderRepository().Update(selectedReorder);
+                        foreach (ReorderItem reorderItem in reorder.Items)
+                        {
+                            Item item = itemsList.Find(x => x.Id == reorderItem.ItemId);
+                            if (item != null)
+                            {
+                                item.AddStock(reorderItem.Quantity);
+                                controller.GetInventoryManager().updateItem(item);
+                            }
+                        }
+                        reorder.MarkComplete();
+                        controller.GetInventoryManager().GetReorderRepository().Update(reorder);
                     }
-                    DisplayItems(itemsList);
                     LoadOrders();
+                    ReloadDB();
 
                 }
                 else
                 {
-                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already recieved");
+                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already complete");
                 }
             }
             else
@@ -729,6 +801,31 @@ namespace ReorderPointSystem
             }
         }
 
+        private void PastOrderDataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            if (PastOrderDataGridView.SelectedRows.Count > 0)
+            {
+                EditOrderAmtBtn.Enabled = false;
+                EditOrderAmtTextBox.Enabled = false;
+                orderSelection = "Past";
+                var row = PastOrderDataGridView.SelectedRows[0];
+                int id;
+                int.TryParse(row.Cells["Id"].Value.ToString(), out id);
+                List<ReorderItem> items = controller.GetInventoryManager().GetReorderRepository().GetById(id).Items;
+                OrderItemsDataGrid.Rows.Clear();
+                foreach ( ReorderItem item in items )
+                {
+                    OrderItemsDataGrid.Rows.Add(item.ItemId, itemsList.Find(x => x.Id == item.ItemId).Name, item.Quantity);
+                }
+                if (!row.Cells["Status"].Value.Equals("Complete"))
+                {
+                    OrderRecievedBtn.Enabled = true;
+                } else
+                {
+                    OrderRecievedBtn.Enabled = false;
+                }
+            }
+        }
         private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
         {
             string newCategoryName = NewCategoryTextBox.Text.Trim();

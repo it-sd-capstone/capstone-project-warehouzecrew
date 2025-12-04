@@ -26,12 +26,29 @@ namespace ReorderPointSystem.Tests.Models
             var item = GenerateTestItem();
             item.CurrentAmount = 5;
             item.ReorderPoint = 10;
+            item.ReorderEnabled = true;
 
             // Act
             var result = item.NeedsReorder();
 
             // Assert
             Assert.True(result);
+        }
+
+        [Fact]
+        public void NeedsReorder_WhenNeedsReorderButReorderedDisabled_ReturnsFalse()
+        {
+            // Arrange
+            var item = GenerateTestItem();
+            item.CurrentAmount = 5;
+            item.ReorderPoint = 10;
+            item.ReorderEnabled = false;
+
+            // Act
+            var result = item.NeedsReorder();
+
+            // Assert
+            Assert.True(!result);
         }
 
         [Fact]
@@ -71,6 +88,7 @@ namespace ReorderPointSystem.Tests.Models
             var item = GenerateTestItem();
             item.CurrentAmount = 0;
             item.ReorderPoint = 10;
+            item.ReorderEnabled = true;
 
             // Act
             var result = item.NeedsReorder();
