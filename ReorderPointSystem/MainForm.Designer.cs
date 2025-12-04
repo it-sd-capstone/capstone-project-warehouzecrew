@@ -122,6 +122,7 @@
             ItemInfoGroupBox.Controls.Add(AddNewCatLabel);
             ItemInfoGroupBox.Controls.Add(AddNewCatCheckBox);
             ItemInfoGroupBox.Controls.Add(SubmitNewCategoryBtn);
+            ItemInfoGroupBox.Controls.Add(EditItemBtn);
             ItemInfoGroupBox.Controls.Add(NewCategoryTextBox);
             ItemInfoGroupBox.Controls.Add(CategoryComboBoxLabel);
             ItemInfoGroupBox.Controls.Add(CategoryComboBox);
@@ -235,9 +236,9 @@
             // 
             // DeleteItemBtn
             // 
-            DeleteItemBtn.Location = new Point(691, 224);
+            DeleteItemBtn.Location = new Point(691, 237);
             DeleteItemBtn.Name = "DeleteItemBtn";
-            DeleteItemBtn.Size = new Size(114, 59);
+            DeleteItemBtn.Size = new Size(114, 46);
             DeleteItemBtn.TabIndex = 11;
             DeleteItemBtn.Text = "Delete Item";
             DeleteItemBtn.UseVisualStyleBackColor = true;
@@ -245,9 +246,9 @@
             // 
             // ClearFieldsBtn
             // 
-            ClearFieldsBtn.Location = new Point(691, 159);
+            ClearFieldsBtn.Location = new Point(691, 185);
             ClearFieldsBtn.Name = "ClearFieldsBtn";
-            ClearFieldsBtn.Size = new Size(114, 59);
+            ClearFieldsBtn.Size = new Size(114, 46);
             ClearFieldsBtn.TabIndex = 10;
             ClearFieldsBtn.Text = "Clear Fields";
             ClearFieldsBtn.UseVisualStyleBackColor = true;
@@ -255,9 +256,9 @@
             // 
             // SubmitItemBtn
             // 
-            SubmitItemBtn.Location = new Point(691, 94);
+            SubmitItemBtn.Location = new Point(691, 81);
             SubmitItemBtn.Name = "SubmitItemBtn";
-            SubmitItemBtn.Size = new Size(114, 59);
+            SubmitItemBtn.Size = new Size(114, 46);
             SubmitItemBtn.TabIndex = 9;
             SubmitItemBtn.Text = "Submit Item";
             SubmitItemBtn.UseVisualStyleBackColor = true;
@@ -359,7 +360,6 @@
             ItemsListGroupBox.Controls.Add(SortByComboBox);
             ItemsListGroupBox.Controls.Add(RefreshButton);
             ItemsListGroupBox.Controls.Add(AddToOrderBtn);
-            ItemsListGroupBox.Controls.Add(EditItemBtn);
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
             ItemsListGroupBox.Location = new Point(12, 309);
@@ -412,7 +412,7 @@
             // 
             // AddToOrderBtn
             // 
-            AddToOrderBtn.Location = new Point(417, 373);
+            AddToOrderBtn.Location = new Point(213, 373);
             AddToOrderBtn.Name = "AddToOrderBtn";
             AddToOrderBtn.Size = new Size(393, 23);
             AddToOrderBtn.TabIndex = 4;
@@ -422,11 +422,11 @@
             // 
             // EditItemBtn
             // 
-            EditItemBtn.Location = new Point(6, 373);
+            EditItemBtn.Location = new Point(691, 133);
             EditItemBtn.Name = "EditItemBtn";
-            EditItemBtn.Size = new Size(393, 23);
+            EditItemBtn.Size = new Size(114, 46);
             EditItemBtn.TabIndex = 3;
-            EditItemBtn.Text = "Edit The Highlighted Item";
+            EditItemBtn.Text = "Edit Item";
             EditItemBtn.UseVisualStyleBackColor = true;
             EditItemBtn.Click += EditItemBtn_Click;
             // 
