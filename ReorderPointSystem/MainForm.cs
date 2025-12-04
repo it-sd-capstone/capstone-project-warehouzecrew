@@ -23,6 +23,8 @@ namespace ReorderPointSystem
 
         public MainForm()
         {
+            Database.Initialize();
+
             InitializeComponent();
 
             LoadCategories();
@@ -183,17 +185,18 @@ namespace ReorderPointSystem
         // helper function to load all current categories on form load
         private void LoadCategories()
         {
-            CategoryRepository cats = new CategoryRepository();
-            categories = cats.GetAll();
+            CategoryRepository repo = new CategoryRepository();
+            categories = repo.GetAll();
 
-            CategoryComboBox.DisplayMember = "Name";
-            CategoryComboBox.ValueMember = "Id";
+            CategoryComboBox.DataSource = null;
             CategoryComboBox.DataSource = categories;
+            CategoryComboBox.ValueMember = "Id";
+            CategoryComboBox.DisplayMember = "Name";
 
-            // Build a dictionary to connect CategoryID to CategoryName
-
+            // Build category → name lookup correctly
             categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
         }
+
 
         // Helper function to load Orders on form load
         private void LoadOrders()
@@ -208,7 +211,6 @@ namespace ReorderPointSystem
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Database.Initialize();
             ReloadDB();
             LoadCategories();
             LoadOrders();
@@ -235,21 +237,32 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            SQLiteConnection conn = Database.GetConnection();
-            Random rand = new Random();
-            foreach (Item item in itemsList)
+            using (SQLiteConnection conn = Database.GetConnection())
             {
-                int num = rand.Next(100);
-                if (num >= 50)
+                Random rand = new Random();
+
+                foreach (Item item in itemsList)
                 {
-                    int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
-                    String updateStr = "UPDATE items SET current_amount = \'" + decrease + "\' WHERE id = \'" + item.Id + "\'";
-                    SQLiteCommand cmd = new SQLiteCommand(updateStr, conn);
-                    cmd.ExecuteNonQuery();
+                    int num = rand.Next(100);
+                    if (num >= 50)
+                    {
+                        int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
+                        string updateStr = "UPDATE items SET current_amount = @decrease WHERE id = @id";
+                        using (SQLiteCommand cmd = new SQLiteCommand(updateStr, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@decrease", decrease);
+                            cmd.Parameters.AddWithValue("@id", item.Id);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
+
+            LoadCategories();
+
             ReloadDB();
         }
+
 
         // Insert dummy records into the DB for testing purposes
         private void AddTestDataBtn_Click(object sender, EventArgs e)
@@ -551,8 +564,8 @@ namespace ReorderPointSystem
 
         private void DisplayItems(List<Item> items)
         {
-            if (categoryLookup == null)
-                LoadCategories();
+            if (categoryLookup == null || categoryLookup.Count == 0)
+            LoadCategories();
 
             ItemsGridView.Rows.Clear();
 
@@ -560,8 +573,8 @@ namespace ReorderPointSystem
             {
                 // Retrieve the Category Name from lookup
                 string categoryName = categoryLookup.ContainsKey(item.CategoryId)
-                                        ? categoryLookup[item.CategoryId]
-                                        : "Unknown";
+                    ? categoryLookup[item.CategoryId]
+                    : "Unknown";
 
                 // Add the categoryName instead of CategoryId
                 ItemsGridView.Rows.Add(
