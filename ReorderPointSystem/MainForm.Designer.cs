@@ -199,9 +199,9 @@
             // NewCategoryTextBox
             // 
             NewCategoryTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            NewCategoryTextBox.Location = new Point(102, 110);
+            NewCategoryTextBox.Location = new Point(106, 110);
             NewCategoryTextBox.Name = "NewCategoryTextBox";
-            NewCategoryTextBox.Size = new Size(287, 29);
+            NewCategoryTextBox.Size = new Size(283, 29);
             NewCategoryTextBox.TabIndex = 8;
             NewCategoryTextBox.Visible = false;
             NewCategoryTextBox.Enter += NewCategoryTextBox_Enter;
@@ -220,9 +220,9 @@
             // 
             CategoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             CategoryComboBox.FormattingEnabled = true;
-            CategoryComboBox.Location = new Point(102, 74);
+            CategoryComboBox.Location = new Point(106, 74);
             CategoryComboBox.Name = "CategoryComboBox";
-            CategoryComboBox.Size = new Size(287, 23);
+            CategoryComboBox.Size = new Size(283, 23);
             CategoryComboBox.TabIndex = 5;
             // 
             // EnableReorderLabel
@@ -346,9 +346,9 @@
             // ItemNameTextBox
             // 
             ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameTextBox.Location = new Point(102, 32);
+            ItemNameTextBox.Location = new Point(106, 32);
             ItemNameTextBox.Name = "ItemNameTextBox";
-            ItemNameTextBox.Size = new Size(287, 29);
+            ItemNameTextBox.Size = new Size(283, 29);
             ItemNameTextBox.TabIndex = 1;
             ItemNameTextBox.Enter += ItemNameTextBox_Enter;
             ItemNameTextBox.Leave += ItemNameTextBox_Leave;
