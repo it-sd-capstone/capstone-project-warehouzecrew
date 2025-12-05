@@ -22,47 +22,7 @@ namespace ReorderPointSystem.Services
 
         public List<Item> LoadItems()
         {
-             
-            List<Item> items = new List<Item>();
-            
-            using var conn = Database.GetConnection();
-            string sqlQuery = "SELECT * FROM items";
-            SQLiteCommand cmd = new SQLiteCommand(sqlQuery, conn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
-            try
-            {
-                while (reader.Read())
-                {
-                    int id = reader.GetInt16(reader.GetOrdinal("id"));
-                    int categoryID = reader.GetInt16(reader.GetOrdinal("category_id"));
-                    string name = reader.GetString(reader.GetOrdinal("name"));
-                    string description = reader.GetString(reader.GetOrdinal("description"));
-                    int currAmt = reader.GetInt16(reader.GetOrdinal("current_amount"));
-                    int reorderPt = reader.GetInt16(reader.GetOrdinal("reorder_point"));
-                    int maxAmt = reader.GetInt16(reader.GetOrdinal("max_amount"));
-                    String created = reader.GetString(reader.GetOrdinal("created_at")).ToString();
-                    String updated = reader.GetString(reader.GetOrdinal("updated_at")).ToString();
-                    bool reorderEnabled = reader.GetBoolean(reader.GetOrdinal("reorder_enabled"));
-                    Item item = new Item(id, categoryID, name, description, currAmt, reorderPt, maxAmt, reorderEnabled);
-                    DateTime result;
-                    DateTime.TryParse(created, out result);
-                    item.CreatedAt = result;
-                    DateTime.TryParse(updated, out result);
-                    item.LastUpdatedAt = result;
-                    items.Add(item);
-                }
-            }
-            catch (Exception ex) 
-            { 
-                MessageBox.Show("Data Loading Error", ex.Message);
-            }
-            cmd.Dispose();
-            conn.Close();
-
-            /*
-            ItemRepository repository = new ItemRepository();
-            items = repository.GetAll();
-            */
+            List<Item> items = _inventoryManager.GetItemRepository().GetAll();
             return items;
         }
 
@@ -138,26 +98,20 @@ namespace ReorderPointSystem.Services
         public List<Item> ProcessLowStockReorders(List<Item> itemsIn, List<Reorder> reorders)
         {
             List<Item> itemsOut = new List<Item>();
-            foreach (Item item in itemsIn) 
-            { 
+            List<ReorderItem> reorderItems = itemsOnOrder();
+
+            foreach (Item item in itemsIn)
+            {
                 if (item.NeedsReorder())
                 {
-                    List<Reorder> matchedOrders = reorders.FindAll(x => findMatchedId(x, item));
-                    bool onOrder = false;
-                    foreach (Reorder reorder in matchedOrders)
-                    {
-                        if (reorder.Status.Equals("In process") || reorder.Status.Equals("Pending approval"))
-                        {
-                            onOrder = true;
-                        }
-                    }
-                    if (!onOrder)
+                    if (reorderItems.Find(x => x.ItemId == item.Id) == null)
                     {
                         itemsOut.Add(item);
                     }
                 }
             }
             return itemsOut;
+
         }
 
         public InventoryManager GetInventoryManager()
@@ -167,19 +121,34 @@ namespace ReorderPointSystem.Services
 
         private bool findMatchedId(Reorder o, Item item)
         {
-            // Alan 12/2/2025
-            // Please refactor. Reorder.ItemId no longer exists and instead lives inside
-            // Reorder.Items which is a list of ReorderItem which includes ItemId.
 
-            //if (o.ItemId == item.Id)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
+            foreach (ReorderItem orderItem in o.Items)
+            {
+                if (orderItem.ItemId == item.Id)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
+
+        private List<ReorderItem> itemsOnOrder()
+        {
+            List<Reorder> reorders = _inventoryManager.GetReorderRepository().GetAll();
+            List<ReorderItem> reorderItems = new List<ReorderItem>();
+            foreach (Reorder reorder in  reorders)
+            {
+                List<ReorderItem> items = _inventoryManager.GetReorderRepository().GetById(reorder.Id).Items;
+                foreach (ReorderItem item in items)
+                {
+                    if (!reorderItems.Contains(item) && !reorder.Status.Equals("Complete")) {
+                        reorderItems.Add(item);
+                    }
+                }
+            }
+            return reorderItems;
+        }
+
     }
 }
