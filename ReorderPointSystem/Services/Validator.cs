@@ -25,5 +25,22 @@
             // Ensures the integer is within allowed bounds
             return value >= min && value <= max;
         }
+
+        public static int SanitizeInt(string? input, int min = 0, int max = int.MaxValue, int fallback = -1)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return fallback;
+
+            if (!int.TryParse(input, out int value))
+                return fallback;
+
+            if (value < min)
+                return min;
+
+            if (value > max)
+                return max;
+
+            return value;
+        }
     }
 }
