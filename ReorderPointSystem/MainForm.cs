@@ -540,6 +540,7 @@ namespace ReorderPointSystem
             CurrentQtyTextBox.Text = string.Empty;
             ReorderPointTextBox.Text = string.Empty;
             ReorderMaxTextBox.Text = string.Empty;
+            ItemDescriptionTextBox.Text = string.Empty;
             selectedItem = null;
             EnableProductInfoOptions();
             DeleteItemBtn.Enabled = false;
