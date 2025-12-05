@@ -486,6 +486,7 @@
             PastOrderDataGridView.MultiSelect = false;
             PastOrderDataGridView.Name = "PastOrderDataGridView";
             PastOrderDataGridView.ReadOnly = true;
+            PastOrderDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             PastOrderDataGridView.Size = new Size(393, 344);
             PastOrderDataGridView.TabIndex = 9;
             PastOrderDataGridView.SelectionChanged += PastOrderDataGridView_SelectionChanged;
@@ -513,6 +514,7 @@
             OrderItemsDataGrid.MultiSelect = false;
             OrderItemsDataGrid.Name = "OrderItemsDataGrid";
             OrderItemsDataGrid.ReadOnly = true;
+            OrderItemsDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             OrderItemsDataGrid.Size = new Size(393, 151);
             OrderItemsDataGrid.TabIndex = 8;
             OrderItemsDataGrid.SelectionChanged += OrderItemsDataGrid_SelectionChanged;
