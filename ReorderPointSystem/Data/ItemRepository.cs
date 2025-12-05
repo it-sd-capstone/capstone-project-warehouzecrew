@@ -54,7 +54,7 @@ namespace ReorderPointSystem.Data
             return MapReaderToItem(reader);
         }
 
-        public Item Add(Item item)
+        public Item Add(Item item, bool ignoreLog = false)
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
@@ -77,6 +77,14 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
 
             int newId = Convert.ToInt32(command.ExecuteScalar());
+            
+            if (!ignoreLog)
+            {
+                InventoryLogRepository logRepository = new InventoryLogRepository();
+                InventoryLog newLog = new InventoryLog(newId, item.CurrentAmount, "Item created");
+                logRepository.Add(newLog);
+            }
+
             return new Item
             {
                 Id = newId,
@@ -92,12 +100,31 @@ namespace ReorderPointSystem.Data
             };
         }
 
-        public bool Update(Item item)
+        public bool Update(Item item, bool ignoreLog = false)
         {
             if (item.IsDeleted) return false;
 
+            int previousQuantity = 0;
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
+
+            // Get previous quantity for inventory log
+            if (!ignoreLog)
+            {
+                command.CommandText = @"
+                    SELECT current_amount
+                    FROM items
+                    WHERE id = @Id
+                ";
+                command.Parameters.AddWithValue("@Id", item.Id);
+
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    previousQuantity = reader.GetInt32(0);
+                }
+            }
+
             command.CommandText = @"
                 UPDATE items
                 SET category_id = @CategoryId,
@@ -121,8 +148,18 @@ namespace ReorderPointSystem.Data
             command.Parameters.AddWithValue("@LastUpdatedAt", currentDateTime);
             command.Parameters.AddWithValue("@Id", item.Id);
 
+            bool result = command.ExecuteNonQuery() > 0;
+
+            // Add inventory log
+            if (!ignoreLog && result)
+            {
+                InventoryLogRepository logRepository = new InventoryLogRepository();
+                InventoryLog newLog = new InventoryLog(item.Id, item.CurrentAmount - previousQuantity, "Item updated");
+                logRepository.Add(newLog);
+            }
+
             // Returns true if successful
-            return command.ExecuteNonQuery() > 0;
+            return result;
         }
 
         public bool Delete(int id)
