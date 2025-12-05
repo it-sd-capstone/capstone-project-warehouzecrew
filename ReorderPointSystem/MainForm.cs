@@ -150,7 +150,8 @@ namespace ReorderPointSystem
             DeleteItemBtn.Enabled = false;
             CategoryComboBox.Enabled = false;
             ClearFieldsBtn.Enabled = true;
-            AddNewCatCheckBox.Enabled = false;
+            AddNewCatCheckBox.Enabled = true;
+            ItemDescriptionTextBox.Enabled = false;
         }
 
         // Helper function to enable editing item information
@@ -165,6 +166,7 @@ namespace ReorderPointSystem
             DeleteItemBtn.Enabled = true;
             CategoryComboBox.Enabled = true;
             AddNewCatCheckBox.Enabled = true;
+            ItemDescriptionTextBox.Enabled = true;
         }
 
         // Helper function to reload data from the DB after an edit/delete has been made
@@ -521,6 +523,7 @@ namespace ReorderPointSystem
                     ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
                     ItemDescriptionTextBox.Text = selectedItem.Description;
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
+                    ItemDescriptionTextBox.Text = selectedItem.Description;
 
                     EnableProductInfoOptions();
 
@@ -682,6 +685,7 @@ namespace ReorderPointSystem
                         ItemDescriptionTextBox.Text = selectedItem.Description;
                         CategoryComboBox.SelectedValue = selectedItem.CategoryId;
                         EnableReorderChkbx.Checked = selectedItem.ReorderEnabled;
+                        ItemDescriptionTextBox.Text = selectedItem.Description;
                     }
                 }
             }
