@@ -26,13 +26,11 @@ namespace ReorderPointSystem
         public MainForm()
         {
             Database.Initialize();
-
             InitializeComponent();
-
             LoadCategories();
-
             SetupGridColumns();
-            
+            ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
+
         }
         private void SetupGridColumns()
         {
@@ -109,7 +107,7 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Add(nameColumn);
             ItemsGridView.Columns.Add(qtyColumn);
             ItemsGridView.Columns.Add(catColumn);
-            
+
 
             OrderItemsDataGrid.Columns.Add(orderItemIdColumn);
             OrderItemsDataGrid.Columns.Add(OrderItemNameColumn);
@@ -181,7 +179,7 @@ namespace ReorderPointSystem
         private async Task CheckReorders()
         {
             await Task.Delay(7000);
-            
+
             pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
             if (manualOrderItems != null && manualOrderItems.Count > 0)
             {
@@ -233,6 +231,10 @@ namespace ReorderPointSystem
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
+            EnableDoubleBuffering(ItemsGridView);
+            EnableDoubleBuffering(PastOrderDataGridView);
+            EnableDoubleBuffering(OrderItemsDataGrid);
+
             ReloadDB();
             LoadCategories();
             LoadOrders();
@@ -635,7 +637,7 @@ namespace ReorderPointSystem
         private void DisplayItems(List<Item> items)
         {
             if (categoryLookup == null || categoryLookup.Count == 0)
-            LoadCategories();
+                LoadCategories();
 
             ItemsGridView.Rows.Clear();
 
@@ -651,7 +653,7 @@ namespace ReorderPointSystem
                     item.Id,
                     item.Name,
                     item.CurrentAmount,
-                    categoryName       
+                    categoryName
                 );
             }
 
@@ -817,14 +819,15 @@ namespace ReorderPointSystem
                 int.TryParse(row.Cells["Id"].Value.ToString(), out id);
                 List<ReorderItem> items = controller.GetInventoryManager().GetReorderRepository().GetById(id).Items;
                 OrderItemsDataGrid.Rows.Clear();
-                foreach ( ReorderItem item in items )
+                foreach (ReorderItem item in items)
                 {
                     OrderItemsDataGrid.Rows.Add(item.ItemId, itemsList.Find(x => x.Id == item.ItemId).Name, item.Quantity);
                 }
                 if (!row.Cells["Status"].Value.Equals("Complete"))
                 {
                     OrderRecievedBtn.Enabled = true;
-                } else
+                }
+                else
                 {
                     OrderRecievedBtn.Enabled = false;
                 }
@@ -933,6 +936,27 @@ namespace ReorderPointSystem
         private void NewCategoryTextBox_Leave(object sender, EventArgs e)
         {
             SetPlaceholder();
+        }
+
+        // DoubleBuffer
+        private void EnableDoubleBuffering(DataGridView dataGridView)
+        {
+            typeof(DataGridView)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .SetValue(dataGridView, true, null);
+
+            dataGridView.EnableHeadersVisualStyles = false;
+        }
+
+        // On pressing "Enter" in the search box, trigger to trigger the search
+        private void ItemSearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SearchBtn_Click(sender, e);
+
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }

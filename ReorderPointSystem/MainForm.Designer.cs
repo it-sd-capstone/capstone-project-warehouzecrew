@@ -410,6 +410,7 @@
             ItemSearchTextBox.Name = "ItemSearchTextBox";
             ItemSearchTextBox.Size = new Size(312, 23);
             ItemSearchTextBox.TabIndex = 15;
+            ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
             // 
             // SearchBtn
             // 
