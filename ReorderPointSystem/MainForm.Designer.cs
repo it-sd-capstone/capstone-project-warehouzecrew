@@ -161,9 +161,9 @@
             AddNewCatLabel.AutoSize = true;
             AddNewCatLabel.Location = new Point(433, 85);
             AddNewCatLabel.Name = "AddNewCatLabel";
-            AddNewCatLabel.Size = new Size(108, 15);
+            AddNewCatLabel.Size = new Size(78, 15);
             AddNewCatLabel.TabIndex = 0;
-            AddNewCatLabel.Text = "Add new category?";
+            AddNewCatLabel.Text = "Add category";
             // 
             // AddNewCatCheckBox
             // 
@@ -230,9 +230,9 @@
             EnableReorderLabel.AutoSize = true;
             EnableReorderLabel.Location = new Point(433, 64);
             EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(161, 15);
+            EnableReorderLabel.Size = new Size(143, 15);
             EnableReorderLabel.TabIndex = 0;
-            EnableReorderLabel.Text = "Allow automated reordering?";
+            EnableReorderLabel.Text = "Disable automatic reorder";
             // 
             // EnableReorderChkbx
             // 
@@ -356,10 +356,10 @@
             // ItemNameLabel
             // 
             ItemNameLabel.AutoSize = true;
-            ItemNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameLabel.Location = new Point(10, 36);
+            ItemNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ItemNameLabel.Location = new Point(31, 41);
             ItemNameLabel.Name = "ItemNameLabel";
-            ItemNameLabel.Size = new Size(90, 21);
+            ItemNameLabel.Size = new Size(69, 15);
             ItemNameLabel.TabIndex = 0;
             ItemNameLabel.Text = "Item Name:";
             // 
