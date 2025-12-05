@@ -211,8 +211,21 @@ namespace ReorderPointSystem
             CategoryComboBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "Name";
 
-            // Build category, essential for proper name lookup 
             categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
+
+            // Reset UI state after delete
+            DeleteCatCheckBox.Checked = false;
+            AddNewCatCheckBox.Checked = false;
+
+            SubmitNewCategoryBtn.Visible = false;
+            SubmitNewCategoryBtn.Text = "Submit New Category";
+
+            NewCategoryTextBox.Visible = false;
+            NewCategoryTextBox.Text = string.Empty;
+            NewCategoryNameLabel.Visible = false;
+
+            CategoryComboBox.Enabled = true;
+            CategoryComboBox.SelectedIndex = 0;
         }
 
 
@@ -270,7 +283,6 @@ namespace ReorderPointSystem
             dataGridView.EnableHeadersVisualStyles = false;
         }
 
-
         /*****  Event Handlers  *****/
 
         // Form load events, all will happen before the form displays to the user
@@ -279,6 +291,7 @@ namespace ReorderPointSystem
             EnableDoubleBuffering(ItemsGridView);
             EnableDoubleBuffering(PastOrderDataGridView);
             EnableDoubleBuffering(OrderItemsDataGrid);
+            DeleteCatCheckBox.Checked = false;
 
             ReloadDB();
             LoadCategories();
@@ -441,91 +454,97 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-            if (selectedItem != null)
-            {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                int reorderEnabled;
-                int id = selectedItem.Id;
-                String name = ItemNameTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                String description = ItemDescriptionTextBox.Text;
-                if (EnableReorderChkbx.Checked)
-                {
-                    reorderEnabled = 1;
-                }
-                else
-                {
-                    reorderEnabled = 0;
-                }
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
-                {
-                    String sql = "UPDATE items SET name = '" + name +
-                        "', current_amount = '" + curAmt +
-                        "', reorder_point = '" + reorderPt +
-                        "', max_amount = '" + maxAmt +
-                        "', reorder_enabled = '" + reorderEnabled +
-                        "', description = '" + ItemDescriptionTextBox.Text +
-                        "', updated_at = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                        "', category_id = '" + CategoryComboBox.SelectedValue +
-                        "' WHERE id = '" + id + "'";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                }
-            }
+            int curAmt, reorderPt, maxAmt, reorderEnabled;
+            string name = ItemNameTextBox.Text.Trim();
+            string description = ItemDescriptionTextBox.Text.Trim();
+            // To prevent cue banner from being accepted as valid input
+            string placeholder = "Enter item name";
+
+            bool isValidCur = int.TryParse(CurrentQtyTextBox.Text, out curAmt);
+            bool isValidReorder = int.TryParse(ReorderPointTextBox.Text, out reorderPt);
+            bool isValidMax = int.TryParse(ReorderMaxTextBox.Text, out maxAmt);
+
+            if (EnableReorderChkbx.Checked)
+                reorderEnabled = 1;
             else
+                reorderEnabled = 0;
+
+            // Checking for valid item name
+            if (string.IsNullOrEmpty(name) || name == placeholder)
             {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                int reorderEnabled;
-                String name = ItemNameTextBox.Text;
-                String description = ItemDescriptionTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                if (EnableReorderChkbx.Checked)
-                {
-                    reorderEnabled = 1;
-                }
-                else
-                {
-                    reorderEnabled = 0;
-                }
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
-                {
-                    String sql = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at) " +
-                    "VALUES ('" + CategoryComboBox.SelectedValue +
-                    "', '" + name +
-                    "', '" + description +
-                    "', '" + curAmt +
-                    "', '" + reorderPt +
-                    "', '" + reorderEnabled +
-                    "', '" + maxAmt +
-                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                    "');";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                }
+                MessageBox.Show("Item name cannot be empty.", "Invalid Input");
+                return;
             }
 
+            // Checking for valid numeric fields
+            if (!isValidCur || !isValidReorder || !isValidMax)
+            {
+                MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
+                return;
+            }
+
+            // Checking for negative values
+            if (curAmt < 0)
+            {
+                MessageBox.Show("Current quantity cannot be negative.", "Invalid Input");
+                return;
+            }
+
+            if (maxAmt < 0)
+            {
+                MessageBox.Show("Maximum quantity cannot be negative.", "Invalid Input");
+                return;
+            }
+
+            using (SQLiteConnection conn = Database.GetConnection())
+            {
+                SQLiteCommand cmd = new SQLiteCommand();
+                cmd.Connection = conn;
+
+                if (selectedItem != null)
+                {
+                    cmd.CommandText = "UPDATE items SET " +
+                                      "name = @name, " +
+                                      "current_amount = @curAmt, " +
+                                      "reorder_point = @reorderPt, " +
+                                      "max_amount = @maxAmt, " +
+                                      "reorder_enabled = @reorderEnabled, " +
+                                      "description = @description, " +
+                                      "updated_at = @updatedAt, " +
+                                      "category_id = @categoryId " +
+                                      "WHERE id = @id";
+
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@curAmt", curAmt);
+                    cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
+                    cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
+                    cmd.Parameters.AddWithValue("@reorderEnabled", reorderEnabled);
+                    cmd.Parameters.AddWithValue("@description", description);
+                    cmd.Parameters.AddWithValue("@updatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.Parameters.AddWithValue("@categoryId", CategoryComboBox.SelectedValue);
+                    cmd.Parameters.AddWithValue("@id", selectedItem.Id);
+                }
+                else
+                {
+                    cmd.CommandText = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at) " +
+                                      "VALUES (@categoryId, @name, @description, @curAmt, @reorderPt, @reorderEnabled, @maxAmt, @createdAt, @updatedAt)";
+
+                    cmd.Parameters.AddWithValue("@categoryId", CategoryComboBox.SelectedValue);
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@description", description);
+                    cmd.Parameters.AddWithValue("@curAmt", curAmt);
+                    cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
+                    cmd.Parameters.AddWithValue("@reorderEnabled", reorderEnabled);
+                    cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
+                    cmd.Parameters.AddWithValue("@createdAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.Parameters.AddWithValue("@updatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+
+                cmd.ExecuteNonQuery();
+            }
+            LoadCategories();
             ReloadDB();
         }
-
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
         private void ClearFieldsBtn_Click(object sender, EventArgs e)
@@ -540,9 +559,10 @@ namespace ReorderPointSystem
             CurrentQtyTextBox.Text = string.Empty;
             ReorderPointTextBox.Text = string.Empty;
             ReorderMaxTextBox.Text = string.Empty;
+            ItemDescriptionTextBox.Text = string.Empty;
             selectedItem = null;
             EnableProductInfoOptions();
-            DeleteItemBtn.Enabled = false;
+            LoadCategories();
         }
 
         // Remove the selected item from the Items DB, If an item is selected
@@ -560,6 +580,7 @@ namespace ReorderPointSystem
             {
                 MessageBox.Show("You must select an item before you can delete it.", "Error - No selected Item");
             }
+            LoadCategories();
             ReloadDB();
         }
 
@@ -576,7 +597,6 @@ namespace ReorderPointSystem
 
                 if (selectedItem != null)
                 {
-                    // Only disable placeholder for THIS textbox
                     isEditingItemName = true;
 
                     ItemNameTextBox.Text = selectedItem.Name;
@@ -598,10 +618,75 @@ namespace ReorderPointSystem
             {
                 MessageBox.Show("You must select an item before you can edit it.", "Error - No selected Item");
             }
+
+            LoadCategories();
         }
 
         private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
         {
+            if (SubmitNewCategoryBtn.Text == "Delete Category")
+            {
+                if (CategoryComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("No category selected to delete.", "Error");
+                    return;
+                }
+
+                string selectedCategoryName = CategoryComboBox.Text;
+                int selectedCategoryId = (int)CategoryComboBox.SelectedValue;
+
+                if (selectedCategoryName == "General")
+                {
+                    MessageBox.Show("The 'General' category cannot be deleted.", "Protected Category");
+                    return;
+                }
+
+                DialogResult result = MessageBox.Show(
+                    $"Are you sure you want to delete the category '{selectedCategoryName}'?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+                if (result == DialogResult.No)
+                    return;
+
+                using (SQLiteConnection conn = Database.GetConnection())
+                {
+                    string checkItemsSql = "SELECT COUNT(*) FROM items WHERE category_id = @id";
+                    using (SQLiteCommand checkItemsCmd = new SQLiteCommand(checkItemsSql, conn))
+                    {
+                        checkItemsCmd.Parameters.AddWithValue("@id", selectedCategoryId);
+                        long count = (long)checkItemsCmd.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            MessageBox.Show(
+                                "You cannot delete this category because items are still assigned to it.\n" +
+                                "Move or delete those items first.",
+                                "Delete Blocked",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                            return;
+                        }
+                    }
+
+                    string deleteSql = "DELETE FROM categories WHERE id = @id";
+                    using (SQLiteCommand deleteCmd = new SQLiteCommand(deleteSql, conn))
+                    {
+                        deleteCmd.Parameters.AddWithValue("@id", selectedCategoryId);
+                        deleteCmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show($"Category '{selectedCategoryName}' deleted successfully.");
+
+                LoadCategories();
+
+                return;
+            }
+
             string newCategoryName = NewCategoryTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(newCategoryName))
@@ -633,40 +718,66 @@ namespace ReorderPointSystem
                 }
             }
 
+            MessageBox.Show($"Category '{newCategoryName}' added successfully!");
             LoadCategories();
-
-            if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
-            {
-                CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
-            }
-
-            AddNewCatCheckBox.Checked = false;
-
-            MessageBox.Show($"Category '{newCategoryName}' added successfully!", "Success");
         }
-
 
         private void AddNewCategory_CheckChanged(object sender, EventArgs e)
         {
             if (AddNewCatCheckBox.Checked)
             {
                 NewCategoryTextBox.Visible = true;
-                SubmitNewCategoryBtn.Visible = true;
                 NewCategoryNameLabel.Visible = true;
 
                 CategoryComboBox.Enabled = false;
+
+                SubmitNewCategoryBtn.Visible = true;
+                DeleteCatCheckBox.Checked = false;
+                SubmitNewCategoryBtn.Text = "Submit New Category";
             }
             else
             {
                 NewCategoryTextBox.Visible = false;
-                SubmitNewCategoryBtn.Visible = false;
                 NewCategoryNameLabel.Visible = false;
+                NewCategoryTextBox.Text = string.Empty;
 
                 CategoryComboBox.Enabled = true;
 
-                NewCategoryTextBox.Text = String.Empty;
+                SubmitNewCategoryBtn.Visible = DeleteCatCheckBox.Checked;
+
+                if (DeleteCatCheckBox.Checked)
+                    SubmitNewCategoryBtn.Text = "Delete Category";
+                else
+                    SubmitNewCategoryBtn.Text = "Submit New Category";
             }
+
             SetPlaceholder();
+        }
+
+        private void NewCategoryTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SubmitNewCategoryBtn_Click(sender, e);
+
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void DeleteCatCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            SubmitNewCategoryBtn.Visible = AddNewCatCheckBox.Checked || DeleteCatCheckBox.Checked;
+
+            if (DeleteCatCheckBox.Checked)
+            {
+                SubmitNewCategoryBtn.Text = "Delete Category";
+            }
+            else
+            {
+                SubmitNewCategoryBtn.Text = "Submit New Category";
+
+                AddNewCategory_CheckChanged(AddNewCatCheckBox, EventArgs.Empty);
+            }
         }
 
         // Placeholder text logic for textboxes
@@ -705,6 +816,14 @@ namespace ReorderPointSystem
             SetPlaceholder();
         }
 
+        private void ReorderPointTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
         /*****  Items List Panel Events  *****/
 
         // Handling selection change in the ItemsGridView to display item details
@@ -733,6 +852,8 @@ namespace ReorderPointSystem
                     }
                 }
             }
+
+            DeleteCatCheckBox.Checked = false;
         }
 
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
