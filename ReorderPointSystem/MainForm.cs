@@ -10,7 +10,7 @@ namespace ReorderPointSystem
     public partial class MainForm : Form
     {
 
-        private List<Item> itemsList;
+        private List<Item> itemsList = new List<Item>();
         private List<Item> pendingOrder;
         private List<Item> manualOrderItems;
         private List<Category> categories;
@@ -167,10 +167,11 @@ namespace ReorderPointSystem
             ItemDescriptionTextBox.Enabled = true;
         }
 
-        // Helper function to reload data from the DB after an edit/delete has been made
-        private void ReloadDB()
+        // Helper function to reload items
+        private void LoadItems()
         {
-            itemsList = controller.LoadItems();
+            itemsList.Clear();
+            itemsList.AddRange(controller.LoadItems());
             DisplayItems(itemsList);
             SetPlaceholder();
         }
@@ -234,6 +235,7 @@ namespace ReorderPointSystem
                 LoadCategories();
 
             ItemsGridView.Rows.Clear();
+            ItemsGridView.SuspendLayout();
 
             foreach (var item in items)
             {
@@ -250,6 +252,8 @@ namespace ReorderPointSystem
                     categoryName
                 );
             }
+
+            ItemsGridView.ResumeLayout();
 
             // Select the first row if available
             if (ItemsGridView.Rows.Count > 0)
@@ -280,12 +284,11 @@ namespace ReorderPointSystem
             EnableDoubleBuffering(PastOrderDataGridView);
             EnableDoubleBuffering(OrderItemsDataGrid);
 
-            ReloadDB();
+            LoadItems();
             LoadCategories();
             LoadOrders();
             CheckReorders();
             ClearFieldsBtn_Click(sender, e);
-            SetPlaceholder();
         }
 
         /***** Simulation Mode Events *****/
@@ -330,7 +333,7 @@ namespace ReorderPointSystem
             }
 
             LoadCategories();
-            ReloadDB();
+            LoadItems();
         }
 
 
@@ -523,7 +526,7 @@ namespace ReorderPointSystem
                 }
             }
 
-            ReloadDB();
+            LoadItems();
         }
 
 
@@ -560,7 +563,7 @@ namespace ReorderPointSystem
             {
                 MessageBox.Show("You must select an item before you can delete it.", "Error - No selected Item");
             }
-            ReloadDB();
+            LoadItems();
         }
 
         // Enables the controls in the ItemInfoGroupBox for editing
@@ -738,31 +741,28 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            itemsList = controller.SearchItems(ItemSearchTextBox.Text);
-
-            if (categoryLookup == null || categoryLookup.Count == 0)
-                LoadCategories();
-
-            ItemsGridView.Rows.Clear();
-
-            foreach (var item in itemsList)
+            // Fetch all items
+            if (string.IsNullOrEmpty(ItemSearchTextBox.Text))
             {
-                string categoryName = categoryLookup.ContainsKey(item.CategoryId)
-                    ? categoryLookup[item.CategoryId]
-                    : "Unknown";
-
-                ItemsGridView.Rows.Add(
-                    item.Id,
-                    item.Name,
-                    item.CurrentAmount,
-                    categoryName
-                );
+                LoadItems();
+                return;
             }
 
-            if (ItemsGridView.Rows.Count > 0)
+            // Search query
+            List<Item>? searchResults = controller.SearchItems(ItemSearchTextBox.Text);
+            if (searchResults == null)
             {
-                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
-                ItemsGridView.Rows[0].Selected = true;
+                ShowError("Invalid search input. Ensure it contains valid characters and is between 1 and 50 characters");
+            }
+            else if (searchResults.Count == 0)
+            {
+                ShowInfo("No results found");
+            }
+            else
+            {
+                itemsList.Clear();
+                itemsList.AddRange(searchResults);
+                DisplayItems(itemsList);
             }
         }
 
@@ -772,7 +772,7 @@ namespace ReorderPointSystem
             if (e.KeyCode == Keys.Enter)
             {
                 SearchBtn_Click(sender, e);
-
+                e.Handled = true;
                 e.SuppressKeyPress = true;
             }
         }
@@ -960,7 +960,7 @@ namespace ReorderPointSystem
                         controller.GetInventoryManager().GetReorderRepository().Update(reorder);
                     }
                     LoadOrders();
-                    ReloadDB();
+                    LoadItems();
 
                 }
                 else
@@ -1000,6 +1000,27 @@ namespace ReorderPointSystem
                     OrderRecievedBtn.Enabled = false;
                 }
             }
+        }
+
+        // Utility functions
+        private void ShowError(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+
+        private void ShowInfo(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Information",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
         }
     }
 }
