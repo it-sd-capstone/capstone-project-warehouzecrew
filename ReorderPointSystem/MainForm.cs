@@ -444,89 +444,85 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-            if (selectedItem != null)
+            int id = selectedItem != null ? selectedItem.Id : -1;
+            String name = ItemNameTextBox.Text;
+            String description = ItemDescriptionTextBox.Text;
+            int curAmt = Validator.SanitizeInt(CurrentQtyTextBox.Text.ToString());
+            int curCat = Validator.SanitizeInt(CategoryComboBox.SelectedValue?.ToString());
+            int reorderPt = Validator.SanitizeInt(ReorderPointTextBox.Text.ToString());
+            int maxAmt = Validator.SanitizeInt(ReorderMaxTextBox.Text.ToString());
+            bool reorderEnabled = EnableReorderChkbx.Checked;
+
+            // Validate inputs
+            if (!Validator.IsValidString(name))
             {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                int reorderEnabled;
-                int id = selectedItem.Id;
-                String name = ItemNameTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                String description = ItemDescriptionTextBox.Text;
-                if (EnableReorderChkbx.Checked)
-                {
-                    reorderEnabled = 1;
-                }
-                else
-                {
-                    reorderEnabled = 0;
-                }
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
-                {
-                    String sql = "UPDATE items SET name = '" + name +
-                        "', current_amount = '" + curAmt +
-                        "', reorder_point = '" + reorderPt +
-                        "', max_amount = '" + maxAmt +
-                        "', reorder_enabled = '" + reorderEnabled +
-                        "', description = '" + ItemDescriptionTextBox.Text +
-                        "', updated_at = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                        "', category_id = '" + CategoryComboBox.SelectedValue +
-                        "' WHERE id = '" + id + "'";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    MessageBox.Show("One of your edited fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                }
-            }
-            else
+                ShowError("Please ensure the name text field contains valid characters.");
+                return;
+            } else if (id > 0 && !Validator.IsValidInt(id))
             {
-                int curAmt;
-                int reorderPt;
-                int maxAmt;
-                int reorderEnabled;
-                String name = ItemNameTextBox.Text;
-                String description = ItemDescriptionTextBox.Text;
-                bool isValidCur = int.TryParse(CurrentQtyTextBox.Text.ToString(), out curAmt);
-                bool isValidReorder = int.TryParse(ReorderPointTextBox.Text.ToString(), out reorderPt);
-                bool isValidMax = int.TryParse(ReorderMaxTextBox.Text.ToString(), out maxAmt);
-                if (EnableReorderChkbx.Checked)
-                {
-                    reorderEnabled = 1;
-                }
-                else
-                {
-                    reorderEnabled = 0;
-                }
-                if (isValidCur && isValidMax && isValidReorder && name != String.Empty)
-                {
-                    String sql = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at) " +
-                    "VALUES ('" + CategoryComboBox.SelectedValue +
-                    "', '" + name +
-                    "', '" + description +
-                    "', '" + curAmt +
-                    "', '" + reorderPt +
-                    "', '" + reorderEnabled +
-                    "', '" + maxAmt +
-                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                    "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                    "');";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    MessageBox.Show("One of your fields is not a valid input, please revise and re-submit", "Error: Invalid Input");
-                }
+                ShowError("Internal error regarding item id");
+                return;
+            } else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
+            {
+                ShowError("Please ensure the description text field contains valid characters.");
+                return;
+            } else if (!Validator.IsValidInt(curAmt))
+            {
+                ShowError("Please ensure the current amount field contains a valid number.");
+                return;
+            } else if (!Validator.IsValidInt(curCat))
+            {
+                ShowError("Please ensure a valid category is selected.");
+                return;
+            } else if (!Validator.IsValidInt(reorderPt))
+            {
+                ShowError("Please ensure the reorder point field contains a valid number.");
+                return;
+            } else if (!Validator.IsValidInt(maxAmt))
+            {
+                ShowError("Please ensure the max amount field contains a valid number.");
+                return;
             }
 
-            LoadItems();
+            // All validations passed, proceed to add/update item
+            Item item = new Item()
+            {
+                CategoryId = curCat,
+                Name = name,
+                Description = description,
+                CurrentAmount = curAmt,
+                ReorderPoint = reorderPt,
+                MaxAmount = maxAmt,
+                ReorderEnabled = reorderEnabled
+            };
+
+            if (id.Equals(-1)) // New item
+            {
+                var result = controller.GetInventoryManager().addItem(item);
+                if (result != null)
+                {
+                    ShowSuccess("Item added successfully");
+                    LoadItems();
+                }
+                else
+                {
+                    ShowError("Internal error adding item");
+                }
+            }
+            else // Update existing item
+            {
+                item.Id = id;
+                var result = controller.GetInventoryManager().updateItem(item);
+                if (result)
+                {
+                    ShowSuccess("Item updated successfully");
+                    LoadItems();
+                }
+                else
+                {
+                    ShowError("Internal error updating item");
+                }
+            }
         }
 
 
@@ -543,6 +539,7 @@ namespace ReorderPointSystem
             CurrentQtyTextBox.Text = string.Empty;
             ReorderPointTextBox.Text = string.Empty;
             ReorderMaxTextBox.Text = string.Empty;
+            ItemDescriptionTextBox.Text = string.Empty;
             selectedItem = null;
             EnableProductInfoOptions();
             DeleteItemBtn.Enabled = false;
@@ -553,17 +550,15 @@ namespace ReorderPointSystem
         {
             if (ItemsGridView.CurrentRow != null)
             {
-                String sql = "DELETE FROM items WHERE id = \'" + selectedItem.Id + "\'";
-                Console.WriteLine(sql);
-                SQLiteConnection conn = Database.GetConnection();
-                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                cmd.ExecuteNonQuery();
+                controller.GetInventoryManager().deleteItem(selectedItem.Id);
+                LoadItems();
+                ShowSuccess("Item deleted successfully");
             }
             else
             {
-                MessageBox.Show("You must select an item before you can delete it.", "Error - No selected Item");
+                ShowError("You must select an item before you can delete it");
             }
-            LoadItems();
+            
         }
 
         // Enables the controls in the ItemInfoGroupBox for editing
@@ -1018,6 +1013,16 @@ namespace ReorderPointSystem
             MessageBox.Show(
                 message,
                 "Information",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void ShowSuccess(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Success",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );

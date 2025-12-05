@@ -48,14 +48,14 @@ namespace ReorderPointSystem.Services
             return _itemRepo.Add(item);
         }
 
-        public void updateItem(Item item)
+        public bool updateItem(Item item)
         {
-            _itemRepo.Update(item);
+            return _itemRepo.Update(item);
         }
 
-        public void deleteItem(int id)
+        public bool deleteItem(int id)
         {
-            _itemRepo.Delete(id);
+            return _itemRepo.Delete(id);
         }
 
         public Reorder generateReorder(Item item)
