@@ -30,8 +30,8 @@ namespace ReorderPointSystem
             LoadCategories();
             SetupGridColumns();
             ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
-
         }
+
         private void SetupGridColumns()
         {
             ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -287,7 +287,7 @@ namespace ReorderPointSystem
             LoadItems();
             LoadCategories();
             LoadOrders();
-            CheckReorders();
+            _ = CheckReorders();
             ClearFieldsBtn_Click(sender, e);
         }
 
@@ -435,7 +435,7 @@ namespace ReorderPointSystem
                 }
             }
 
-            MessageBox.Show("Test data inserted successfully!");
+            ShowSuccess("Test data inserted successfully!");
         }
 
         /*****  Item Info Panel Events  *****/
@@ -594,7 +594,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("You must select an item before you can edit it.", "Error - No selected Item");
+                ShowError("You must select an item before you can edit it.");
             }
         }
 
@@ -602,45 +602,29 @@ namespace ReorderPointSystem
         {
             string newCategoryName = NewCategoryTextBox.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(newCategoryName))
+            // Validate
+            if (!Validator.IsValidString(newCategoryName))
             {
-                MessageBox.Show("Please enter a category name.", "Invalid Input");
+                ShowError("Please enter a valid category name.");
                 return;
             }
 
-            using (SQLiteConnection conn = Database.GetConnection())
+            // Add category
+            var addedCategory = controller.GetInventoryManager().GetCategoryRepository().Add(new Category { Name = newCategoryName });
+            if (addedCategory == null)
             {
-                string checkSql = "SELECT COUNT(*) FROM categories WHERE name = @name";
-                using (SQLiteCommand checkCmd = new SQLiteCommand(checkSql, conn))
-                {
-                    checkCmd.Parameters.AddWithValue("@name", newCategoryName);
-                    long count = (long)checkCmd.ExecuteScalar();
-
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Category already exists.", "Duplicate Category");
-                        return;
-                    }
-                }
-
-                string insertSql = "INSERT INTO categories (name) VALUES (@name)";
-                using (SQLiteCommand insertCmd = new SQLiteCommand(insertSql, conn))
-                {
-                    insertCmd.Parameters.AddWithValue("@name", newCategoryName);
-                    insertCmd.ExecuteNonQuery();
-                }
+                ShowError("Category already exists.");
+                return;
             }
 
+            // Refresh categories
             LoadCategories();
-
             if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
             {
                 CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
             }
-
             AddNewCatCheckBox.Checked = false;
-
-            MessageBox.Show($"Category '{newCategoryName}' added successfully!", "Success");
+            ShowSuccess("Category added successfully");
         }
 
 
@@ -755,9 +739,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                itemsList.Clear();
-                itemsList.AddRange(searchResults);
-                DisplayItems(itemsList);
+                DisplayItems(searchResults);
             }
         }
 
@@ -775,44 +757,38 @@ namespace ReorderPointSystem
         // Add the highlighted item to a pending order. If no pending orders exist, also create a new pending order
         private void AddToOrderBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsGridView.CurrentRow != null)
+            if (ItemsGridView.CurrentRow != null || selectedItem != null)
             {
-                if (selectedItem != null)
+                Item copy = selectedItem;
+                if (PendingOrderListBox.Items.Count == 0)
                 {
-                    Item copy = selectedItem;
-                    if (PendingOrderListBox.Items.Count == 0)
-                    {
-                        String searchStr = "SELECT COUNT(\'id\') FROM reorders";
-                        SQLiteConnection conn = Database.GetConnection();
-                        SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
-                        int orderID;
-                        int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                        PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
-                    }
-                    if (pendingOrder == null)
-                    {
-                        pendingOrder = new List<Item> { };
-                    }
-                    pendingOrder.Add(copy);
-                    if (manualOrderItems == null)
-                    {
-                        manualOrderItems = new List<Item> { };
-                    }
-                    manualOrderItems.Add(copy);
-                    OrderItemsDataGrid.Rows.Clear();
-                    foreach (Item item in pendingOrder)
-                    {
-                        OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
-                    }
+                    String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                    int orderID;
+                    int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                    PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
                 }
-                else
+                if (pendingOrder == null)
                 {
-                    MessageBox.Show("Select an item first, please.", "Error: no item Selected");
+                    pendingOrder = new List<Item> { };
+                }
+                pendingOrder.Add(copy);
+                if (manualOrderItems == null)
+                {
+                    manualOrderItems = new List<Item> { };
+                }
+                manualOrderItems.Add(copy);
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
                 }
             }
             else
             {
-                MessageBox.Show("You must select an item before you can add it to an order.", "Error - No selected Item");
+                ShowError("You must select an item.");
+
             }
         }
 
@@ -834,7 +810,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("You must select an order before you can delete it.", "Error - No selected order");
+                ShowError("Please select an order to delete.");
             }
         }
 
@@ -862,12 +838,12 @@ namespace ReorderPointSystem
                 }
                 else
                 {
-                    MessageBox.Show("You cannot change the quantity on a past order.", "Error - can't edit past order");
+                    ShowError("You cannot change the quantity on a past order.");
                 }
             }
             else
             {
-                MessageBox.Show("You must select an item before you can edit it's order quantity.", "Error - No selected item");
+                ShowError("You must select an item before you can edit it's order quantity.");
             }
         }
 
@@ -900,7 +876,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("Error: no selected index");
+                ShowError("You must select a pending order before you can view its items.");
             }
         }
 
@@ -960,12 +936,12 @@ namespace ReorderPointSystem
                 }
                 else
                 {
-                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already complete");
+                    ShowError("You cannot receive an order that's already been received.");
                 }
             }
             else
             {
-                MessageBox.Show("You must select an order before you can recieve it.", "Error - no order selected");
+                ShowError("You must select an order before you can receive it.");
             }
         }
 
