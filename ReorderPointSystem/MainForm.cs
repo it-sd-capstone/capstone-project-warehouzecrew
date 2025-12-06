@@ -32,6 +32,44 @@ namespace ReorderPointSystem
             ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
         }
 
+
+        private void SetPlaceholder()
+        {
+            if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
+            {
+                NewCategoryTextBox.Text = "Enter new category name";
+                NewCategoryTextBox.ForeColor = Color.Gray;
+            }
+            else
+            {
+                NewCategoryTextBox.ForeColor = Color.Black;
+            }
+
+            if (!isEditingItemName)
+            {
+                if (string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+                {
+                    ItemNameTextBox.Text = "Enter item name";
+                    ItemNameTextBox.ForeColor = Color.Gray;
+                }
+                else
+                {
+                    ItemNameTextBox.ForeColor = Color.Black;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(ItemDescriptionTextBox.Text))
+            {
+                ItemDescriptionTextBox.Text = "Enter the item description here (size, color, weight, material, etc.)";
+                ItemDescriptionTextBox.ForeColor = Color.Gray;
+            }
+            else
+            {
+                ItemDescriptionTextBox.ForeColor = Color.Black;
+            }
+        }
+
+
         private void SetupGridColumns()
         {
             ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -61,7 +99,7 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
             catColumn.Name = "Category";
             catColumn.HeaderText = "Category";
-            catColumn.DataPropertyName = "CategoryID"; // Maps to Item.CategoryID property
+            catColumn.DataPropertyName = "CategoryID"; 
             catColumn.FillWeight = 20;// 20% of total width
 
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
@@ -118,23 +156,6 @@ namespace ReorderPointSystem
             PastOrderDataGridView.Columns.Add(pastOrderStatusColumn);
 
         }
-
-        private void SetPlaceholder()
-        {
-            if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
-            {
-                NewCategoryTextBox.Text = "Enter new category name";
-                NewCategoryTextBox.ForeColor = Color.Gray;
-            }
-
-            // Disables placeholder ONLY when editing ItemName
-            if (!isEditingItemName && string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
-            {
-                ItemNameTextBox.Text = "Enter item name";
-                ItemNameTextBox.ForeColor = Color.Gray;
-            }
-        }
-
 
         // Helper function to disable editing item information
         private void DisableProductInfoOptions()
@@ -201,7 +222,7 @@ namespace ReorderPointSystem
             CheckReorders();
         }
 
-        // helper function to load all current categories on form load
+        // Helper function to load all current categories on form load
         private void LoadCategories()
         {
             CategoryRepository repo = new CategoryRepository();
@@ -212,8 +233,20 @@ namespace ReorderPointSystem
             CategoryComboBox.ValueMember = "Id";
             CategoryComboBox.DisplayMember = "Name";
 
-            // Build category, essential for proper name lookup 
             categoryLookup = categories.ToDictionary(c => c.Id, c => c.Name);
+
+            DeleteCatCheckBox.Checked = false;
+            AddNewCatCheckBox.Checked = false;
+
+            SubmitNewCategoryBtn.Visible = false;
+            SubmitNewCategoryBtn.Text = "Submit New Category";
+
+            NewCategoryTextBox.Visible = false;
+            NewCategoryTextBox.Text = string.Empty;
+            NewCategoryNameLabel.Visible = false;
+
+            CategoryComboBox.Enabled = true;
+            CategoryComboBox.SelectedIndex = 0;
         }
 
 
@@ -274,9 +307,11 @@ namespace ReorderPointSystem
             dataGridView.EnableHeadersVisualStyles = false;
         }
 
+        /*----------------------------/
+        ******  Event Handlers  ******
+        /--------------------------*/
 
-        /*****  Event Handlers  *****/
-
+        /***** Form Events *****/
         // Form load events, all will happen before the form displays to the user
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -289,6 +324,12 @@ namespace ReorderPointSystem
             LoadOrders();
             _ = CheckReorders();
             ClearFieldsBtn_Click(sender, e);
+            this.BeginInvoke(new Action(() =>
+            {
+                ItemNameTextBox.Focus();
+                ItemNameTextBox.Select();
+            }));
+            
         }
 
         /***** Simulation Mode Events *****/
@@ -452,11 +493,14 @@ namespace ReorderPointSystem
             int reorderPt = Validator.SanitizeInt(ReorderPointTextBox.Text.ToString());
             int maxAmt = Validator.SanitizeInt(ReorderMaxTextBox.Text.ToString());
             bool reorderEnabled = EnableReorderChkbx.Checked;
+            string placeholder = "Enter item name";
 
             // Validate inputs
-            if (!Validator.IsValidString(name))
+            if (!Validator.IsValidString(name) || name == placeholder)
             {
                 ShowError("Please ensure the name text field contains valid characters.");
+                ItemNameTextBox.Focus();
+                ItemNameTextBox.SelectAll();
                 return;
             } else if (id > 0 && !Validator.IsValidInt(id))
             {
@@ -469,6 +513,8 @@ namespace ReorderPointSystem
             } else if (!Validator.IsValidInt(curAmt))
             {
                 ShowError("Please ensure the current amount field contains a valid number.");
+                CurrentQtyTextBox.Focus();
+                CurrentQtyTextBox.SelectAll();
                 return;
             } else if (!Validator.IsValidInt(curCat))
             {
@@ -477,10 +523,14 @@ namespace ReorderPointSystem
             } else if (!Validator.IsValidInt(reorderPt))
             {
                 ShowError("Please ensure the reorder point field contains a valid number.");
+                ReorderPointTextBox.Focus();
+                ReorderPointTextBox.SelectAll();
                 return;
             } else if (!Validator.IsValidInt(maxAmt))
             {
                 ShowError("Please ensure the max amount field contains a valid number.");
+                ReorderMaxTextBox.Focus();
+                ReorderMaxTextBox.SelectAll();
                 return;
             }
 
@@ -525,14 +575,16 @@ namespace ReorderPointSystem
             }
         }
 
-
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
         private void ClearFieldsBtn_Click(object sender, EventArgs e)
         {
-            if (ItemInfoGroupBox.Enabled == false)
-            {
+            LoadCategories();
+
+            if (!ItemInfoGroupBox.Enabled)
                 ItemInfoGroupBox.Enabled = true;
-            }
+
+            isEditingItemName = false;
+
             CategoryComboBox.SelectedIndex = 0;
             ItemNameTextBox.Text = string.Empty;
             EnableReorderChkbx.Checked = false;
@@ -542,24 +594,43 @@ namespace ReorderPointSystem
             ItemDescriptionTextBox.Text = string.Empty;
             selectedItem = null;
             EnableProductInfoOptions();
-            DeleteItemBtn.Enabled = false;
+
+            ItemNameTextBox.Focus();
+            SetPlaceholder();
         }
+
 
         // Remove the selected item from the Items DB, If an item is selected
         private void DeleteItemBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsGridView.CurrentRow != null)
+            if (selectedItem == null || string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
+            {
+                MessageBox.Show("Must select a valid item to delete first.", "Error - No valid item");
+                return;
+            }
+
+            var confirmResult = MessageBox.Show($"Are you sure you want to delete '{selectedItem.Name}'?",
+                                                "Confirm Delete",
+                                                MessageBoxButtons.YesNo);
+            if (confirmResult != DialogResult.Yes)
+                return;
+
+            try
             {
                 controller.GetInventoryManager().deleteItem(selectedItem.Id);
-                LoadItems();
                 ShowSuccess("Item deleted successfully");
+
+                // Clear form and reload
+                ClearFieldsBtn_Click(sender, e);
+                LoadCategories();
+                LoadItems();
             }
-            else
+            catch (Exception ex)
             {
-                ShowError("You must select an item before you can delete it");
+                MessageBox.Show($"Error deleting item: {ex.Message}", "Error");
             }
-            
         }
+
 
         // Enables the controls in the ItemInfoGroupBox for editing
         private void EditItemBtn_Click(object sender, EventArgs e)
@@ -567,14 +638,12 @@ namespace ReorderPointSystem
             if (ItemsGridView.SelectedRows.Count > 0)
             {
                 var row = ItemsGridView.SelectedRows[0];
-
                 int id = (int)row.Cells["Id"].Value;
 
                 selectedItem = itemsList.FirstOrDefault(item => item.Id == id);
 
                 if (selectedItem != null)
                 {
-                    // Only disable placeholder for THIS textbox
                     isEditingItemName = true;
 
                     ItemNameTextBox.Text = selectedItem.Name;
@@ -583,9 +652,21 @@ namespace ReorderPointSystem
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
                     ReorderMaxTextBox.Text = selectedItem.MaxAmount.ToString();
-                    ItemDescriptionTextBox.Text = selectedItem.Description;
+
+                    if (!string.IsNullOrWhiteSpace(selectedItem.Description))
+                    {
+                        ItemDescriptionTextBox.Text = selectedItem.Description;
+                        ItemDescriptionTextBox.ForeColor = Color.Black;
+                    }
+                    else
+                    {
+                        ItemDescriptionTextBox.Text = "Enter the item description here (size, color, weight, material, etc.)";
+                        ItemDescriptionTextBox.ForeColor = Color.Gray;
+                    }
+
+                    LoadCategories();
+
                     CategoryComboBox.SelectedValue = selectedItem.CategoryId;
-                    ItemDescriptionTextBox.Text = selectedItem.Description;
 
                     EnableProductInfoOptions();
 
@@ -598,8 +679,73 @@ namespace ReorderPointSystem
             }
         }
 
+
+
         private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
         {
+            if (SubmitNewCategoryBtn.Text == "Delete Category")
+            {
+                if (CategoryComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("No category selected to delete.", "Error");
+                    return;
+                }
+
+                string selectedCategoryName = CategoryComboBox.Text;
+                int selectedCategoryId = (int)CategoryComboBox.SelectedValue;
+
+                if (selectedCategoryName == "General")
+                {
+                    MessageBox.Show("The 'General' category cannot be deleted.", "Protected Category");
+                    return;
+                }
+
+                DialogResult result = MessageBox.Show(
+                    $"Are you sure you want to delete the category '{selectedCategoryName}'?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+                if (result == DialogResult.No)
+                    return;
+
+                using (SQLiteConnection conn = Database.GetConnection())
+                {
+                    string checkItemsSql = "SELECT COUNT(*) FROM items WHERE category_id = @id";
+                    using (SQLiteCommand checkItemsCmd = new SQLiteCommand(checkItemsSql, conn))
+                    {
+                        checkItemsCmd.Parameters.AddWithValue("@id", selectedCategoryId);
+                        long count = (long)checkItemsCmd.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            MessageBox.Show(
+                                "You cannot delete this category because items are still assigned to it.\n" +
+                                "Move or delete those items first.",
+                                "Delete Blocked",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                            return;
+                        }
+                    }
+
+                    string deleteSql = "DELETE FROM categories WHERE id = @id";
+                    using (SQLiteCommand deleteCmd = new SQLiteCommand(deleteSql, conn))
+                    {
+                        deleteCmd.Parameters.AddWithValue("@id", selectedCategoryId);
+                        deleteCmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show($"Category '{selectedCategoryName}' deleted successfully.");
+
+                LoadCategories();
+
+                return;
+            }
+
             string newCategoryName = NewCategoryTextBox.Text.Trim();
 
             // Validate
@@ -617,74 +763,101 @@ namespace ReorderPointSystem
                 return;
             }
 
-            // Refresh categories
+            MessageBox.Show($"Category '{newCategoryName}' added successfully!");
             LoadCategories();
-            if (!string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
-            {
-                CategoryComboBox.SelectedIndex = CategoryComboBox.FindStringExact(newCategoryName);
-            }
-            AddNewCatCheckBox.Checked = false;
-            ShowSuccess("Category added successfully");
-        }
 
+            int newIndex = CategoryComboBox.FindStringExact(newCategoryName);
+            if (newIndex >= 0)
+                CategoryComboBox.SelectedIndex = newIndex;
+
+            AddNewCatCheckBox.Checked = false;
+        }
 
         private void AddNewCategory_CheckChanged(object sender, EventArgs e)
         {
-            if (AddNewCatCheckBox.Checked)
-            {
-                NewCategoryTextBox.Visible = true;
-                SubmitNewCategoryBtn.Visible = true;
-                NewCategoryNameLabel.Visible = true;
+            bool isChecked = AddNewCatCheckBox.Checked;
 
-                CategoryComboBox.Enabled = false;
+            NewCategoryTextBox.Visible = isChecked;
+            NewCategoryNameLabel.Visible = isChecked;
+
+            CategoryComboBox.Enabled = !isChecked;
+
+            SubmitNewCategoryBtn.Visible = isChecked || DeleteCatCheckBox.Checked;
+            SubmitNewCategoryBtn.Text = isChecked ? "Submit New Category" :
+                                          (DeleteCatCheckBox.Checked ? "Delete Category" : "Submit New Category");
+
+            if (isChecked && string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
+            {
+                NewCategoryTextBox.Text = "Enter new category name";
+                NewCategoryTextBox.ForeColor = Color.Gray;
+            }
+
+            if (!isChecked)
+            {
+                NewCategoryTextBox.Text = string.Empty;
+            }
+        }
+
+
+        private void NewCategoryTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SubmitNewCategoryBtn_Click(sender, e);
+
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void DeleteCatCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            SubmitNewCategoryBtn.Visible = AddNewCatCheckBox.Checked || DeleteCatCheckBox.Checked;
+
+            if (DeleteCatCheckBox.Checked)
+            {
+                SubmitNewCategoryBtn.Text = "Delete Category";
             }
             else
             {
-                NewCategoryTextBox.Visible = false;
-                SubmitNewCategoryBtn.Visible = false;
-                NewCategoryNameLabel.Visible = false;
+                SubmitNewCategoryBtn.Text = "Submit New Category";
 
-                CategoryComboBox.Enabled = true;
-
-                NewCategoryTextBox.Text = String.Empty;
+                AddNewCategory_CheckChanged(AddNewCatCheckBox, EventArgs.Empty);
             }
-            SetPlaceholder();
         }
 
         // Placeholder text logic for textboxes
-        private void ItemNameTextBox_Enter(object sender, EventArgs e)
+        // Generic Enter handler
+        private void TextBox_Enter(object sender, EventArgs e)
         {
-            if (isEditingItemName)
-                return;
+            TextBox tb = sender as TextBox;
+            string placeholder = tb.Tag as string;
 
-            if (ItemNameTextBox.ForeColor == Color.Gray)
+            if (tb.Text == placeholder)
             {
-                ItemNameTextBox.Text = "";
-                ItemNameTextBox.ForeColor = Color.Black;
+                tb.Text = "";
+                tb.ForeColor = Color.Black;
             }
         }
 
-        private void ItemNameTextBox_Leave(object sender, EventArgs e)
+        private void TextBox_Leave(object sender, EventArgs e)
         {
-            if (!isEditingItemName)
-                SetPlaceholder();
-        }
+            TextBox tb = sender as TextBox;
+            string placeholder = tb.Tag as string;
 
-
-        private void NewCategoryTextBox_Enter(object sender, EventArgs e)
-        {
+            if (string.IsNullOrWhiteSpace(tb.Text))
             {
-                if (NewCategoryTextBox.ForeColor == Color.Gray)
-                {
-                    NewCategoryTextBox.Text = "";
-                    NewCategoryTextBox.ForeColor = Color.Black;
-                }
+                tb.Text = placeholder;
+                tb.ForeColor = Color.Gray;
             }
         }
 
-        private void NewCategoryTextBox_Leave(object sender, EventArgs e)
+
+        private void ReorderPointTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            SetPlaceholder();
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         /*****  Items List Panel Events  *****/
@@ -715,6 +888,8 @@ namespace ReorderPointSystem
                     }
                 }
             }
+
+            DeleteCatCheckBox.Checked = false;
         }
 
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox

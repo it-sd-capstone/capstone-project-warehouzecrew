@@ -32,6 +32,8 @@
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
             ItemInfoGroupBox = new GroupBox();
+            DeleteCatLabel = new Label();
+            DeleteCatCheckBox = new CheckBox();
             NewCategoryNameLabel = new Label();
             AddNewCatLabel = new Label();
             AddNewCatCheckBox = new CheckBox();
@@ -117,6 +119,8 @@
             // 
             // ItemInfoGroupBox
             // 
+            ItemInfoGroupBox.Controls.Add(DeleteCatLabel);
+            ItemInfoGroupBox.Controls.Add(DeleteCatCheckBox);
             ItemInfoGroupBox.Controls.Add(NewCategoryNameLabel);
             ItemInfoGroupBox.Controls.Add(AddNewCatLabel);
             ItemInfoGroupBox.Controls.Add(AddNewCatCheckBox);
@@ -145,6 +149,25 @@
             ItemInfoGroupBox.TabIndex = 0;
             ItemInfoGroupBox.TabStop = false;
             ItemInfoGroupBox.Text = "Item Info";
+            // 
+            // DeleteCatLabel
+            // 
+            DeleteCatLabel.AutoSize = true;
+            DeleteCatLabel.Location = new Point(573, 85);
+            DeleteCatLabel.Name = "DeleteCatLabel";
+            DeleteCatLabel.Size = new Size(94, 15);
+            DeleteCatLabel.TabIndex = 16;
+            DeleteCatLabel.Text = "Delete category?";
+            // 
+            // DeleteCatCheckBox
+            // 
+            DeleteCatCheckBox.AutoSize = true;
+            DeleteCatCheckBox.Location = new Point(552, 85);
+            DeleteCatCheckBox.Name = "DeleteCatCheckBox";
+            DeleteCatCheckBox.Size = new Size(15, 14);
+            DeleteCatCheckBox.TabIndex = 15;
+            DeleteCatCheckBox.UseVisualStyleBackColor = true;
+            DeleteCatCheckBox.CheckedChanged += DeleteCatCheckBox_CheckChanged;
             // 
             // NewCategoryNameLabel
             // 
@@ -204,8 +227,7 @@
             NewCategoryTextBox.Size = new Size(283, 29);
             NewCategoryTextBox.TabIndex = 8;
             NewCategoryTextBox.Visible = false;
-            NewCategoryTextBox.Enter += NewCategoryTextBox_Enter;
-            NewCategoryTextBox.Leave += NewCategoryTextBox_Leave;
+            NewCategoryTextBox.KeyDown += NewCategoryTextBox_KeyDown;
             // 
             // CategoryComboBoxLabel
             // 
@@ -307,6 +329,7 @@
             ReorderPointTextBox.Size = new Size(114, 23);
             ReorderPointTextBox.TabIndex = 3;
             ReorderPointTextBox.TextAlign = HorizontalAlignment.Center;
+            ReorderPointTextBox.KeyPress += ReorderPointTextBox_KeyPress;
             // 
             // CurrentQtyTextBox
             // 
@@ -350,8 +373,6 @@
             ItemNameTextBox.Name = "ItemNameTextBox";
             ItemNameTextBox.Size = new Size(283, 29);
             ItemNameTextBox.TabIndex = 1;
-            ItemNameTextBox.Enter += ItemNameTextBox_Enter;
-            ItemNameTextBox.Leave += ItemNameTextBox_Leave;
             // 
             // ItemNameLabel
             // 
@@ -633,5 +654,7 @@
         private Label NewCategoryNameLabel;
         private TextBox ItemDescriptionTextBox;
         private DataGridView PastOrderDataGridView;
+        private Label DeleteCatLabel;
+        private CheckBox DeleteCatCheckBox;
     }
 }
