@@ -3,6 +3,7 @@
     internal class ReorderItem
     {
         public int ItemId { get; set; }
+        public string Name { get; set; } = "Missing Name";
         public int Quantity { get; set; }
 
         public ReorderItem() {
@@ -14,6 +15,13 @@
         {
             ItemId = itemId;
             Quantity = quantity;
+        }
+
+        public ReorderItem(int itemId, int quantity, string name)
+        {
+            ItemId = itemId;
+            Quantity = quantity;
+            Name = name;
         }
     }
 }
