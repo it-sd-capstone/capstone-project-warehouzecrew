@@ -73,6 +73,7 @@
             EditOrderAmtTextBox = new TextBox();
             EditOrderAmtBtn = new Button();
             OrderRecievedBtn = new Button();
+            openAnalysisButton = new Button();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -571,11 +572,22 @@
             OrderRecievedBtn.UseVisualStyleBackColor = true;
             OrderRecievedBtn.Click += OrderRecievedBtn_Click;
             // 
+            // openAnalysisButton
+            // 
+            openAnalysisButton.Location = new Point(418, 723);
+            openAnalysisButton.Name = "openAnalysisButton";
+            openAnalysisButton.Size = new Size(113, 23);
+            openAnalysisButton.TabIndex = 27;
+            openAnalysisButton.Text = "Analysis";
+            openAnalysisButton.UseVisualStyleBackColor = true;
+            openAnalysisButton.Click += openAnalysisButton_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 761);
+            Controls.Add(openAnalysisButton);
             Controls.Add(OrderRecievedBtn);
             Controls.Add(CurrentOrdersGroupBox);
             Controls.Add(EditOrderAmtBtn);
@@ -656,5 +668,6 @@
         private DataGridView PastOrderDataGridView;
         private Label DeleteCatLabel;
         private CheckBox DeleteCatCheckBox;
+        private Button openAnalysisButton;
     }
 }

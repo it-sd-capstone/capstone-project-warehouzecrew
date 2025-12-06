@@ -1215,5 +1215,11 @@ namespace ReorderPointSystem
                 }
             }
         }
+
+        private void openAnalysisButton_Click(object sender, EventArgs e)
+        {
+            AnalysisView form = new AnalysisView();
+            form.Show();
+        }
     }
 }
