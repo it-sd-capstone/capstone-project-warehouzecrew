@@ -601,7 +601,6 @@ namespace ReorderPointSystem
                     isEditingItemName = true;
 
                     ItemNameTextBox.Text = selectedItem.Name;
-                    ItemNameTextBox.ForeColor = Color.Black;
 
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
@@ -610,12 +609,10 @@ namespace ReorderPointSystem
                     if (!string.IsNullOrWhiteSpace(selectedItem.Description))
                     {
                         ItemDescriptionTextBox.Text = selectedItem.Description;
-                        ItemDescriptionTextBox.ForeColor = Color.Black;
                     }
                     else
                     {
-                        ItemDescriptionTextBox.Text = "Enter the item description here (size, color, weight, material, etc.)";
-                        ItemDescriptionTextBox.ForeColor = Color.Gray;
+                        ItemDescriptionTextBox.Text = string.Empty;
                     }
 
                     LoadCategories();
