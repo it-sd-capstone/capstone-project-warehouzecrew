@@ -49,10 +49,20 @@ namespace ReorderPointSystem.Data
         public Category Add(Category category)
         {
             using var connection = Database.GetConnection();
-            using var command = new SQLiteCommand(
-                "INSERT INTO categories (name) VALUES (@name); SELECT last_insert_rowid();",
-                connection);
+            using var command = connection.CreateCommand();
 
+            // Check if a category with the same name already exists
+            command.CommandText = "SELECT COUNT(*) FROM categories WHERE name = @name;";
+            command.Parameters.AddWithValue("@name", category.Name);
+
+            long count = (long)command.ExecuteScalar();
+            if (count > 0)
+            {
+                return null;
+            }
+
+            // Insert the new category
+            command.CommandText = "INSERT INTO categories (name) VALUES (@name); SELECT last_insert_rowid();";
             command.Parameters.AddWithValue("@name", category.Name);
 
             long insertedId = (long)command.ExecuteScalar();
