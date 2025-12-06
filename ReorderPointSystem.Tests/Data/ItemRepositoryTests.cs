@@ -72,8 +72,8 @@ namespace ReorderPointSystem.Tests.Data
                     updated_at
                 ) VALUES (
                     1,
-                    'AnotherItem',
-                    'AnotherDescription',
+                    'AnotherItem2',
+                    'AnotherDescription2',
                     20,
                     10,
                     100,
