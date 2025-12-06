@@ -15,12 +15,14 @@ namespace ReorderPointSystem.Services
         private ItemRepository _itemRepo;
         private ReorderRepository _reorderRepo;
         private InventoryLogRepository _inventoryLogRepo;
+        private CategoryRepository _categoryRepo;
 
         public InventoryManager()
         {
             _itemRepo = new ItemRepository();
             _reorderRepo = new ReorderRepository();
             _inventoryLogRepo = new InventoryLogRepository();
+            _categoryRepo = new CategoryRepository();
         }
 
         public ItemRepository GetItemRepository()
@@ -36,6 +38,11 @@ namespace ReorderPointSystem.Services
         public InventoryLogRepository GetInventoryLogRepository()
         {
             return _inventoryLogRepo;
+        }
+
+        public CategoryRepository GetCategoryRepository()
+        {
+            return _categoryRepo;
         }
 
         public List<Item> GetAllItems()
