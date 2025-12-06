@@ -29,7 +29,7 @@ namespace ReorderPointSystem.Data
 
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM items WHERE Name LIKE @searchTerm";
+            command.CommandText = "SELECT * FROM items WHERE Name LIKE @searchTerm AND NOT is_deleted";
             command.Parameters.AddWithValue("@searchTerm", $"%{searchTerm}%");
 
             List<Item> items = new List<Item>();
