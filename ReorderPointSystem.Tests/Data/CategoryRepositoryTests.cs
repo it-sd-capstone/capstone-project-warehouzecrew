@@ -258,7 +258,8 @@ namespace ReorderPointSystem.Tests.Data
             Category? deletedCategory = repo.GetById(category.Id);
 
             // Assert
-            Assert.Null(deletedCategory);
+            Assert.NotNull(deletedCategory);
+            Assert.True(deletedCategory.IsDeleted);
         }
 
         [Fact]
