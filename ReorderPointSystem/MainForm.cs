@@ -441,16 +441,17 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
+            // Sanitize
             int id = selectedItem != null ? selectedItem.Id : -1;
-            String name = ItemNameTextBox.Text;
-            String description = ItemDescriptionTextBox.Text;
+            string name = Validator.SanitizeString(ItemNameTextBox.Text);
+            string description = Validator.SanitizeString(ItemDescriptionTextBox.Text);
             int curAmt = Validator.SanitizeInt(CurrentQtyTextBox.Text.ToString());
             int curCat = Validator.SanitizeInt(CategoryComboBox.SelectedValue?.ToString());
             int reorderPt = Validator.SanitizeInt(ReorderPointTextBox.Text.ToString());
             int maxAmt = Validator.SanitizeInt(ReorderMaxTextBox.Text.ToString());
             bool reorderEnabled = EnableReorderChkbx.Checked;
 
-            // Validate inputs
+            // Validate
             if (!Validator.IsValidString(name))
             {
                 ShowError("Please ensure the name text field contains valid characters.");
@@ -489,7 +490,7 @@ namespace ReorderPointSystem
                 return;
             }
 
-            // All validations passed, proceed to add/update item
+            // Add/Update item
             Item item = new Item()
             {
                 CategoryId = curCat,
@@ -561,7 +562,7 @@ namespace ReorderPointSystem
         {
             if (selectedItem == null || string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
             {
-                MessageBox.Show("Must select a valid item to delete first.", "Error - No valid item");
+                ShowError("You must select a valid item to delete first.");
                 return;
             }
 
@@ -573,8 +574,13 @@ namespace ReorderPointSystem
 
             try
             {
-                controller.GetInventoryManager().deleteItem(selectedItem.Id);
-                ShowSuccess("Item deleted successfully");
+                bool result = controller.GetInventoryManager().deleteItem(selectedItem.Id);
+                if (!result)
+                {
+                    ShowError("Item does not exist.");
+                    return;
+                } 
+                ShowSuccess("Item deleted successfully.");
 
                 // Clear form and reload
                 ClearFieldsBtn_Click(sender, e);
@@ -583,7 +589,7 @@ namespace ReorderPointSystem
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error deleting item: {ex.Message}", "Error");
+                ShowError($"Error deleting item: {ex.Message}");
             }
         }
 
@@ -687,7 +693,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                string newCategoryName = NewCategoryTextBox.Text.Trim();
+                string newCategoryName = Validator.SanitizeString(NewCategoryTextBox.Text);
 
                 // Validate
                 if (!Validator.IsValidString(newCategoryName))
@@ -804,15 +810,17 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
+            string searchQuery = Validator.SanitizeString(ItemSearchTextBox.Text);
+
             // Fetch all items
-            if (string.IsNullOrEmpty(ItemSearchTextBox.Text))
+            if (string.IsNullOrEmpty(searchQuery))
             {
                 LoadItems();
                 return;
             }
 
             // Search query
-            List<Item>? searchResults = controller.SearchItems(ItemSearchTextBox.Text);
+            List<Item>? searchResults = controller.SearchItems(searchQuery);
             if (searchResults == null)
             {
                 ShowError("Invalid search input. Ensure it contains valid characters and is between 1 and 50 characters");
@@ -905,9 +913,8 @@ namespace ReorderPointSystem
             {
                 if (!orderSelection.Equals("") && !orderSelection.Equals("Past"))
                 {
-                    int qty;
-                    bool validQty = int.TryParse(EditOrderAmtTextBox.Text.ToString(), out qty);
-                    if (validQty)
+                    int qty = Validator.SanitizeInt(EditOrderAmtTextBox.Text.ToString());
+                    if (Validator.IsValidInt(qty))
                     {
                         var row = OrderItemsDataGrid.SelectedRows[0];
                         pendingOrder[row.Index].MaxAmount = qty;
