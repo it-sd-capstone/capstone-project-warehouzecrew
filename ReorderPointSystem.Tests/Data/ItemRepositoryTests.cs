@@ -57,7 +57,32 @@ namespace ReorderPointSystem.Tests.Data
                     0,
                     datetime('now'),
                     datetime('now')
-                );";
+                );
+
+                INSERT INTO items (
+                    category_id,
+                    name,
+                    description,
+                    current_amount,
+                    reorder_point,
+                    max_amount,
+                    reorder_enabled,
+                    is_deleted,
+                    created_at,
+                    updated_at
+                ) VALUES (
+                    1,
+                    'AnotherItem2',
+                    'AnotherDescription2',
+                    20,
+                    10,
+                    100,
+                    0,
+                    1,
+                    datetime('now'),
+                    datetime('now')
+                );
+                ";
                 command.ExecuteNonQuery();
             }
         }
@@ -77,7 +102,7 @@ namespace ReorderPointSystem.Tests.Data
         }
 
         [Fact]
-        public void GetAll_ShouldReturnItemList_WhenAnyItemDoesExist()
+        public void GetAll_ShouldReturnItemList_WhenAnyItemDoesExistAndNotDeleted()
         {
             // Arrange
             AddSampleData();
@@ -367,6 +392,23 @@ namespace ReorderPointSystem.Tests.Data
         }
 
         [Fact]
+        public void Update_ShouldReturnFalse_WhenFlaggedWithIsDeleted()
+        {
+            // Arrange
+            AddSampleData();
+            var repo = new ItemRepository();
+            Item item = repo.Add(CreateTestItem());
+            item.Name = "Updated Name";
+            item.IsDeleted = true;
+
+            // Act
+            bool result = repo.Update(item);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
         public void Update_ShouldReturnFalse_WhenItemDoesNotExist()
         {
             // Arrange
@@ -442,7 +484,7 @@ namespace ReorderPointSystem.Tests.Data
         }
 
         [Fact]
-        public void Delete_ShouldRemoveItemFromDatabase()
+        public void Delete_ShouldHaveIsDeletedFlag()
         {
             // Arrange
             AddSampleData();
@@ -454,7 +496,8 @@ namespace ReorderPointSystem.Tests.Data
             Item? deletedItem = repo.GetById(item.Id);
 
             // Assert
-            Assert.Null(deletedItem);
+            Assert.NotNull(deletedItem);
+            Assert.True(deletedItem.IsDeleted);
         }
 
         [Fact]

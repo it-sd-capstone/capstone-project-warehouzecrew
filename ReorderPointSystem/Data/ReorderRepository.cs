@@ -59,7 +59,18 @@ namespace ReorderPointSystem.Data
         {
             using var connection = Database.GetConnection();
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT item_id, quantity FROM reorder_items WHERE reorder_id = @ReorderId";
+            command.CommandText = @"
+                SELECT 
+                    ri.item_id,
+                    ri.quantity,
+                    i.name AS item_name
+                FROM 
+                    reorder_items ri
+                JOIN 
+                    items i ON ri.item_id = i.id
+                WHERE 
+                    ri.reorder_id = @ReorderId;
+            ";
             command.Parameters.AddWithValue("@ReorderId", reorderId);
 
             List<ReorderItem> items = new List<ReorderItem>();
@@ -70,7 +81,8 @@ namespace ReorderPointSystem.Data
                 items.Add(new ReorderItem
                 {
                     ItemId = reader.GetInt32(0),
-                    Quantity = reader.GetInt32(1)
+                    Quantity = reader.GetInt32(1),
+                    Name = reader.GetString(2)
                 });
             }
             return items;

@@ -10,7 +10,7 @@ namespace ReorderPointSystem
     public partial class MainForm : Form
     {
 
-        private List<Item> itemsList;
+        private List<Item> itemsList = new List<Item>();
         private List<Item> pendingOrder;
         private List<Item> manualOrderItems;
         private List<Category> categories;
@@ -29,63 +29,7 @@ namespace ReorderPointSystem
             InitializeComponent();
             LoadCategories();
             SetupGridColumns();
-            ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
-
-            // Set placeholders
-            SetPlaceholder();
-
-            ItemNameTextBox.Enter += TextBox_Enter;
-            ItemNameTextBox.Leave += TextBox_Leave;
-
-            NewCategoryTextBox.Enter += TextBox_Enter;
-            NewCategoryTextBox.Leave += TextBox_Leave;
-
-            ItemDescriptionTextBox.Enter += TextBox_Enter;
-            ItemDescriptionTextBox.Leave += TextBox_Leave;
-
-            ItemNameTextBox.Tag = "Enter item name";
-            NewCategoryTextBox.Tag = "Enter new category name";
-            ItemDescriptionTextBox.Tag = "Enter the item description here (size, color, weight, material, etc.)";
-
         }
-
-
-        private void SetPlaceholder()
-        {
-            if (string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
-            {
-                NewCategoryTextBox.Text = "Enter new category name";
-                NewCategoryTextBox.ForeColor = Color.Gray;
-            }
-            else
-            {
-                NewCategoryTextBox.ForeColor = Color.Black;
-            }
-
-            if (!isEditingItemName)
-            {
-                if (string.IsNullOrWhiteSpace(ItemNameTextBox.Text))
-                {
-                    ItemNameTextBox.Text = "Enter item name";
-                    ItemNameTextBox.ForeColor = Color.Gray;
-                }
-                else
-                {
-                    ItemNameTextBox.ForeColor = Color.Black;
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(ItemDescriptionTextBox.Text))
-            {
-                ItemDescriptionTextBox.Text = "Enter the item description here (size, color, weight, material, etc.)";
-                ItemDescriptionTextBox.ForeColor = Color.Gray;
-            }
-            else
-            {
-                ItemDescriptionTextBox.ForeColor = Color.Black;
-            }
-        }
-
 
         private void SetupGridColumns()
         {
@@ -205,12 +149,12 @@ namespace ReorderPointSystem
             ItemDescriptionTextBox.Enabled = true;
         }
 
-        // Helper function to reload data from the DB after an edit/delete has been made
-        private void ReloadDB()
+        // Helper function to reload items
+        private void LoadItems()
         {
-            itemsList = controller.LoadItems();
+            itemsList.Clear();
+            itemsList.AddRange(controller.LoadItems());
             DisplayItems(itemsList);
-            SetPlaceholder();
         }
 
         // recursive helper function to continue checking for reorder items
@@ -284,6 +228,7 @@ namespace ReorderPointSystem
                 LoadCategories();
 
             ItemsGridView.Rows.Clear();
+            ItemsGridView.SuspendLayout();
 
             foreach (var item in items)
             {
@@ -300,6 +245,8 @@ namespace ReorderPointSystem
                     categoryName
                 );
             }
+
+            ItemsGridView.ResumeLayout();
 
             // Select the first row if available
             if (ItemsGridView.Rows.Count > 0)
@@ -332,17 +279,16 @@ namespace ReorderPointSystem
             EnableDoubleBuffering(PastOrderDataGridView);
             EnableDoubleBuffering(OrderItemsDataGrid);
 
-            ReloadDB();
+            LoadItems();
             LoadCategories();
             LoadOrders();
-            CheckReorders();
-
+            _ = CheckReorders();
             ClearFieldsBtn_Click(sender, e);
-            this.BeginInvoke(new Action(() =>
-            {
-                ItemNameTextBox.Focus();
-                ItemNameTextBox.Select();
-            }));
+            //this.BeginInvoke(new Action(() =>
+            //{
+            //    ItemNameTextBox.Focus();
+            //    ItemNameTextBox.Select();
+            //}));
             
         }
 
@@ -366,29 +312,23 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            using (SQLiteConnection conn = Database.GetConnection())
+            Random rand = new Random();
+            foreach (Item item in itemsList)
             {
-                Random rand = new Random();
-
-                foreach (Item item in itemsList)
+                int num = rand.Next(100);
+                if (num >= 50)
                 {
-                    int num = rand.Next(100);
-                    if (num >= 50)
+                    int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
+                    if (decrease > 0)
                     {
-                        int decrease = Math.Min(rand.Next(100), item.CurrentAmount);
-                        string updateStr = "UPDATE items SET current_amount = @decrease WHERE id = @id";
-                        using (SQLiteCommand cmd = new SQLiteCommand(updateStr, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@decrease", decrease);
-                            cmd.Parameters.AddWithValue("@id", item.Id);
-                            cmd.ExecuteNonQuery();
-                        }
+                        item.RemoveStock(decrease);
+                        controller.GetInventoryManager().GetItemRepository().Update(item);
                     }
                 }
             }
 
             LoadCategories();
-            ReloadDB();
+            LoadItems();
         }
 
 
@@ -490,7 +430,9 @@ namespace ReorderPointSystem
                 }
             }
 
-            MessageBox.Show("Test data inserted successfully!");
+            ShowSuccess("Test data inserted successfully!");
+            LoadCategories();
+            LoadItems();
         }
 
         /*****  Item Info Panel Events  *****/
@@ -499,116 +441,93 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
-            int curAmt, reorderPt, maxAmt, reorderEnabled;
-            string name = ItemNameTextBox.Text.Trim();
-            string description = ItemDescriptionTextBox.Text.Trim();
-            // To prevent cue banner from being accepted as valid input
-            string placeholder = "Enter item name";
+            int id = selectedItem != null ? selectedItem.Id : -1;
+            String name = ItemNameTextBox.Text;
+            String description = ItemDescriptionTextBox.Text;
+            int curAmt = Validator.SanitizeInt(CurrentQtyTextBox.Text.ToString());
+            int curCat = Validator.SanitizeInt(CategoryComboBox.SelectedValue?.ToString());
+            int reorderPt = Validator.SanitizeInt(ReorderPointTextBox.Text.ToString());
+            int maxAmt = Validator.SanitizeInt(ReorderMaxTextBox.Text.ToString());
+            bool reorderEnabled = EnableReorderChkbx.Checked;
 
-            bool isValidCur = int.TryParse(CurrentQtyTextBox.Text, out curAmt);
-            bool isValidReorder = int.TryParse(ReorderPointTextBox.Text, out reorderPt);
-            bool isValidMax = int.TryParse(ReorderMaxTextBox.Text, out maxAmt);
-
-            if (EnableReorderChkbx.Checked)
-                reorderEnabled = 1;
-            else
-                reorderEnabled = 0;
-
-            // Checking for valid item name
-            if (string.IsNullOrEmpty(name) || name == placeholder)
+            // Validate inputs
+            if (!Validator.IsValidString(name))
             {
-                MessageBox.Show("Item name cannot be empty.", "Invalid Input");
-
+                ShowError("Please ensure the name text field contains valid characters.");
                 ItemNameTextBox.Focus();
                 ItemNameTextBox.SelectAll();
-
                 return;
-            }
-
-            // Validate Current Amount to be valid and non-negative
-            if (!isValidCur || curAmt < 0)
+            } else if (id > 0 && !Validator.IsValidInt(id))
             {
-                if (!isValidCur)
-                    MessageBox.Show("Current Quantity must be a valid number.", "Invalid Input");
-                else
-                    MessageBox.Show("Current Quantity cannot be negative.", "Invalid Input");
-
+                ShowError("Internal error regarding item id");
+                return;
+            } else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
+            {
+                ShowError("Please ensure the description text field contains valid characters.");
+                return;
+            } else if (!Validator.IsValidInt(curAmt))
+            {
+                ShowError("Please ensure the current amount field contains a valid number.");
                 CurrentQtyTextBox.Focus();
                 CurrentQtyTextBox.SelectAll();
                 return;
-            }
-
-            // Validate Reorder Point
-            if (!isValidReorder)
+            } else if (!Validator.IsValidInt(curCat))
             {
-                MessageBox.Show("Reorder Point must be a valid number.", "Invalid Input");
+                ShowError("Please ensure a valid category is selected.");
+                return;
+            } else if (!Validator.IsValidInt(reorderPt))
+            {
+                ShowError("Please ensure the reorder point field contains a valid number.");
                 ReorderPointTextBox.Focus();
                 ReorderPointTextBox.SelectAll();
                 return;
-            }
-
-            // Validate Max Amount to be valid and non-negative
-            if (!isValidMax || maxAmt < 0)
+            } else if (!Validator.IsValidInt(maxAmt))
             {
-                if (!isValidMax)
-                    MessageBox.Show("Max Quantity must be a valid number.", "Invalid Input");
-                else
-                    MessageBox.Show("Maximum quantity cannot be negative.", "Invalid Input");
-
+                ShowError("Please ensure the max amount field contains a valid number.");
                 ReorderMaxTextBox.Focus();
                 ReorderMaxTextBox.SelectAll();
                 return;
             }
 
-
-            using (SQLiteConnection conn = Database.GetConnection())
+            // All validations passed, proceed to add/update item
+            Item item = new Item()
             {
-                SQLiteCommand cmd = new SQLiteCommand();
-                cmd.Connection = conn;
+                CategoryId = curCat,
+                Name = name,
+                Description = description,
+                CurrentAmount = curAmt,
+                ReorderPoint = reorderPt,
+                MaxAmount = maxAmt,
+                ReorderEnabled = reorderEnabled
+            };
 
-                if (selectedItem != null)
+            if (id.Equals(-1)) // New item
+            {
+                var result = controller.GetInventoryManager().addItem(item);
+                if (result != null)
                 {
-                    cmd.CommandText = "UPDATE items SET " +
-                                      "name = @name, " +
-                                      "current_amount = @curAmt, " +
-                                      "reorder_point = @reorderPt, " +
-                                      "max_amount = @maxAmt, " +
-                                      "reorder_enabled = @reorderEnabled, " +
-                                      "description = @description, " +
-                                      "updated_at = @updatedAt, " +
-                                      "category_id = @categoryId " +
-                                      "WHERE id = @id";
-
-                    cmd.Parameters.AddWithValue("@name", name);
-                    cmd.Parameters.AddWithValue("@curAmt", curAmt);
-                    cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
-                    cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
-                    cmd.Parameters.AddWithValue("@reorderEnabled", reorderEnabled);
-                    cmd.Parameters.AddWithValue("@description", description);
-                    cmd.Parameters.AddWithValue("@updatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    cmd.Parameters.AddWithValue("@categoryId", CategoryComboBox.SelectedValue);
-                    cmd.Parameters.AddWithValue("@id", selectedItem.Id);
+                    ShowSuccess("Item added successfully");
+                    LoadItems();
                 }
                 else
                 {
-                    cmd.CommandText = "INSERT INTO items (category_id, name, description, current_amount, reorder_point, reorder_enabled, max_amount, created_at, updated_at) " +
-                                      "VALUES (@categoryId, @name, @description, @curAmt, @reorderPt, @reorderEnabled, @maxAmt, @createdAt, @updatedAt)";
-
-                    cmd.Parameters.AddWithValue("@categoryId", CategoryComboBox.SelectedValue);
-                    cmd.Parameters.AddWithValue("@name", name);
-                    cmd.Parameters.AddWithValue("@description", description);
-                    cmd.Parameters.AddWithValue("@curAmt", curAmt);
-                    cmd.Parameters.AddWithValue("@reorderPt", reorderPt);
-                    cmd.Parameters.AddWithValue("@reorderEnabled", reorderEnabled);
-                    cmd.Parameters.AddWithValue("@maxAmt", maxAmt);
-                    cmd.Parameters.AddWithValue("@createdAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    cmd.Parameters.AddWithValue("@updatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    ShowError("Internal error adding item");
                 }
-
-                cmd.ExecuteNonQuery();
             }
-            LoadCategories();
-            ReloadDB();
+            else // Update existing item
+            {
+                item.Id = id;
+                var result = controller.GetInventoryManager().updateItem(item);
+                if (result)
+                {
+                    ShowSuccess("Item updated successfully");
+                    LoadItems();
+                }
+                else
+                {
+                    ShowError("Internal error updating item");
+                }
+            }
         }
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
@@ -631,8 +550,9 @@ namespace ReorderPointSystem
             selectedItem = null;
             EnableProductInfoOptions();
 
+            DeleteItemBtn.Enabled = false;
+
             ItemNameTextBox.Focus();
-            SetPlaceholder();
         }
 
 
@@ -653,20 +573,13 @@ namespace ReorderPointSystem
 
             try
             {
-                string sql = "DELETE FROM items WHERE id = @id";
-                using (SQLiteConnection conn = Database.GetConnection())
-                using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@id", selectedItem.Id);
-                    cmd.ExecuteNonQuery();
-                }
-
-                MessageBox.Show("Item deleted successfully.", "Deleted");
+                controller.GetInventoryManager().deleteItem(selectedItem.Id);
+                ShowSuccess("Item deleted successfully");
 
                 // Clear form and reload
                 ClearFieldsBtn_Click(sender, e);
                 LoadCategories();
-                ReloadDB();
+                LoadItems();
             }
             catch (Exception ex)
             {
@@ -690,7 +603,6 @@ namespace ReorderPointSystem
                     isEditingItemName = true;
 
                     ItemNameTextBox.Text = selectedItem.Name;
-                    ItemNameTextBox.ForeColor = Color.Black;
 
                     CurrentQtyTextBox.Text = selectedItem.CurrentAmount.ToString();
                     ReorderPointTextBox.Text = selectedItem.ReorderPoint.ToString();
@@ -699,12 +611,10 @@ namespace ReorderPointSystem
                     if (!string.IsNullOrWhiteSpace(selectedItem.Description))
                     {
                         ItemDescriptionTextBox.Text = selectedItem.Description;
-                        ItemDescriptionTextBox.ForeColor = Color.Black;
                     }
                     else
                     {
-                        ItemDescriptionTextBox.Text = "Enter the item description here (size, color, weight, material, etc.)";
-                        ItemDescriptionTextBox.ForeColor = Color.Gray;
+                        ItemDescriptionTextBox.Text = string.Empty;
                     }
 
                     LoadCategories();
@@ -718,7 +628,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("You must select an item before you can edit it.", "Error - No selected Item");
+                ShowError("You must select an item before you can edit it.");
             }
         }
 
@@ -730,7 +640,7 @@ namespace ReorderPointSystem
             {
                 if (CategoryComboBox.SelectedItem == null)
                 {
-                    MessageBox.Show("No category selected to delete.", "Error");
+                    ShowError("No category selected to delete.");
                     return;
                 }
 
@@ -739,13 +649,13 @@ namespace ReorderPointSystem
 
                 if (selectedCategoryName == "General")
                 {
-                    MessageBox.Show("The 'General' category cannot be deleted.", "Protected Category");
+                    ShowError("The 'General' category cannot be deleted.");
                     return;
                 }
 
                 DialogResult result = MessageBox.Show(
                     $"Are you sure you want to delete the category '{selectedCategoryName}'?",
-                    "Confirm Delete",
+                    "Are you sure?",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning
                 );
@@ -753,81 +663,56 @@ namespace ReorderPointSystem
                 if (result == DialogResult.No)
                     return;
 
-                using (SQLiteConnection conn = Database.GetConnection())
+                try 
                 {
-                    string checkItemsSql = "SELECT COUNT(*) FROM items WHERE category_id = @id";
-                    using (SQLiteCommand checkItemsCmd = new SQLiteCommand(checkItemsSql, conn))
+                    bool deleteSuccess = controller.GetInventoryManager().GetCategoryRepository().Delete(selectedCategoryId);
+                    if (!deleteSuccess)
                     {
-                        checkItemsCmd.Parameters.AddWithValue("@id", selectedCategoryId);
-                        long count = (long)checkItemsCmd.ExecuteScalar();
-
-                        if (count > 0)
-                        {
-                            MessageBox.Show(
-                                "You cannot delete this category because items are still assigned to it.\n" +
-                                "Move or delete those items first.",
-                                "Delete Blocked",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning
-                            );
-                            return;
-                        }
-                    }
-
-                    string deleteSql = "DELETE FROM categories WHERE id = @id";
-                    using (SQLiteCommand deleteCmd = new SQLiteCommand(deleteSql, conn))
-                    {
-                        deleteCmd.Parameters.AddWithValue("@id", selectedCategoryId);
-                        deleteCmd.ExecuteNonQuery();
-                    }
-                }
-
-                MessageBox.Show($"Category '{selectedCategoryName}' deleted successfully.");
-
-                LoadCategories();
-
-                return;
-            }
-
-            string newCategoryName = NewCategoryTextBox.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(newCategoryName))
-            {
-                MessageBox.Show("Please enter a category name.", "Invalid Input");
-                return;
-            }
-
-            using (SQLiteConnection conn = Database.GetConnection())
-            {
-                string checkSql = "SELECT COUNT(*) FROM categories WHERE name = @name";
-                using (SQLiteCommand checkCmd = new SQLiteCommand(checkSql, conn))
-                {
-                    checkCmd.Parameters.AddWithValue("@name", newCategoryName);
-                    long count = (long)checkCmd.ExecuteScalar();
-
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Category already exists.", "Duplicate Category");
+                        ShowError("Category not deleted; possible invalid category id.");
                         return;
                     }
+                    LoadCategories();
+                    ShowSuccess($"Category '{selectedCategoryName}' deleted successfully.");
                 }
-
-                string insertSql = "INSERT INTO categories (name) VALUES (@name)";
-                using (SQLiteCommand insertCmd = new SQLiteCommand(insertSql, conn))
+                catch (InvalidOperationException ex)
                 {
-                    insertCmd.Parameters.AddWithValue("@name", newCategoryName);
-                    insertCmd.ExecuteNonQuery();
+                    ShowError("Cannot delete category with associated items. Please reassign or delete those items first.");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    ShowError("An internal error has occurred: " + ex.Message);
+                    return;
                 }
             }
+            else
+            {
+                string newCategoryName = NewCategoryTextBox.Text.Trim();
 
-            MessageBox.Show($"Category '{newCategoryName}' added successfully!");
-            LoadCategories();
+                // Validate
+                if (!Validator.IsValidString(newCategoryName))
+                {
+                    ShowError("Please enter a valid category name.");
+                    return;
+                }
 
-            int newIndex = CategoryComboBox.FindStringExact(newCategoryName);
-            if (newIndex >= 0)
-                CategoryComboBox.SelectedIndex = newIndex;
+                // Add category
+                var addedCategory = controller.GetInventoryManager().GetCategoryRepository().Add(new Category { Name = newCategoryName });
+                if (addedCategory == null)
+                {
+                    ShowError("Category already exists.");
+                    return;
+                }
 
-            AddNewCatCheckBox.Checked = false;
+                LoadCategories();
+                MessageBox.Show($"Category '{newCategoryName}' added successfully!");
+
+                int newIndex = CategoryComboBox.FindStringExact(newCategoryName);
+                if (newIndex >= 0)
+                    CategoryComboBox.SelectedIndex = newIndex;
+
+                AddNewCatCheckBox.Checked = false;
+            }
         }
 
         private void AddNewCategory_CheckChanged(object sender, EventArgs e)
@@ -842,12 +727,6 @@ namespace ReorderPointSystem
             SubmitNewCategoryBtn.Visible = isChecked || DeleteCatCheckBox.Checked;
             SubmitNewCategoryBtn.Text = isChecked ? "Submit New Category" :
                                           (DeleteCatCheckBox.Checked ? "Delete Category" : "Submit New Category");
-
-            if (isChecked && string.IsNullOrWhiteSpace(NewCategoryTextBox.Text))
-            {
-                NewCategoryTextBox.Text = "Enter new category name";
-                NewCategoryTextBox.ForeColor = Color.Gray;
-            }
 
             if (!isChecked)
             {
@@ -881,33 +760,6 @@ namespace ReorderPointSystem
                 AddNewCategory_CheckChanged(AddNewCatCheckBox, EventArgs.Empty);
             }
         }
-
-        // Placeholder text logic for textboxes
-        // Generic Enter handler
-        private void TextBox_Enter(object sender, EventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-            string placeholder = tb.Tag as string;
-
-            if (tb.Text == placeholder)
-            {
-                tb.Text = "";
-                tb.ForeColor = Color.Black;
-            }
-        }
-
-        private void TextBox_Leave(object sender, EventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-            string placeholder = tb.Tag as string;
-
-            if (string.IsNullOrWhiteSpace(tb.Text))
-            {
-                tb.Text = placeholder;
-                tb.ForeColor = Color.Gray;
-            }
-        }
-
 
         private void ReorderPointTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -952,31 +804,26 @@ namespace ReorderPointSystem
         // Filter the items listed in the ItemsListBox box based on the text in the ItemSearchTextBox
         private void SearchBtn_Click(object sender, EventArgs e)
         {
-            itemsList = controller.SearchItems(ItemSearchTextBox.Text);
-
-            if (categoryLookup == null || categoryLookup.Count == 0)
-                LoadCategories();
-
-            ItemsGridView.Rows.Clear();
-
-            foreach (var item in itemsList)
+            // Fetch all items
+            if (string.IsNullOrEmpty(ItemSearchTextBox.Text))
             {
-                string categoryName = categoryLookup.ContainsKey(item.CategoryId)
-                    ? categoryLookup[item.CategoryId]
-                    : "Unknown";
-
-                ItemsGridView.Rows.Add(
-                    item.Id,
-                    item.Name,
-                    item.CurrentAmount,
-                    categoryName
-                );
+                LoadItems();
+                return;
             }
 
-            if (ItemsGridView.Rows.Count > 0)
+            // Search query
+            List<Item>? searchResults = controller.SearchItems(ItemSearchTextBox.Text);
+            if (searchResults == null)
             {
-                ItemsGridView.CurrentCell = ItemsGridView.Rows[0].Cells[0];
-                ItemsGridView.Rows[0].Selected = true;
+                ShowError("Invalid search input. Ensure it contains valid characters and is between 1 and 50 characters");
+            }
+            else if (searchResults.Count == 0)
+            {
+                ShowInfo("No results found");
+            }
+            else
+            {
+                DisplayItems(searchResults);
             }
         }
 
@@ -986,7 +833,7 @@ namespace ReorderPointSystem
             if (e.KeyCode == Keys.Enter)
             {
                 SearchBtn_Click(sender, e);
-
+                e.Handled = true;
                 e.SuppressKeyPress = true;
             }
         }
@@ -994,44 +841,38 @@ namespace ReorderPointSystem
         // Add the highlighted item to a pending order. If no pending orders exist, also create a new pending order
         private void AddToOrderBtn_Click(object sender, EventArgs e)
         {
-            if (ItemsGridView.CurrentRow != null)
+            if (ItemsGridView.CurrentRow != null || selectedItem != null)
             {
-                if (selectedItem != null)
+                Item copy = selectedItem;
+                if (PendingOrderListBox.Items.Count == 0)
                 {
-                    Item copy = selectedItem;
-                    if (PendingOrderListBox.Items.Count == 0)
-                    {
-                        String searchStr = "SELECT COUNT(\'id\') FROM reorders";
-                        SQLiteConnection conn = Database.GetConnection();
-                        SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
-                        int orderID;
-                        int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                        PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
-                    }
-                    if (pendingOrder == null)
-                    {
-                        pendingOrder = new List<Item> { };
-                    }
-                    pendingOrder.Add(copy);
-                    if (manualOrderItems == null)
-                    {
-                        manualOrderItems = new List<Item> { };
-                    }
-                    manualOrderItems.Add(copy);
-                    OrderItemsDataGrid.Rows.Clear();
-                    foreach (Item item in pendingOrder)
-                    {
-                        OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
-                    }
+                    String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                    SQLiteConnection conn = Database.GetConnection();
+                    SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
+                    int orderID;
+                    int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
+                    PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
                 }
-                else
+                if (pendingOrder == null)
                 {
-                    MessageBox.Show("Select an item first, please.", "Error: no item Selected");
+                    pendingOrder = new List<Item> { };
+                }
+                pendingOrder.Add(copy);
+                if (manualOrderItems == null)
+                {
+                    manualOrderItems = new List<Item> { };
+                }
+                manualOrderItems.Add(copy);
+                OrderItemsDataGrid.Rows.Clear();
+                foreach (Item item in pendingOrder)
+                {
+                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
                 }
             }
             else
             {
-                MessageBox.Show("You must select an item before you can add it to an order.", "Error - No selected Item");
+                ShowError("You must select an item.");
+
             }
         }
 
@@ -1053,7 +894,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("You must select an order before you can delete it.", "Error - No selected order");
+                ShowError("Please select an order to delete.");
             }
         }
 
@@ -1081,12 +922,12 @@ namespace ReorderPointSystem
                 }
                 else
                 {
-                    MessageBox.Show("You cannot change the quantity on a past order.", "Error - can't edit past order");
+                    ShowError("You cannot change the quantity on a past order.");
                 }
             }
             else
             {
-                MessageBox.Show("You must select an item before you can edit it's order quantity.", "Error - No selected item");
+                ShowError("You must select an item before you can edit it's order quantity.");
             }
         }
 
@@ -1119,7 +960,7 @@ namespace ReorderPointSystem
             }
             else
             {
-                MessageBox.Show("Error: no selected index");
+                ShowError("You must select a pending order before you can view its items.");
             }
         }
 
@@ -1129,8 +970,11 @@ namespace ReorderPointSystem
             if (OrderItemsDataGrid.SelectedRows.Count > 0)
             {
                 var row = OrderItemsDataGrid.SelectedRows[0];
-                EditOrderAmtBtn.Enabled = true;
-                EditOrderAmtTextBox.Enabled = true;
+                if (orderSelection.Equals("Pending"))
+                {
+                    EditOrderAmtBtn.Enabled = true;
+                    EditOrderAmtTextBox.Enabled = true;
+                }
                 EditOrderAmtTextBox.Text = row.Cells["ReorderQty"].Value.ToString();
 
             }
@@ -1174,17 +1018,17 @@ namespace ReorderPointSystem
                         controller.GetInventoryManager().GetReorderRepository().Update(reorder);
                     }
                     LoadOrders();
-                    ReloadDB();
+                    LoadItems();
 
                 }
                 else
                 {
-                    MessageBox.Show("You cannot recieve an order that's already been recieved.", "Error - order already complete");
+                    ShowError("You cannot receive an order that's already been received.");
                 }
             }
             else
             {
-                MessageBox.Show("You must select an order before you can recieve it.", "Error - no order selected");
+                ShowError("You must select an order before you can receive it.");
             }
         }
 
@@ -1203,7 +1047,7 @@ namespace ReorderPointSystem
                 OrderItemsDataGrid.Rows.Clear();
                 foreach (ReorderItem item in items)
                 {
-                    OrderItemsDataGrid.Rows.Add(item.ItemId, itemsList.Find(x => x.Id == item.ItemId).Name, item.Quantity);
+                    OrderItemsDataGrid.Rows.Add(item.ItemId, item.Name, item.Quantity);
                 }
                 if (!row.Cells["Status"].Value.Equals("Complete"))
                 {
@@ -1220,6 +1064,35 @@ namespace ReorderPointSystem
         {
             AnalysisView form = new AnalysisView();
             form.Show();
+        // Utility functions
+        private void ShowError(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+
+        private void ShowInfo(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Information",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void ShowSuccess(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Success",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
         }
     }
 }

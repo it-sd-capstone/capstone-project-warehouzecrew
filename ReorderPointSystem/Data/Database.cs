@@ -44,6 +44,7 @@ namespace ReorderPointSystem.Data
                 CREATE TABLE IF NOT EXISTS categories (
 	                id	    INTEGER NOT NULL UNIQUE,
 	                name	TEXT NOT NULL,
+                    is_deleted INTEGER NOT NULL DEFAULT 0,
 	                PRIMARY KEY(id AUTOINCREMENT)
                 );
                 CREATE TABLE IF NOT EXISTS inventory_logs (
@@ -64,6 +65,7 @@ namespace ReorderPointSystem.Data
 	                reorder_point	INTEGER NOT NULL,
 	                max_amount	    INTEGER NOT NULL,
 	                reorder_enabled	INTEGER NOT NULL,
+                    is_deleted      INTEGER NOT NULL DEFAULT 0,
 	                created_at	    TEXT,
 	                updated_at	    TEXT,
 	                PRIMARY KEY(id AUTOINCREMENT),

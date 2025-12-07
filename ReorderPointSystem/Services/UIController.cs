@@ -61,38 +61,15 @@ namespace ReorderPointSystem.Services
             }
         }
 
-        public List<Item> SearchItems(string name)
+        public List<Item>? SearchItems(string name)
         {
-            SQLiteConnection conn = Database.GetConnection();
-            String sqlSearchStr = "SELECT * FROM items WHERE name LIKE '%" + name + "%'";
-            SQLiteCommand cmd = new SQLiteCommand(sqlSearchStr, conn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
-            List<Item> items = new List<Item>();
-
-            while (reader.Read())
+            if (Validator.IsValidString(name))
             {
-                int id = reader.GetInt16(reader.GetOrdinal("id"));
-                int categoryID = reader.GetInt16(reader.GetOrdinal("category_id"));
-                string itemName = reader.GetString(reader.GetOrdinal("name"));
-                string description = reader.GetString(reader.GetOrdinal("description"));
-                int currAmt = reader.GetInt16(reader.GetOrdinal("current_amount"));
-                int reorderPt = reader.GetInt16(reader.GetOrdinal("reorder_point"));
-                int maxAmt = reader.GetInt16(reader.GetOrdinal("max_amount"));
-                String created = reader.GetString(reader.GetOrdinal("created_at")).ToString();
-                String updated = reader.GetString(reader.GetOrdinal("updated_at")).ToString();
-                bool reorderEnabled = reader.GetBoolean(reader.GetOrdinal("reorder_enabled"));
-                Item item = new Item(id, categoryID, itemName, description, currAmt, reorderPt, maxAmt, reorderEnabled);
-                DateTime result;
-                DateTime.TryParse(created, out result);
-                item.CreatedAt = result;
-                DateTime.TryParse(updated, out result);
-                item.LastUpdatedAt = result;
-                items.Add(item);
+                return _inventoryManager.GetItemRepository().Search(name);
+            } else
+            {
+                return null;
             }
-            reader.Close();
-            conn.Close();
-            cmd.Dispose();
-            return items;
         }
 
         public List<Item> ProcessLowStockReorders(List<Item> itemsIn, List<Reorder> reorders)
@@ -119,20 +96,6 @@ namespace ReorderPointSystem.Services
             return _inventoryManager;
         }
 
-        private bool findMatchedId(Reorder o, Item item)
-        {
-
-            foreach (ReorderItem orderItem in o.Items)
-            {
-                if (orderItem.ItemId == item.Id)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private List<ReorderItem> itemsOnOrder()
         {
             List<Reorder> reorders = _inventoryManager.GetReorderRepository().GetAll();
@@ -149,6 +112,5 @@ namespace ReorderPointSystem.Services
             }
             return reorderItems;
         }
-
     }
 }
