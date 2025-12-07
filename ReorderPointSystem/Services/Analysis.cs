@@ -176,8 +176,8 @@ namespace ReorderPointSystem.Services
             {
                 // precise parabolic formula from 3 points, steps taken from the internet
                 Point p1 = controlPoints[i][0];
-                Point p2 = controlPoints[i][0];
-                Point p3 = controlPoints[i][0];
+                Point p2 = controlPoints[i][1];
+                Point p3 = controlPoints[i][2];
                 double a1 = p2.X * p2.X - p1.X * p1.X;
                 double b1 = p2.X - p1.X;
                 double d1 = p2.Y - p1.Y;
