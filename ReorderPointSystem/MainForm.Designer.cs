@@ -92,7 +92,7 @@
             // 
             EnableTestModeChkbx.AutoSize = true;
             EnableTestModeChkbx.Location = new Point(33, 1551);
-            EnableTestModeChkbx.Margin = new Padding(6, 6, 6, 6);
+            EnableTestModeChkbx.Margin = new Padding(6);
             EnableTestModeChkbx.Name = "EnableTestModeChkbx";
             EnableTestModeChkbx.Size = new Size(319, 36);
             EnableTestModeChkbx.TabIndex = 0;
@@ -103,7 +103,7 @@
             // SimDayBtn
             // 
             SimDayBtn.Location = new Point(368, 1542);
-            SimDayBtn.Margin = new Padding(6, 6, 6, 6);
+            SimDayBtn.Margin = new Padding(6);
             SimDayBtn.Name = "SimDayBtn";
             SimDayBtn.Size = new Size(176, 49);
             SimDayBtn.TabIndex = 0;
@@ -115,7 +115,7 @@
             // AddTestDataBtn
             // 
             AddTestDataBtn.Location = new Point(574, 1541);
-            AddTestDataBtn.Margin = new Padding(6, 6, 6, 6);
+            AddTestDataBtn.Margin = new Padding(6);
             AddTestDataBtn.Name = "AddTestDataBtn";
             AddTestDataBtn.Size = new Size(167, 49);
             AddTestDataBtn.TabIndex = 0;
@@ -151,9 +151,9 @@
             ItemInfoGroupBox.Controls.Add(ItemNameTextBox);
             ItemInfoGroupBox.Controls.Add(ItemNameLabel);
             ItemInfoGroupBox.Location = new Point(22, 26);
-            ItemInfoGroupBox.Margin = new Padding(6, 6, 6, 6);
+            ItemInfoGroupBox.Margin = new Padding(6);
             ItemInfoGroupBox.Name = "ItemInfoGroupBox";
-            ItemInfoGroupBox.Padding = new Padding(6, 6, 6, 6);
+            ItemInfoGroupBox.Padding = new Padding(6);
             ItemInfoGroupBox.Size = new Size(1515, 591);
             ItemInfoGroupBox.TabIndex = 0;
             ItemInfoGroupBox.TabStop = false;
@@ -173,7 +173,7 @@
             // 
             DeleteCatCheckBox.AutoSize = true;
             DeleteCatCheckBox.Location = new Point(966, 181);
-            DeleteCatCheckBox.Margin = new Padding(6, 6, 6, 6);
+            DeleteCatCheckBox.Margin = new Padding(6);
             DeleteCatCheckBox.Name = "DeleteCatCheckBox";
             DeleteCatCheckBox.Size = new Size(28, 27);
             DeleteCatCheckBox.TabIndex = 15;
@@ -205,7 +205,7 @@
             // 
             AddNewCatCheckBox.AutoSize = true;
             AddNewCatCheckBox.Location = new Point(765, 181);
-            AddNewCatCheckBox.Margin = new Padding(6, 6, 6, 6);
+            AddNewCatCheckBox.Margin = new Padding(6);
             AddNewCatCheckBox.Name = "AddNewCatCheckBox";
             AddNewCatCheckBox.Size = new Size(28, 27);
             AddNewCatCheckBox.TabIndex = 7;
@@ -215,7 +215,7 @@
             // SubmitNewCategoryBtn
             // 
             SubmitNewCategoryBtn.Location = new Point(765, 235);
-            SubmitNewCategoryBtn.Margin = new Padding(6, 6, 6, 6);
+            SubmitNewCategoryBtn.Margin = new Padding(6);
             SubmitNewCategoryBtn.Name = "SubmitNewCategoryBtn";
             SubmitNewCategoryBtn.Size = new Size(260, 62);
             SubmitNewCategoryBtn.TabIndex = 9;
@@ -227,7 +227,7 @@
             // EditItemBtn
             // 
             EditItemBtn.Location = new Point(1283, 254);
-            EditItemBtn.Margin = new Padding(6, 6, 6, 6);
+            EditItemBtn.Margin = new Padding(6);
             EditItemBtn.Name = "EditItemBtn";
             EditItemBtn.Size = new Size(212, 98);
             EditItemBtn.TabIndex = 12;
@@ -239,7 +239,7 @@
             // 
             NewCategoryTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             NewCategoryTextBox.Location = new Point(197, 235);
-            NewCategoryTextBox.Margin = new Padding(6, 6, 6, 6);
+            NewCategoryTextBox.Margin = new Padding(6);
             NewCategoryTextBox.Name = "NewCategoryTextBox";
             NewCategoryTextBox.PlaceholderText = "Enter new category name";
             NewCategoryTextBox.Size = new Size(522, 50);
@@ -262,7 +262,7 @@
             CategoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             CategoryComboBox.FormattingEnabled = true;
             CategoryComboBox.Location = new Point(197, 158);
-            CategoryComboBox.Margin = new Padding(6, 6, 6, 6);
+            CategoryComboBox.Margin = new Padding(6);
             CategoryComboBox.Name = "CategoryComboBox";
             CategoryComboBox.Size = new Size(522, 40);
             CategoryComboBox.TabIndex = 5;
@@ -281,7 +281,7 @@
             // 
             EnableReorderChkbx.AutoSize = true;
             EnableReorderChkbx.Location = new Point(765, 139);
-            EnableReorderChkbx.Margin = new Padding(6, 6, 6, 6);
+            EnableReorderChkbx.Margin = new Padding(6);
             EnableReorderChkbx.Name = "EnableReorderChkbx";
             EnableReorderChkbx.Size = new Size(28, 27);
             EnableReorderChkbx.TabIndex = 6;
@@ -290,7 +290,7 @@
             // DeleteItemBtn
             // 
             DeleteItemBtn.Location = new Point(1283, 476);
-            DeleteItemBtn.Margin = new Padding(6, 6, 6, 6);
+            DeleteItemBtn.Margin = new Padding(6);
             DeleteItemBtn.Name = "DeleteItemBtn";
             DeleteItemBtn.Size = new Size(212, 98);
             DeleteItemBtn.TabIndex = 14;
@@ -301,7 +301,7 @@
             // ClearFieldsBtn
             // 
             ClearFieldsBtn.Location = new Point(1283, 365);
-            ClearFieldsBtn.Margin = new Padding(6, 6, 6, 6);
+            ClearFieldsBtn.Margin = new Padding(6);
             ClearFieldsBtn.Name = "ClearFieldsBtn";
             ClearFieldsBtn.Size = new Size(212, 98);
             ClearFieldsBtn.TabIndex = 13;
@@ -312,7 +312,7 @@
             // SubmitItemBtn
             // 
             SubmitItemBtn.Location = new Point(1283, 143);
-            SubmitItemBtn.Margin = new Padding(6, 6, 6, 6);
+            SubmitItemBtn.Margin = new Padding(6);
             SubmitItemBtn.Name = "SubmitItemBtn";
             SubmitItemBtn.Size = new Size(212, 98);
             SubmitItemBtn.TabIndex = 11;
@@ -324,9 +324,9 @@
             // 
             ItemDescriptionGroupBox.Controls.Add(ItemDescriptionTextBox);
             ItemDescriptionGroupBox.Location = new Point(11, 309);
-            ItemDescriptionGroupBox.Margin = new Padding(6, 6, 6, 6);
+            ItemDescriptionGroupBox.Margin = new Padding(6);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
-            ItemDescriptionGroupBox.Padding = new Padding(6, 6, 6, 6);
+            ItemDescriptionGroupBox.Padding = new Padding(6);
             ItemDescriptionGroupBox.Size = new Size(1255, 265);
             ItemDescriptionGroupBox.TabIndex = 0;
             ItemDescriptionGroupBox.TabStop = false;
@@ -335,7 +335,7 @@
             // ItemDescriptionTextBox
             // 
             ItemDescriptionTextBox.Location = new Point(11, 41);
-            ItemDescriptionTextBox.Margin = new Padding(6, 6, 6, 6);
+            ItemDescriptionTextBox.Margin = new Padding(6);
             ItemDescriptionTextBox.MaxLength = 250;
             ItemDescriptionTextBox.Multiline = true;
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
@@ -346,7 +346,7 @@
             // ReorderMaxTextBox
             // 
             ReorderMaxTextBox.Location = new Point(1283, 81);
-            ReorderMaxTextBox.Margin = new Padding(6, 6, 6, 6);
+            ReorderMaxTextBox.Margin = new Padding(6);
             ReorderMaxTextBox.Name = "ReorderMaxTextBox";
             ReorderMaxTextBox.PlaceholderText = "Enter quantity";
             ReorderMaxTextBox.Size = new Size(208, 39);
@@ -356,7 +356,7 @@
             // ReorderPointTextBox
             // 
             ReorderPointTextBox.Location = new Point(1025, 81);
-            ReorderPointTextBox.Margin = new Padding(6, 6, 6, 6);
+            ReorderPointTextBox.Margin = new Padding(6);
             ReorderPointTextBox.Name = "ReorderPointTextBox";
             ReorderPointTextBox.PlaceholderText = "Enter quantity";
             ReorderPointTextBox.Size = new Size(208, 39);
@@ -367,7 +367,7 @@
             // CurrentQtyTextBox
             // 
             CurrentQtyTextBox.Location = new Point(765, 81);
-            CurrentQtyTextBox.Margin = new Padding(6, 6, 6, 6);
+            CurrentQtyTextBox.Margin = new Padding(6);
             CurrentQtyTextBox.Name = "CurrentQtyTextBox";
             CurrentQtyTextBox.PlaceholderText = "Enter quantity";
             CurrentQtyTextBox.Size = new Size(208, 39);
@@ -408,7 +408,7 @@
             // 
             ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ItemNameTextBox.Location = new Point(197, 68);
-            ItemNameTextBox.Margin = new Padding(6, 6, 6, 6);
+            ItemNameTextBox.Margin = new Padding(6);
             ItemNameTextBox.Name = "ItemNameTextBox";
             ItemNameTextBox.PlaceholderText = "Enter item name";
             ItemNameTextBox.Size = new Size(522, 50);
@@ -432,9 +432,9 @@
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
             ItemsListGroupBox.Location = new Point(22, 629);
-            ItemsListGroupBox.Margin = new Padding(6, 6, 6, 6);
+            ItemsListGroupBox.Margin = new Padding(6);
             ItemsListGroupBox.Name = "ItemsListGroupBox";
-            ItemsListGroupBox.Padding = new Padding(6, 6, 6, 6);
+            ItemsListGroupBox.Padding = new Padding(6);
             ItemsListGroupBox.Size = new Size(1515, 900);
             ItemsListGroupBox.TabIndex = 0;
             ItemsListGroupBox.TabStop = false;
@@ -450,7 +450,7 @@
             ItemsGridView.BackgroundColor = SystemColors.Window;
             ItemsGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             ItemsGridView.Location = new Point(11, 98);
-            ItemsGridView.Margin = new Padding(6, 6, 6, 6);
+            ItemsGridView.Margin = new Padding(6);
             ItemsGridView.MultiSelect = false;
             ItemsGridView.Name = "ItemsGridView";
             ItemsGridView.ReadOnly = true;
@@ -463,7 +463,7 @@
             // AddToOrderBtn
             // 
             AddToOrderBtn.Location = new Point(396, 838);
-            AddToOrderBtn.Margin = new Padding(6, 6, 6, 6);
+            AddToOrderBtn.Margin = new Padding(6);
             AddToOrderBtn.Name = "AddToOrderBtn";
             AddToOrderBtn.Size = new Size(730, 49);
             AddToOrderBtn.TabIndex = 18;
@@ -474,7 +474,7 @@
             // ItemSearchTextBox
             // 
             ItemSearchTextBox.Location = new Point(396, 34);
-            ItemSearchTextBox.Margin = new Padding(6, 6, 6, 6);
+            ItemSearchTextBox.Margin = new Padding(6);
             ItemSearchTextBox.Name = "ItemSearchTextBox";
             ItemSearchTextBox.PlaceholderText = "Search...";
             ItemSearchTextBox.Size = new Size(576, 39);
@@ -484,7 +484,7 @@
             // SearchBtn
             // 
             SearchBtn.Location = new Point(986, 36);
-            SearchBtn.Margin = new Padding(6, 6, 6, 6);
+            SearchBtn.Margin = new Padding(6);
             SearchBtn.Name = "SearchBtn";
             SearchBtn.Size = new Size(139, 49);
             SearchBtn.TabIndex = 16;
@@ -498,9 +498,9 @@
             PendingOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
             PendingOrdersGroupBox.Controls.Add(PendingOrderListBox);
             PendingOrdersGroupBox.Location = new Point(1549, 26);
-            PendingOrdersGroupBox.Margin = new Padding(6, 6, 6, 6);
+            PendingOrdersGroupBox.Margin = new Padding(6);
             PendingOrdersGroupBox.Name = "PendingOrdersGroupBox";
-            PendingOrdersGroupBox.Padding = new Padding(6, 6, 6, 6);
+            PendingOrdersGroupBox.Padding = new Padding(6);
             PendingOrdersGroupBox.Size = new Size(752, 297);
             PendingOrdersGroupBox.TabIndex = 0;
             PendingOrdersGroupBox.TabStop = false;
@@ -509,7 +509,7 @@
             // SubmitPendingOrderButton
             // 
             SubmitPendingOrderButton.Location = new Point(11, 228);
-            SubmitPendingOrderButton.Margin = new Padding(6, 6, 6, 6);
+            SubmitPendingOrderButton.Margin = new Padding(6);
             SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
             SubmitPendingOrderButton.Size = new Size(362, 49);
             SubmitPendingOrderButton.TabIndex = 20;
@@ -520,7 +520,7 @@
             // DeletePendingOrderBtn
             // 
             DeletePendingOrderBtn.Location = new Point(381, 228);
-            DeletePendingOrderBtn.Margin = new Padding(6, 6, 6, 6);
+            DeletePendingOrderBtn.Margin = new Padding(6);
             DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
             DeletePendingOrderBtn.Size = new Size(360, 49);
             DeletePendingOrderBtn.TabIndex = 21;
@@ -532,7 +532,7 @@
             // 
             PendingOrderListBox.FormattingEnabled = true;
             PendingOrderListBox.Location = new Point(11, 38);
-            PendingOrderListBox.Margin = new Padding(6, 6, 6, 6);
+            PendingOrderListBox.Margin = new Padding(6);
             PendingOrderListBox.Name = "PendingOrderListBox";
             PendingOrderListBox.Size = new Size(726, 164);
             PendingOrderListBox.TabIndex = 0;
@@ -542,9 +542,9 @@
             // 
             CurrentOrdersGroupBox.Controls.Add(PastOrderDataGridView);
             CurrentOrdersGroupBox.Location = new Point(1549, 335);
-            CurrentOrdersGroupBox.Margin = new Padding(6, 6, 6, 6);
+            CurrentOrdersGroupBox.Margin = new Padding(6);
             CurrentOrdersGroupBox.Name = "CurrentOrdersGroupBox";
-            CurrentOrdersGroupBox.Padding = new Padding(6, 6, 6, 6);
+            CurrentOrdersGroupBox.Padding = new Padding(6);
             CurrentOrdersGroupBox.Size = new Size(752, 787);
             CurrentOrdersGroupBox.TabIndex = 0;
             CurrentOrdersGroupBox.TabStop = false;
@@ -560,7 +560,7 @@
             PastOrderDataGridView.BackgroundColor = SystemColors.Window;
             PastOrderDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             PastOrderDataGridView.Location = new Point(11, 41);
-            PastOrderDataGridView.Margin = new Padding(6, 6, 6, 6);
+            PastOrderDataGridView.Margin = new Padding(6);
             PastOrderDataGridView.MultiSelect = false;
             PastOrderDataGridView.Name = "PastOrderDataGridView";
             PastOrderDataGridView.ReadOnly = true;
@@ -574,9 +574,9 @@
             // 
             OrderItemsGroupBox.Controls.Add(OrderItemsDataGrid);
             OrderItemsGroupBox.Location = new Point(1549, 1135);
-            OrderItemsGroupBox.Margin = new Padding(6, 6, 6, 6);
+            OrderItemsGroupBox.Margin = new Padding(6);
             OrderItemsGroupBox.Name = "OrderItemsGroupBox";
-            OrderItemsGroupBox.Padding = new Padding(6, 6, 6, 6);
+            OrderItemsGroupBox.Padding = new Padding(6);
             OrderItemsGroupBox.Size = new Size(752, 395);
             OrderItemsGroupBox.TabIndex = 0;
             OrderItemsGroupBox.TabStop = false;
@@ -592,7 +592,7 @@
             OrderItemsDataGrid.BackgroundColor = SystemColors.Window;
             OrderItemsDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             OrderItemsDataGrid.Location = new Point(11, 47);
-            OrderItemsDataGrid.Margin = new Padding(6, 6, 6, 6);
+            OrderItemsDataGrid.Margin = new Padding(6);
             OrderItemsDataGrid.MultiSelect = false;
             OrderItemsDataGrid.Name = "OrderItemsDataGrid";
             OrderItemsDataGrid.ReadOnly = true;
@@ -606,7 +606,7 @@
             // 
             EditOrderAmtTextBox.Enabled = false;
             EditOrderAmtTextBox.Location = new Point(1549, 1536);
-            EditOrderAmtTextBox.Margin = new Padding(6, 6, 6, 6);
+            EditOrderAmtTextBox.Margin = new Padding(6);
             EditOrderAmtTextBox.Name = "EditOrderAmtTextBox";
             EditOrderAmtTextBox.PlaceholderText = "Enter quantity";
             EditOrderAmtTextBox.Size = new Size(186, 39);
@@ -617,7 +617,7 @@
             // 
             EditOrderAmtBtn.Enabled = false;
             EditOrderAmtBtn.Location = new Point(1749, 1536);
-            EditOrderAmtBtn.Margin = new Padding(6, 6, 6, 6);
+            EditOrderAmtBtn.Margin = new Padding(6);
             EditOrderAmtBtn.Name = "EditOrderAmtBtn";
             EditOrderAmtBtn.Size = new Size(321, 49);
             EditOrderAmtBtn.TabIndex = 25;
@@ -629,7 +629,7 @@
             // 
             OrderRecievedBtn.Enabled = false;
             OrderRecievedBtn.Location = new Point(2082, 1536);
-            OrderRecievedBtn.Margin = new Padding(6, 6, 6, 6);
+            OrderRecievedBtn.Margin = new Padding(6);
             OrderRecievedBtn.Name = "OrderRecievedBtn";
             OrderRecievedBtn.Size = new Size(219, 49);
             OrderRecievedBtn.TabIndex = 26;
@@ -645,6 +645,7 @@
             BtnExportItems.TabIndex = 27;
             BtnExportItems.Text = "Export Items";
             BtnExportItems.UseVisualStyleBackColor = true;
+            BtnExportItems.Click += BtnExportItems_Click;
             // 
             // BtnExportCategories
             // 
@@ -654,6 +655,7 @@
             BtnExportCategories.TabIndex = 28;
             BtnExportCategories.Text = "Export Categories";
             BtnExportCategories.UseVisualStyleBackColor = true;
+            BtnExportCategories.Click += BtnExportCategories_Click;
             // 
             // BtnExportReorders
             // 
@@ -663,6 +665,7 @@
             BtnExportReorders.TabIndex = 28;
             BtnExportReorders.Text = "Export Reorders";
             BtnExportReorders.UseVisualStyleBackColor = true;
+            BtnExportReorders.Click += BtnExportReorders_Click;
             // 
             // BtnExportLogs
             // 
@@ -672,6 +675,7 @@
             BtnExportLogs.TabIndex = 29;
             BtnExportLogs.Text = "Export Inventory Log";
             BtnExportLogs.UseVisualStyleBackColor = true;
+            BtnExportLogs.Click += BtnExportLogs_Click;
             // 
             // MainForm
             // 
@@ -694,7 +698,7 @@
             Controls.Add(SimDayBtn);
             Controls.Add(EnableTestModeChkbx);
             FormBorderStyle = FormBorderStyle.Fixed3D;
-            Margin = new Padding(6, 6, 6, 6);
+            Margin = new Padding(6);
             MaximizeBox = false;
             Name = "MainForm";
             Text = "Reorder Point System";

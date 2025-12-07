@@ -1146,7 +1146,6 @@ namespace ReorderPointSystem
             string csv = CSVExport.ExportInventoryLogs(logs);
             SaveCsvToFile(csv, "inventory_logs_export.csv");
         }
-       
     }
 }
 
