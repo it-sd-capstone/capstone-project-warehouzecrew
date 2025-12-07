@@ -67,11 +67,7 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
-<<<<<<< HEAD
             var currentDateTime = GlobalDate.date;
-=======
-            var currentDateTime = DateTime.UtcNow;
->>>>>>> alan
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);
@@ -143,11 +139,7 @@ namespace ReorderPointSystem.Data
                     updated_at = @LastUpdatedAt
                 WHERE id = @Id;
             ";
-<<<<<<< HEAD
             var currentDateTime = GlobalDate.date;
-=======
-            var currentDateTime = DateTime.UtcNow;
->>>>>>> alan
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);
