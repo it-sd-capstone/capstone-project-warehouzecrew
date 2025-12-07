@@ -26,6 +26,9 @@ namespace ReorderPointSystem
             }
             ItemRepository repo = new ItemRepository();
             Item[] items = repo.GetAll().ToArray();
+            string[] timeLevelIdentities = analysis.timeLevelIdentities;
+            int[] timeLevelDays = analysis.timeLevelDays;
+            int timeLevel = analysis.totalGains.Count();
             // column labels
             historyGrid.Columns.Add("Date", "Date");
             historyRecentGainsGrid.Columns.Add("Over last", "Over last");
@@ -56,14 +59,58 @@ namespace ReorderPointSystem
                 historyGrid.Rows.Add(row);
             }
             // historyRecentGainsGrid
-
+            for (int i = 0; i < timeLevel; i++)
+            {
+                var row = new DataGridViewRow();
+                row.CreateCells(historyRecentGainsGrid);
+                row.Cells[0].Value = timeLevelIdentities[i];
+                var vals = analysis.totalGains[i];
+                for (int j = 0; j < vals.Length; j++)
+                {
+                    row.Cells[j + 1].Value = vals[j].ToString();
+                }
+                historyRecentGainsGrid.Rows.Add(row);
+            }
             // ---------- PREDICT ----------
             // predictionLinearGrid
-
+            for (int i = 0; i < timeLevel; i++)
+            {
+                var row = new DataGridViewRow();
+                row.CreateCells(predictionLinearGrid);
+                row.Cells[0].Value = timeLevelIdentities[i];
+                var vals = analysis.predictLinear[i];
+                for (int j = 0; j < vals.Length; j++)
+                {
+                    row.Cells[j + 1].Value = vals[j].ToString();
+                }
+                predictionLinearGrid.Rows.Add(row);
+            }
             // predictionParabolicGrid
-
+            for (int i = 0; i < timeLevel; i++)
+            {
+                var row = new DataGridViewRow();
+                row.CreateCells(predictionParabolicGrid);
+                row.Cells[0].Value = timeLevelIdentities[i];
+                var vals = analysis.predictParabola[i];
+                for (int j = 0; j < vals.Length; j++)
+                {
+                    row.Cells[j + 1].Value = vals[j].ToString();
+                }
+                predictionParabolicGrid.Rows.Add(row);
+            }
             // predictionExponentialGrid
-
+            for (int i = 0; i < timeLevel; i++)
+            {
+                var row = new DataGridViewRow();
+                row.CreateCells(predictionExponentialGrid);
+                row.Cells[0].Value = timeLevelIdentities[i];
+                var vals = analysis.predictExponent[i];
+                for (int j = 0; j < vals.Length; j++)
+                {
+                    row.Cells[j + 1].Value = vals[j].ToString();
+                }
+                predictionExponentialGrid.Rows.Add(row);
+            }
         }
     }
 }

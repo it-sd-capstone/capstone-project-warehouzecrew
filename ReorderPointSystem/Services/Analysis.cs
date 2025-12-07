@@ -61,7 +61,7 @@ namespace ReorderPointSystem.Services
             for (int i = 0; i < logCount; i++) // step through logs end to start
             {
                 var log = logs[i];
-                (log.QuantityChange >= 0 ? gains : losses)[log.ItemId - 1] += log.QuantityChange;
+                (log.QuantityChange <= 0 ? gains : losses)[log.ItemId - 1] += log.QuantityChange;
                 if (log.CreatedAt.Date != date) // IF date is same, continue to update current day ELSE add current day to history and start new current day, which is a clone of current day
                 {
                     backwardHistory.Add((int[])currentDay.Clone());
@@ -87,20 +87,21 @@ namespace ReorderPointSystem.Services
         }
         private void estimateRates()
         {
-            int maxTimeLevel = timeLevelDays.Length;
+            int maxTimeLevel = timeLevelDays.Length - 1;
             int timeLevel = 0;
             List<int[]> validHistory = new List<int[]>();
-            for (int i = 0; i < timeLevelDays[maxTimeLevel]; i++)
+            for (int i = 0; i < timeLevelDays[maxTimeLevel] + 1; i++)
             {
                 if (i >= history.Length) { break; }
                 if (i >= timeLevelDays[timeLevel]) { timeLevel++; }
                 validHistory.Add(history[history.Length - i - 1]);
             }
-            totalGains = new int[timeLevel][];
-            predictLinear = new int[timeLevel][];
-            predictParabola = new int[timeLevel][];
-            predictExponent = new int[timeLevel][];
-            for (int i = 0; i <  timeLevel; i++)
+            timeLevel--;
+            totalGains = new int[timeLevel + 1][];
+            predictLinear = new int[timeLevel + 1][];
+            predictParabola = new int[timeLevel + 1][];
+            predictExponent = new int[timeLevel + 1][];
+            for (int i = 0; i <= timeLevel; i++)
             {
                 totalGains[i] = calcGainsFromSpan(validHistory[0], validHistory.Last());
                 List<int[]> days = validHistory.GetRange(0, timeLevelDays[timeLevel]);
@@ -125,7 +126,7 @@ namespace ReorderPointSystem.Services
             int dayCount = days.Count();
             for (int i = 0; i < itemCount; i++)
             {
-                // simple linear regression formula (start and end as control points, rest shift trend vertically)
+                // simple linear regression formula (my design, start and end as control points, rest shift trend vertically)
                 var startAmt = days[0][i];
                 var endAmt = days.Last()[i];
                 int mean = 0;
@@ -145,16 +146,16 @@ namespace ReorderPointSystem.Services
             for (int i = 0; i < itemCount; i++)
             {
                 // cluster points into 3 pools and average each pool
-                List<Point> pool1 = new List<Point>();
-                List<Point> pool2 = new List<Point>();
-                List<Point> pool3 = new List<Point>();
-                for (int j = 0; j < dayCount; j++)
-                {
-                    int poolTarget = (j + 1) % 3;
-                    if (poolTarget == 0) { pool1.Add(new Point(j + 1, days[j][i])); continue; }
-                    if (poolTarget == 1) { pool2.Add(new Point(j + 1, days[j][i])); continue; }
-                                           pool3.Add(new Point(j + 1, days[j][i]));
-                }
+                List<Point> allPoints = new List<Point>();
+                for (int j = 0; j < dayCount; j++) { allPoints.Add(new Point(j + 1, days[j][i])); }
+                int remaining = dayCount - 3;
+                int n1 = remaining / 3;
+                int n2 = remaining - n1 * 2;
+                int size1 = 1 + n1;
+                int size2 = 1 + n2;
+                List<Point> pool1 = allPoints.GetRange(0, size1);
+                List<Point> pool2 = allPoints.GetRange(size1, size1);
+                List<Point> pool3 = allPoints.GetRange(size1 * 2, size2);
                 Point avg1 = new Point(0, 0);
                 Point avg2 = new Point(0, 0);
                 Point avg3 = new Point(0, 0);
@@ -203,7 +204,11 @@ namespace ReorderPointSystem.Services
                 Point p2 = controlPoints[i][0];
                 Point p3 = controlPoints[i][0];
                 int sign = Math.Sign(p3.Y - p1.Y);
-                double k1 = Math.Max(0.0001, 1 + ((p3.Y - p2.Y) / (p3.X - p2.X) - (p2.Y - p1.Y) / (p2.X - p1.X)) * sign);
+                double k1 = 0.0001;
+                if (sign != 0)
+                {
+                    k1 = Math.Max(0.0001, 1 + ((p3.Y - p2.Y) / (p3.X - p2.X) - (p2.Y - p1.Y) / (p2.X - p1.X)) * sign);
+                }
                 double k0 = 0.0001;
                 if (sign != 0)
                 {

@@ -65,7 +65,7 @@
             groupBox1.Controls.Add(historyGrid);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(614, 532);
+            groupBox1.Size = new Size(614, 509);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "History";
@@ -84,7 +84,7 @@
             historyRecentGainsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             historyRecentGainsGrid.Location = new Point(6, 338);
             historyRecentGainsGrid.Name = "historyRecentGainsGrid";
-            historyRecentGainsGrid.Size = new Size(602, 141);
+            historyRecentGainsGrid.Size = new Size(602, 164);
             historyRecentGainsGrid.TabIndex = 6;
             // 
             // label1
@@ -166,7 +166,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1354, 605);
+            ClientSize = new Size(1257, 533);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Name = "AnalysisView";
