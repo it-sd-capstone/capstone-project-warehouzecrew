@@ -441,6 +441,7 @@ namespace ReorderPointSystem
         // ELSE create a new item in the BD with the properties set by the user
         private void SubmitItemBtn_Click(object sender, EventArgs e)
         {
+            RetrySubmission:
             int id = selectedItem != null ? selectedItem.Id : -1;
             String name = ItemNameTextBox.Text;
             String description = ItemDescriptionTextBox.Text;
@@ -457,31 +458,37 @@ namespace ReorderPointSystem
                 ItemNameTextBox.Focus();
                 ItemNameTextBox.SelectAll();
                 return;
-            } else if (id > 0 && !Validator.IsValidInt(id))
+            }
+            else if (id > 0 && !Validator.IsValidInt(id))
             {
                 ShowError("Internal error regarding item id");
                 return;
-            } else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
+            }
+            else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
             {
                 ShowError("Please ensure the description text field contains valid characters.");
                 return;
-            } else if (!Validator.IsValidInt(curAmt))
+            }
+            else if (!Validator.IsValidInt(curAmt))
             {
                 ShowError("Please ensure the current amount field contains a valid number.");
                 CurrentQtyTextBox.Focus();
                 CurrentQtyTextBox.SelectAll();
                 return;
-            } else if (!Validator.IsValidInt(curCat))
+            }
+            else if (!Validator.IsValidInt(curCat))
             {
                 ShowError("Please ensure a valid category is selected.");
                 return;
-            } else if (!Validator.IsValidInt(reorderPt))
+            }
+            else if (!Validator.IsValidInt(reorderPt))
             {
                 ShowError("Please ensure the reorder point field contains a valid number.");
                 ReorderPointTextBox.Focus();
                 ReorderPointTextBox.SelectAll();
                 return;
-            } else if (!Validator.IsValidInt(maxAmt))
+            }
+            else if (!Validator.IsValidInt(maxAmt))
             {
                 ShowError("Please ensure the max amount field contains a valid number.");
                 ReorderMaxTextBox.Focus();
@@ -501,34 +508,80 @@ namespace ReorderPointSystem
                 ReorderEnabled = reorderEnabled
             };
 
-            if (id.Equals(-1)) // New item
+            if (id != -1)
+                item.Id = id;
+
+            try
             {
-                var result = controller.GetInventoryManager().addItem(item);
-                if (result != null)
+                using (var testConn = Database.GetConnection())
                 {
-                    ShowSuccess("Item added successfully");
-                    LoadItems();
-                }
-                else
-                {
-                    ShowError("Internal error adding item");
                 }
             }
-            else // Update existing item
+            catch (Exception ex)
             {
-                item.Id = id;
-                var result = controller.GetInventoryManager().updateItem(item);
-                if (result)
+                var retryDB = MessageBox.Show(
+                    "Unable to connect to the database.\n\n" + ex.Message,
+                    "Database Connection Failed",
+                    MessageBoxButtons.RetryCancel,
+                    MessageBoxIcon.Error
+                );
+
+                if (retryDB == DialogResult.Retry)
+                    goto RetrySubmission;
+                else
+                    return;
+            }
+
+
+            try
+            {
+                bool success;
+
+                if (id == -1)
                 {
-                    ShowSuccess("Item updated successfully");
-                    LoadItems();
+                    var addResult = controller.GetInventoryManager().addItem(item);
+
+                    if (addResult == null)
+                        throw new Exception("The database did not acknowledge the insert.");
+
+                    success = true;
                 }
                 else
                 {
-                    ShowError("Internal error updating item");
+                    success = controller.GetInventoryManager().updateItem(item);
+
+                    if (!success)
+                        throw new Exception("The database did not acknowledge the update.");
+                }
+
+                if (id == -1)
+                    ShowSuccess("Item added successfully");
+                else
+                    ShowSuccess("Item updated successfully");
+
+                LoadItems();
+                return;
+            }
+            catch (Exception ex)
+            {
+                var retryInsert = MessageBox.Show(
+                    "The item could NOT be saved to the database.\n\n" + ex.Message +
+                    "\n\nWould you like to try again?",
+                    "Insert/Update Failed",
+                    MessageBoxButtons.RetryCancel,
+                    MessageBoxIcon.Warning
+                );
+
+                if (retryInsert == DialogResult.Retry)
+                    goto RetrySubmission;
+                else
+                {
+                    ClearFieldsBtn_Click(null, EventArgs.Empty);
+                    return;
                 }
             }
         }
+
 
         // Clear the item information in the item info group box. If the text boxes are disabled, also enable them
         private void ClearFieldsBtn_Click(object sender, EventArgs e)
@@ -636,6 +689,8 @@ namespace ReorderPointSystem
 
         private void SubmitNewCategoryBtn_Click(object sender, EventArgs e)
         {
+        RetrySubmission:
+
             if (SubmitNewCategoryBtn.Text == "Delete Category")
             {
                 if (CategoryComboBox.SelectedItem == null)
@@ -663,18 +718,22 @@ namespace ReorderPointSystem
                 if (result == DialogResult.No)
                     return;
 
-                try 
+                try
                 {
-                    bool deleteSuccess = controller.GetInventoryManager().GetCategoryRepository().Delete(selectedCategoryId);
+                    bool deleteSuccess = controller.GetInventoryManager()
+                                                   .GetCategoryRepository()
+                                                   .Delete(selectedCategoryId);
+
                     if (!deleteSuccess)
                     {
                         ShowError("Category not deleted; possible invalid category id.");
                         return;
                     }
+
                     LoadCategories();
                     ShowSuccess($"Category '{selectedCategoryName}' deleted successfully.");
                 }
-                catch (InvalidOperationException ex)
+                catch (InvalidOperationException)
                 {
                     ShowError("Cannot delete category with associated items. Please reassign or delete those items first.");
                     return;
@@ -689,31 +748,72 @@ namespace ReorderPointSystem
             {
                 string newCategoryName = NewCategoryTextBox.Text.Trim();
 
-                // Validate
                 if (!Validator.IsValidString(newCategoryName))
                 {
                     ShowError("Please enter a valid category name.");
                     return;
                 }
 
-                // Add category
-                var addedCategory = controller.GetInventoryManager().GetCategoryRepository().Add(new Category { Name = newCategoryName });
-                if (addedCategory == null)
+                try
                 {
-                    ShowError("Category already exists.");
-                    return;
+                    using (var testConn = Database.GetConnection())
+                    {
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var retryDB = MessageBox.Show(
+                        "Unable to connect to the database.\n\n" + ex.Message,
+                        "Database Connection Failed",
+                        MessageBoxButtons.RetryCancel,
+                        MessageBoxIcon.Error
+                    );
+
+                    if (retryDB == DialogResult.Retry)
+                        goto RetrySubmission;
+                    else
+                        return;
                 }
 
-                LoadCategories();
-                MessageBox.Show($"Category '{newCategoryName}' added successfully!");
+                try
+                {
+                    var addedCategory = controller.GetInventoryManager()
+                                                  .GetCategoryRepository()
+                                                  .Add(new Category { Name = newCategoryName });
 
-                int newIndex = CategoryComboBox.FindStringExact(newCategoryName);
-                if (newIndex >= 0)
-                    CategoryComboBox.SelectedIndex = newIndex;
+                    if (addedCategory == null)
+                        throw new Exception("Category already exists or could not be added.");
 
-                AddNewCatCheckBox.Checked = false;
+                    LoadCategories();
+                    ShowSuccess($"Category '{newCategoryName}' added successfully!");
+
+                    int newIndex = CategoryComboBox.FindStringExact(newCategoryName);
+                    if (newIndex >= 0)
+                        CategoryComboBox.SelectedIndex = newIndex;
+
+                    AddNewCatCheckBox.Checked = false;
+                }
+                catch (Exception ex)
+                {
+                    var retryInsert = MessageBox.Show(
+                        "The category could NOT be saved to the database.\n\n" + ex.Message +
+                        "\n\nWould you like to try again?",
+                        "Insert Failed",
+                        MessageBoxButtons.RetryCancel,
+                        MessageBoxIcon.Warning
+                    );
+
+                    if (retryInsert == DialogResult.Retry)
+                        goto RetrySubmission;
+                    else
+                    {
+                        ClearFieldsBtn_Click(null, EventArgs.Empty);
+                        return;
+                    }
+                }
             }
         }
+
 
         private void AddNewCategory_CheckChanged(object sender, EventArgs e)
         {
