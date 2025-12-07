@@ -60,7 +60,7 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn catColumn = new DataGridViewTextBoxColumn();
             catColumn.Name = "Category";
             catColumn.HeaderText = "Category";
-            catColumn.DataPropertyName = "CategoryID"; 
+            catColumn.DataPropertyName = "CategoryID";
             catColumn.FillWeight = 20;// 20% of total width
 
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
@@ -289,7 +289,7 @@ namespace ReorderPointSystem
             //    ItemNameTextBox.Focus();
             //    ItemNameTextBox.Select();
             //}));
-            
+
         }
 
         /***** Simulation Mode Events *****/
@@ -457,31 +457,37 @@ namespace ReorderPointSystem
                 ItemNameTextBox.Focus();
                 ItemNameTextBox.SelectAll();
                 return;
-            } else if (id > 0 && !Validator.IsValidInt(id))
+            }
+            else if (id > 0 && !Validator.IsValidInt(id))
             {
                 ShowError("Internal error regarding item id");
                 return;
-            } else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
+            }
+            else if (!string.IsNullOrEmpty(description) && !Validator.IsValidString(description))
             {
                 ShowError("Please ensure the description text field contains valid characters.");
                 return;
-            } else if (!Validator.IsValidInt(curAmt))
+            }
+            else if (!Validator.IsValidInt(curAmt))
             {
                 ShowError("Please ensure the current amount field contains a valid number.");
                 CurrentQtyTextBox.Focus();
                 CurrentQtyTextBox.SelectAll();
                 return;
-            } else if (!Validator.IsValidInt(curCat))
+            }
+            else if (!Validator.IsValidInt(curCat))
             {
                 ShowError("Please ensure a valid category is selected.");
                 return;
-            } else if (!Validator.IsValidInt(reorderPt))
+            }
+            else if (!Validator.IsValidInt(reorderPt))
             {
                 ShowError("Please ensure the reorder point field contains a valid number.");
                 ReorderPointTextBox.Focus();
                 ReorderPointTextBox.SelectAll();
                 return;
-            } else if (!Validator.IsValidInt(maxAmt))
+            }
+            else if (!Validator.IsValidInt(maxAmt))
             {
                 ShowError("Please ensure the max amount field contains a valid number.");
                 ReorderMaxTextBox.Focus();
@@ -663,7 +669,7 @@ namespace ReorderPointSystem
                 if (result == DialogResult.No)
                     return;
 
-                try 
+                try
                 {
                     bool deleteSuccess = controller.GetInventoryManager().GetCategoryRepository().Delete(selectedCategoryId);
                     if (!deleteSuccess)
@@ -1090,5 +1096,57 @@ namespace ReorderPointSystem
                 MessageBoxIcon.Information
             );
         }
+
+        private void SaveCsvToFile(string csvContent, string defaultFileName)
+        {
+            using SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Title = "Save CSV Export";
+            sfd.Filter = "CSV Files (*.csv)|*.csv";
+            sfd.FileName = defaultFileName;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(sfd.FileName, csvContent);
+                MessageBox.Show("Export complete!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void BtnExportItems_Click(object sender, EventArgs e)
+        {
+            var repo = new ItemRepository();
+            var items = repo.GetAll();
+
+            string csv = CSVExport.ExportItems(items);
+            SaveCsvToFile(csv, "items_export.csv");
+        }
+
+        private void BtnExportCategories_Click(object sender, EventArgs e)
+        {
+            var repo = new CategoryRepository();
+            var categories = repo.GetAll();
+
+            string csv = CSVExport.ExportCategories(categories);
+            SaveCsvToFile(csv, "categories_export.csv");
+        }
+
+        private void BtnExportReorders_Click(object sender, EventArgs e)
+        {
+            var repo = new ReorderRepository();
+            var reorders = repo.GetAll();
+
+            string csv = CSVExport.ExportReorders(reorders);
+            SaveCsvToFile(csv, "reorders_export.csv");
+        }
+
+        private void BtnExportLogs_Click(object sender, EventArgs e)
+        {
+            var repo = new InventoryLogRepository();
+            var logs = repo.GetAll();
+
+            string csv = CSVExport.ExportInventoryLogs(logs);
+            SaveCsvToFile(csv, "inventory_logs_export.csv");
+        }
+       
     }
 }
+
