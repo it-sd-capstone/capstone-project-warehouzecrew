@@ -62,15 +62,15 @@ namespace ReorderPointSystem.Data
             return null;
         }
 
-        private static InventoryLog MapReader(SQLiteDataReader r)
+        private static InventoryLog MapReader(SQLiteDataReader reader)
         {
             return new InventoryLog
             {
-                Id = Convert.ToInt32(r["id"]),
-                ItemId = Convert.ToInt32(r["item_id"]),
-                QuantityChange = Convert.ToInt32(r["quantity_change"]),
-                Type = r["type"].ToString() ?? "",
-                CreatedAt = r.GetDateTime(5)
+                Id = reader.GetInt32(0),
+                ItemId = reader.GetInt32(1),
+                QuantityChange = reader.GetInt32(2),
+                Type = reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4)
             };
         }
     }
