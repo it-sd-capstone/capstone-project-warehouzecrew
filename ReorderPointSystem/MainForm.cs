@@ -1060,6 +1060,10 @@ namespace ReorderPointSystem
             }
         }
 
+        private void openAnalysisButton_Click(object sender, EventArgs e)
+        {
+            AnalysisView form = new AnalysisView();
+            form.Show();
         // Utility functions
         private void ShowError(string message)
         {
