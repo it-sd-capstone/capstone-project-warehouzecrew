@@ -550,6 +550,8 @@ namespace ReorderPointSystem
             selectedItem = null;
             EnableProductInfoOptions();
 
+            DeleteItemBtn.Enabled = false;
+
             ItemNameTextBox.Focus();
         }
 
