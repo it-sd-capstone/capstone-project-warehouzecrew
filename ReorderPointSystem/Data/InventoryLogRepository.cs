@@ -18,7 +18,7 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = DateTime.UtcNow;
             cmd.Parameters.AddWithValue("@item_id", log.ItemId);
             cmd.Parameters.AddWithValue("@quantity_change", log.QuantityChange);
             cmd.Parameters.AddWithValue("@type", log.Type);
@@ -70,7 +70,7 @@ namespace ReorderPointSystem.Data
                 ItemId = Convert.ToInt32(r["item_id"]),
                 QuantityChange = Convert.ToInt32(r["quantity_change"]),
                 Type = r["type"].ToString() ?? "",
-                CreatedAt = DateTime.Parse(r["created_at"].ToString() ?? DateTime.Now.ToString())
+                CreatedAt = r.GetDateTime(5)
             };
         }
     }
