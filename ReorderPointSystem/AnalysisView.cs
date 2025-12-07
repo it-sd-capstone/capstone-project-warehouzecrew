@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace ReorderPointSystem
 {
@@ -18,14 +19,30 @@ namespace ReorderPointSystem
         public AnalysisView()
         {
             InitializeComponent();
-            historyGrid.Columns.Add("Date", "Date");
-            ItemRepository repo = new ItemRepository();
-            foreach (Item item in repo.GetAll())
-            {
-                historyGrid.Columns.Add(item.Name, item.Name);
-            }
             Analysis analysis = new Analysis();
-            if (!analysis.instantiate()) { return; }
+            if (!analysis.initialize())
+            {
+                return;
+            }
+            ItemRepository repo = new ItemRepository();
+            Item[] items = repo.GetAll().ToArray();
+            // column labels
+            historyGrid.Columns.Add("Date", "Date");
+            historyRecentGainsGrid.Columns.Add("Over last", "Over last");
+            predictionLinearGrid.Columns.Add("By last", "By last"); // by last [3 days/week/2 weeks/month/etc]
+            predictionParabolicGrid.Columns.Add("By last", "By last");
+            predictionExponentialGrid.Columns.Add("By last", "By last");
+            foreach (Item item in items)
+            {
+                var name = item.Name;
+                historyGrid.Columns.Add(name, name);
+                historyRecentGainsGrid.Columns.Add(name, name);
+                predictionLinearGrid.Columns.Add(name, name);
+                predictionParabolicGrid.Columns.Add(name, name);
+                predictionExponentialGrid.Columns.Add(name, name);
+            }
+            // ---------- HISTORY ----------
+            // historyGrid
             for (int i = 0; i < analysis.dates.Count(); i++)
             {
                 var row = new DataGridViewRow();
@@ -38,6 +55,15 @@ namespace ReorderPointSystem
                 }
                 historyGrid.Rows.Add(row);
             }
+            // historyRecentGainsGrid
+
+            // ---------- PREDICT ----------
+            // predictionLinearGrid
+
+            // predictionParabolicGrid
+
+            // predictionExponentialGrid
+
         }
     }
 }
