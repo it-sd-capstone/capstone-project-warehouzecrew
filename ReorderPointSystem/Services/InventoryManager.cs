@@ -15,12 +15,14 @@ namespace ReorderPointSystem.Services
         private ItemRepository _itemRepo;
         private ReorderRepository _reorderRepo;
         private InventoryLogRepository _inventoryLogRepo;
+        private CategoryRepository _categoryRepo;
 
         public InventoryManager()
         {
             _itemRepo = new ItemRepository();
             _reorderRepo = new ReorderRepository();
             _inventoryLogRepo = new InventoryLogRepository();
+            _categoryRepo = new CategoryRepository();
         }
 
         public ItemRepository GetItemRepository()
@@ -38,6 +40,11 @@ namespace ReorderPointSystem.Services
             return _inventoryLogRepo;
         }
 
+        public CategoryRepository GetCategoryRepository()
+        {
+            return _categoryRepo;
+        }
+
         public List<Item> GetAllItems()
         {
             return _itemRepo.GetAll();
@@ -48,14 +55,14 @@ namespace ReorderPointSystem.Services
             return _itemRepo.Add(item);
         }
 
-        public void updateItem(Item item)
+        public bool updateItem(Item item)
         {
-            _itemRepo.Update(item);
+            return _itemRepo.Update(item);
         }
 
-        public void deleteItem(int id)
+        public bool deleteItem(int id)
         {
-            _itemRepo.Delete(id);
+            return _itemRepo.Delete(id);
         }
 
         public Reorder generateReorder(Item item)

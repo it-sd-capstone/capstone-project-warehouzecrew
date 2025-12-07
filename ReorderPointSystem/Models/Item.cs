@@ -17,6 +17,7 @@ namespace ReorderPointSystem.Models
         public int ReorderPoint { get; set; }
         public int MaxAmount { get; set; }
         public bool ReorderEnabled { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
        

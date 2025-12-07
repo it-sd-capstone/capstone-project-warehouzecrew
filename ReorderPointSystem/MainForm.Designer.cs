@@ -153,16 +153,16 @@
             // DeleteCatLabel
             // 
             DeleteCatLabel.AutoSize = true;
-            DeleteCatLabel.Location = new Point(573, 85);
+            DeleteCatLabel.Location = new Point(541, 85);
             DeleteCatLabel.Name = "DeleteCatLabel";
-            DeleteCatLabel.Size = new Size(94, 15);
+            DeleteCatLabel.Size = new Size(89, 15);
             DeleteCatLabel.TabIndex = 16;
-            DeleteCatLabel.Text = "Delete category?";
+            DeleteCatLabel.Text = "Delete category";
             // 
             // DeleteCatCheckBox
             // 
             DeleteCatCheckBox.AutoSize = true;
-            DeleteCatCheckBox.Location = new Point(552, 85);
+            DeleteCatCheckBox.Location = new Point(520, 85);
             DeleteCatCheckBox.Name = "DeleteCatCheckBox";
             DeleteCatCheckBox.Size = new Size(15, 14);
             DeleteCatCheckBox.TabIndex = 15;
@@ -184,9 +184,9 @@
             AddNewCatLabel.AutoSize = true;
             AddNewCatLabel.Location = new Point(433, 85);
             AddNewCatLabel.Name = "AddNewCatLabel";
-            AddNewCatLabel.Size = new Size(108, 15);
+            AddNewCatLabel.Size = new Size(78, 15);
             AddNewCatLabel.TabIndex = 0;
-            AddNewCatLabel.Text = "Add new category?";
+            AddNewCatLabel.Text = "Add category";
             // 
             // AddNewCatCheckBox
             // 
@@ -224,6 +224,7 @@
             NewCategoryTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             NewCategoryTextBox.Location = new Point(106, 110);
             NewCategoryTextBox.Name = "NewCategoryTextBox";
+            NewCategoryTextBox.PlaceholderText = "Enter new category name";
             NewCategoryTextBox.Size = new Size(283, 29);
             NewCategoryTextBox.TabIndex = 8;
             NewCategoryTextBox.Visible = false;
@@ -252,9 +253,9 @@
             EnableReorderLabel.AutoSize = true;
             EnableReorderLabel.Location = new Point(433, 64);
             EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(161, 15);
+            EnableReorderLabel.Size = new Size(143, 15);
             EnableReorderLabel.TabIndex = 0;
-            EnableReorderLabel.Text = "Allow automated reordering?";
+            EnableReorderLabel.Text = "Disable automatic reorder";
             // 
             // EnableReorderChkbx
             // 
@@ -311,6 +312,7 @@
             ItemDescriptionTextBox.MaxLength = 250;
             ItemDescriptionTextBox.Multiline = true;
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
+            ItemDescriptionTextBox.PlaceholderText = "Enter the item description here (size, color, weight, material, etc.)";
             ItemDescriptionTextBox.Size = new Size(663, 96);
             ItemDescriptionTextBox.TabIndex = 10;
             // 
@@ -318,6 +320,7 @@
             // 
             ReorderMaxTextBox.Location = new Point(691, 38);
             ReorderMaxTextBox.Name = "ReorderMaxTextBox";
+            ReorderMaxTextBox.PlaceholderText = "Enter quantity";
             ReorderMaxTextBox.Size = new Size(114, 23);
             ReorderMaxTextBox.TabIndex = 4;
             ReorderMaxTextBox.TextAlign = HorizontalAlignment.Center;
@@ -326,6 +329,7 @@
             // 
             ReorderPointTextBox.Location = new Point(552, 38);
             ReorderPointTextBox.Name = "ReorderPointTextBox";
+            ReorderPointTextBox.PlaceholderText = "Enter quantity";
             ReorderPointTextBox.Size = new Size(114, 23);
             ReorderPointTextBox.TabIndex = 3;
             ReorderPointTextBox.TextAlign = HorizontalAlignment.Center;
@@ -335,6 +339,7 @@
             // 
             CurrentQtyTextBox.Location = new Point(412, 38);
             CurrentQtyTextBox.Name = "CurrentQtyTextBox";
+            CurrentQtyTextBox.PlaceholderText = "Enter quantity";
             CurrentQtyTextBox.Size = new Size(114, 23);
             CurrentQtyTextBox.TabIndex = 2;
             CurrentQtyTextBox.TextAlign = HorizontalAlignment.Center;
@@ -371,16 +376,17 @@
             ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ItemNameTextBox.Location = new Point(106, 32);
             ItemNameTextBox.Name = "ItemNameTextBox";
+            ItemNameTextBox.PlaceholderText = "Enter item name";
             ItemNameTextBox.Size = new Size(283, 29);
             ItemNameTextBox.TabIndex = 1;
             // 
             // ItemNameLabel
             // 
             ItemNameLabel.AutoSize = true;
-            ItemNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameLabel.Location = new Point(10, 36);
+            ItemNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ItemNameLabel.Location = new Point(31, 41);
             ItemNameLabel.Name = "ItemNameLabel";
-            ItemNameLabel.Size = new Size(90, 21);
+            ItemNameLabel.Size = new Size(69, 15);
             ItemNameLabel.TabIndex = 0;
             ItemNameLabel.Text = "Item Name:";
             // 
@@ -429,6 +435,7 @@
             // 
             ItemSearchTextBox.Location = new Point(213, 16);
             ItemSearchTextBox.Name = "ItemSearchTextBox";
+            ItemSearchTextBox.PlaceholderText = "Search...";
             ItemSearchTextBox.Size = new Size(312, 23);
             ItemSearchTextBox.TabIndex = 15;
             ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
@@ -546,8 +553,10 @@
             EditOrderAmtTextBox.Enabled = false;
             EditOrderAmtTextBox.Location = new Point(834, 720);
             EditOrderAmtTextBox.Name = "EditOrderAmtTextBox";
+            EditOrderAmtTextBox.PlaceholderText = "Enter quantity";
             EditOrderAmtTextBox.Size = new Size(102, 23);
             EditOrderAmtTextBox.TabIndex = 24;
+            EditOrderAmtTextBox.TextAlign = HorizontalAlignment.Center;
             // 
             // EditOrderAmtBtn
             // 

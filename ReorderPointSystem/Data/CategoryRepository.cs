@@ -12,7 +12,7 @@ namespace ReorderPointSystem.Data
             var categories = new List<Category>();
 
             using var connection = Database.GetConnection();
-            using var command = new SQLiteCommand("SELECT id, name FROM categories ORDER BY name;", connection);
+            using var command = new SQLiteCommand("SELECT id, name FROM categories WHERE NOT is_deleted ORDER BY name;", connection);
 
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -30,7 +30,7 @@ namespace ReorderPointSystem.Data
         public Category? GetById(int id)
         {
             using var connection = Database.GetConnection();
-            using var command = new SQLiteCommand("SELECT id, name FROM categories WHERE id = @id;", connection);
+            using var command = new SQLiteCommand("SELECT * FROM categories WHERE id = @id;", connection);
             command.Parameters.AddWithValue("@id", id);
 
             using var reader = command.ExecuteReader();
@@ -39,7 +39,8 @@ namespace ReorderPointSystem.Data
                 return new Category
                 {
                     Id = reader.GetInt32(0),
-                    Name = reader.GetString(1)
+                    Name = reader.GetString(1),
+                    IsDeleted = reader.GetBoolean(2)
                 };
             }
 
@@ -49,10 +50,20 @@ namespace ReorderPointSystem.Data
         public Category Add(Category category)
         {
             using var connection = Database.GetConnection();
-            using var command = new SQLiteCommand(
-                "INSERT INTO categories (name) VALUES (@name); SELECT last_insert_rowid();",
-                connection);
+            using var command = connection.CreateCommand();
 
+            // Check if a category with the same name already exists
+            command.CommandText = "SELECT COUNT(*) FROM categories WHERE name = @name;";
+            command.Parameters.AddWithValue("@name", category.Name);
+
+            long count = (long)command.ExecuteScalar();
+            if (count > 0)
+            {
+                return null;
+            }
+
+            // Insert the new category
+            command.CommandText = "INSERT INTO categories (name) VALUES (@name); SELECT last_insert_rowid();";
             command.Parameters.AddWithValue("@name", category.Name);
 
             long insertedId = (long)command.ExecuteScalar();
@@ -79,10 +90,20 @@ namespace ReorderPointSystem.Data
         public bool Delete(int categoryId)
         {
             using var connection = Database.GetConnection();
-            using var command = new SQLiteCommand(
-                "DELETE FROM categories WHERE id = @id;",
-                connection);
+            using var command = connection.CreateCommand();
 
+            // Check if any items are associated with this category
+            command.CommandText = "SELECT COUNT(*) FROM items WHERE category_id = @id AND NOT is_deleted";
+            command.Parameters.AddWithValue("@id", categoryId);
+            long itemCount = (long)command.ExecuteScalar();
+            if (itemCount > 0)
+            {
+                // Cannot delete category with associated items
+                throw new InvalidOperationException();
+            }
+
+            // Mark the category as deleted
+            command.CommandText = "UPDATE categories SET is_deleted = 1 WHERE id = @id;";
             command.Parameters.AddWithValue("@id", categoryId);
 
             return command.ExecuteNonQuery() > 0;
