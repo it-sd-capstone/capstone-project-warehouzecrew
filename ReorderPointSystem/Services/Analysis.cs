@@ -42,7 +42,7 @@ namespace ReorderPointSystem.Services
                 start[i] = current[i].CurrentAmount;
             }
             backwardHistory.Add((int[])start.Clone());
-            backwardDates.Add(DateTime.Now.Date);
+            backwardDates.Add(GlobalDate.date.Date);
 
             int[] currentDay = start;
             DateTime date = logs[logCount - 1].CreatedAt.Date;

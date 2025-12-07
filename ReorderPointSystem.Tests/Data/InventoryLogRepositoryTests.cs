@@ -1,5 +1,6 @@
 ﻿using ReorderPointSystem.Data;
 using ReorderPointSystem.Models;
+using ReorderPointSystem.Services;
 using System.Data.SQLite;
 
 namespace ReorderPointSystem.Tests.Data
@@ -77,7 +78,7 @@ namespace ReorderPointSystem.Tests.Data
             SeedFakeItem();
             var repo = new InventoryLogRepository();
 
-            var before = DateTime.Now;
+            var before = GlobalDate.date;
             InventoryLog newLog = repo.Add(new InventoryLog(1, 7, "IN"));
 
             Assert.NotNull(newLog);
@@ -85,7 +86,7 @@ namespace ReorderPointSystem.Tests.Data
             // Allow 1 second timestamp drift due to SQLite string-based timestamps
             Assert.InRange(newLog!.CreatedAt,
                 before.AddSeconds(-1),
-                DateTime.Now.AddSeconds(1));
+                GlobalDate.date.AddSeconds(1));
         }
 
         // ------------------------------------------------------

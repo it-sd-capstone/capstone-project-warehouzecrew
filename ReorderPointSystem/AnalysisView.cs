@@ -28,11 +28,13 @@ namespace ReorderPointSystem
             if (!analysis.instantiate()) { return; }
             for (int i = 0; i < analysis.dates.Count(); i++)
             {
-                var row = new List<string>();
-                row.Add(analysis.dates[i].ToString());
-                foreach (int count in analysis.history[i])
+                var row = new DataGridViewRow();
+                row.CreateCells(historyGrid);
+                row.Cells[0].Value = analysis.dates[i].ToString("d");
+                var vals = analysis.history[i];
+                for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Add(count.ToString());
+                    row.Cells[j + 1].Value = vals[j].ToString();
                 }
                 historyGrid.Rows.Add(row);
             }

@@ -1,5 +1,6 @@
 ﻿using ReorderPointSystem.Data;
 using ReorderPointSystem.Models;
+using ReorderPointSystem.Services;
 
 namespace ReorderPointSystem.Tests.Data
 {
@@ -309,11 +310,11 @@ namespace ReorderPointSystem.Tests.Data
             AddSampleData();
             var repo = new ItemRepository();
             Item item = CreateTestItem();
-            DateTime beforeAdd = DateTime.Now.AddSeconds(-1);
+            DateTime beforeAdd = GlobalDate.date.AddSeconds(-1);
 
             // Act
             Item result = repo.Add(item);
-            DateTime afterAdd = DateTime.Now.AddSeconds(1);
+            DateTime afterAdd = GlobalDate.date.AddSeconds(1);
 
             // Assert
             Assert.InRange(result.CreatedAt, beforeAdd, afterAdd);
