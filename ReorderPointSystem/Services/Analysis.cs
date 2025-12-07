@@ -103,12 +103,12 @@ namespace ReorderPointSystem.Services
             predictExponent = new int[timeLevel + 1][];
             for (int i = 0; i <= timeLevel; i++)
             {
-                totalGains[i] = calcGainsFromSpan(validHistory[0], validHistory.Last());
-                List<int[]> days = validHistory.GetRange(0, timeLevelDays[timeLevel]);
+                totalGains[i] = calcGainsFromSpan(validHistory[0], validHistory[timeLevelDays[i]]);
+                List<int[]> days = validHistory.GetRange(0, timeLevelDays[i]);
                 predictLinear[i] = calcLinearFromDays(days);
                 Point[][] controlPoints = calcControlPointsFromDays(days);
-                predictParabola[i] = calcParabolaFromControlPoints(controlPoints, timeLevelDays[timeLevel] + 1);
-                predictExponent[i] = calcExponentFromControlPoints(controlPoints, timeLevelDays[timeLevel] + 1);
+                predictParabola[i] = calcParabolaFromControlPoints(controlPoints, timeLevelDays[i] + 1);
+                predictExponent[i] = calcExponentFromControlPoints(controlPoints, timeLevelDays[i] + 1);
             }
         }
         private int[] calcGainsFromSpan(int[] start, int[] end)
@@ -116,7 +116,7 @@ namespace ReorderPointSystem.Services
             int[] spanGains = new int[itemCount];
             for (int i = 0; i < itemCount; i++)
             {
-                spanGains[i] = end[i] - start[i];
+                spanGains[i] = start[i] - end[i];
             }
             return spanGains;
         }
