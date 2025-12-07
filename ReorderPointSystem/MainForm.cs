@@ -1064,6 +1064,7 @@ namespace ReorderPointSystem
         {
             AnalysisView form = new AnalysisView();
             form.Show();
+        }
         // Utility functions
         private void ShowError(string message)
         {

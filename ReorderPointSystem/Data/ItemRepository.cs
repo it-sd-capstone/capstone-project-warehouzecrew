@@ -184,9 +184,6 @@ namespace ReorderPointSystem.Data
             item.CurrentAmount = reader.GetInt32(4);
             item.ReorderPoint = reader.GetInt32(5);
             item.MaxAmount = reader.GetInt32(6);
-            //item.ReorderEnabled = reader.GetInt32(7) > 0;
-            //item.CreatedAt = DateTime.Parse(reader.GetString(8));
-            //item.LastUpdatedAt = DateTime.Parse(reader.GetString(9));
             item.ReorderEnabled = reader.GetBoolean(7);
             item.IsDeleted = reader.GetBoolean(8);
             item.CreatedAt = reader.GetDateTime(9);
