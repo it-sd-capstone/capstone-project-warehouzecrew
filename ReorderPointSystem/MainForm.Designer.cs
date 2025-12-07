@@ -254,9 +254,9 @@
             EnableReorderLabel.AutoSize = true;
             EnableReorderLabel.Location = new Point(433, 64);
             EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(143, 15);
+            EnableReorderLabel.Size = new Size(140, 15);
             EnableReorderLabel.TabIndex = 0;
-            EnableReorderLabel.Text = "Disable automatic reorder";
+            EnableReorderLabel.Text = "Enable automatic reorder";
             // 
             // EnableReorderChkbx
             // 
