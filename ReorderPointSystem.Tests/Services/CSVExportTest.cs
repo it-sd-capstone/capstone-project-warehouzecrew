@@ -78,23 +78,20 @@ namespace ReorderPointSystem.Tests.Services
         [Fact]
         public void ExportReorders_ShouldExportRowsCorrectly()
         {
-            // Alan 12/2/2025
-            // Please refactor to match the new format of Reorder.cs
+            var reorder = new Reorder
+            {
+                Id = 7,
+                Status = "Pending",
+                CreatedAt = new DateTime(2024, 1, 2, 9, 0, 0),
+                Items = new List<ReorderItem>
+        {
+            new ReorderItem(1, 50)
+        }
+            };
 
-            //var reorder = new Reorder
-            //{
-            //    Id = 7,
-            //    ItemId = 1,
-            //    Quantity = 50,
-            //    Status = "Pending",
-            //    CreatedAt = new DateTime(2024, 1, 2, 9, 0, 0)
-            //};
+            var csv = CSVExport.ExportReorders(new List<Reorder> { reorder });
 
-            //var csv = CSVExport.ExportReorders(new List<Reorder> { reorder });
-
-            //Assert.Contains("7,1,50,Pending,2024-01-02 09:00:00", csv);
-
-            Assert.True(false);
+            Assert.Contains("7,1,50,Pending,2024-01-02 09:00:00", csv);
         }
 
         // ---------------------------------------------------------

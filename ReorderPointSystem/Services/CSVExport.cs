@@ -70,20 +70,20 @@ namespace ReorderPointSystem.Services
         internal static string ExportReorders(List<Reorder> reorders)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Id,ItemId,Quantity,Status,CreatedAt");
-            // Alan 12/2/2025
-            // Please refactor the following commented code.
-            // Reorders were refactored. Review Reorder.cs and ReorderItem.cs
+            sb.AppendLine("ReorderId,ItemId,Quantity,Status,CreatedAt");
 
-            foreach (var r in reorders)
+            foreach (var reorder in reorders)
             {
-                sb.AppendLine(
-                    $"{r.Id}," +
-                    //$"{r.ItemId}," +
-                    //$"{r.Quantity}," +
-                    $"{Escape(r.Status)}," +
-                    $"{r.CreatedAt:yyyy-MM-dd HH:mm:ss}"
-                );
+                foreach (var item in reorder.Items)
+                {
+                    sb.AppendLine(
+                        $"{reorder.Id}," +
+                        $"{item.ItemId}," +
+                        $"{item.Quantity}," +
+                        $"{Escape(reorder.Status)}," +
+                        $"{reorder.CreatedAt:yyyy-MM-dd HH:mm:ss}"
+                    );
+                }
             }
 
             return sb.ToString();
