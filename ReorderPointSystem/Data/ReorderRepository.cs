@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ReorderPointSystem.Models;
+using ReorderPointSystem.Services;
 
 namespace ReorderPointSystem.Data
 {
@@ -101,7 +102,7 @@ namespace ReorderPointSystem.Data
 
                     SELECT last_insert_rowid();
                 ";
-                reorderEntry.CreatedAt = DateTime.Now;
+                reorderEntry.CreatedAt = GlobalDate.date;
                 command.Parameters.AddWithValue("@Status", reorderEntry.Status);
                 command.Parameters.AddWithValue("@CreatedAt", reorderEntry.CreatedAt);
 

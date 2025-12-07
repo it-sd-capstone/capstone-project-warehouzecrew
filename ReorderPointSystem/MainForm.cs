@@ -312,7 +312,7 @@ namespace ReorderPointSystem
         // When the simulate day button is pressed, each item in the DB has a chance to deplete a random amount of stock
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
-            Random rand = new Random();
+            Random rand = new Random(GlobalDate.date.Day + GlobalDate.date.Month * 50 + GlobalDate.date.Year * 500);
             foreach (Item item in itemsList)
             {
                 int num = rand.Next(100);
@@ -327,6 +327,7 @@ namespace ReorderPointSystem
                 }
             }
 
+            GlobalDate.nextDay();
             LoadCategories();
             LoadItems();
         }

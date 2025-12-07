@@ -1,4 +1,5 @@
 ﻿using ReorderPointSystem.Models;
+using ReorderPointSystem.Services;
 namespace ReorderPointSystem.Tests.Models
 {
     public class ItemTests
@@ -14,8 +15,8 @@ namespace ReorderPointSystem.Tests.Models
                 CurrentAmount = 5,
                 ReorderPoint = 10,
                 MaxAmount = 15,
-                CreatedAt = DateTime.Now,
-                LastUpdatedAt = DateTime.Now,
+                CreatedAt = GlobalDate.date,
+                LastUpdatedAt = GlobalDate.date,
             };
         }
 
