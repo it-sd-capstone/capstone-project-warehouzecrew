@@ -102,7 +102,11 @@ namespace ReorderPointSystem.Data
 
                     SELECT last_insert_rowid();
                 ";
+<<<<<<< HEAD
                 reorderEntry.CreatedAt = GlobalDate.date;
+=======
+                reorderEntry.CreatedAt = DateTime.UtcNow;
+>>>>>>> alan
                 command.Parameters.AddWithValue("@Status", reorderEntry.Status);
                 command.Parameters.AddWithValue("@CreatedAt", reorderEntry.CreatedAt);
 

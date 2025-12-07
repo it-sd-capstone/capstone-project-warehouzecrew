@@ -19,7 +19,11 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
+<<<<<<< HEAD
             var currentDateTime = GlobalDate.date;
+=======
+            var currentDateTime = DateTime.UtcNow;
+>>>>>>> alan
             cmd.Parameters.AddWithValue("@item_id", log.ItemId);
             cmd.Parameters.AddWithValue("@quantity_change", log.QuantityChange);
             cmd.Parameters.AddWithValue("@type", log.Type);
@@ -63,15 +67,23 @@ namespace ReorderPointSystem.Data
             return null;
         }
 
-        private static InventoryLog MapReader(SQLiteDataReader r)
+        private static InventoryLog MapReader(SQLiteDataReader reader)
         {
             return new InventoryLog
             {
+<<<<<<< HEAD
                 Id = Convert.ToInt32(r["id"]),
                 ItemId = Convert.ToInt32(r["item_id"]),
                 QuantityChange = Convert.ToInt32(r["quantity_change"]),
                 Type = r["type"].ToString() ?? "",
                 CreatedAt = DateTime.TryParse(r["created_at"]?.ToString(), out var dt) ? dt: GlobalDate.date
+=======
+                Id = reader.GetInt32(0),
+                ItemId = reader.GetInt32(1),
+                QuantityChange = reader.GetInt32(2),
+                Type = reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4)
+>>>>>>> alan
             };
         }
     }
