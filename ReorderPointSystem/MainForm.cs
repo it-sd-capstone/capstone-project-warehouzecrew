@@ -313,7 +313,7 @@ namespace ReorderPointSystem
             LoadCategories();
             LoadOrders();
             _ = CheckReorders();
-            ClearFieldsBtn_Click(sender, e);
+            // ClearFieldsBtn_Click(sender, e);
             //this.BeginInvoke(new Action(() =>
             //{
             //    ItemNameTextBox.Focus();
@@ -844,12 +844,19 @@ namespace ReorderPointSystem
                 {
                     pendingOrder = new List<Item> { };
                 }
-                pendingOrder.Add(copy);
                 if (manualOrderItems == null)
                 {
                     manualOrderItems = new List<Item> { };
                 }
-                manualOrderItems.Add(copy);
+
+                if (pendingOrder.Find(x => x.Id == copy.Id) == null && manualOrderItems.Find(x => x.Id == copy.Id) == null)
+                {
+                    pendingOrder.Add(copy);
+                    manualOrderItems.Add(copy);
+                } else
+                {
+                    ShowError("Item is already in the pending order, please update it's order quantity instead");
+                }
 
             }
             else
@@ -939,7 +946,9 @@ namespace ReorderPointSystem
                     {
                         wipReorder.MarkInProcess();
                         controller.GetInventoryManager().GetReorderRepository().Add(wipReorder);
+                        wipReorder = null;
                         wipReorder = new Reorder();
+                        manualOrderItems = new List<Item> { };
                         LoadOrders();
                     } else
                     {
