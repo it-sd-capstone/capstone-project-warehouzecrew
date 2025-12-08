@@ -14,5 +14,10 @@ namespace ReorderPointSystem.Services
             // But the time to be the same as now
             date = new DateTime(date.Year, date.Month, date.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTime.UtcNow.Millisecond, DateTimeKind.Utc).AddDays(1);
         }
+
+        public static DateTime GetUpdatedDate()
+        {
+            return new DateTime(date.Year, date.Month, date.Day, DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, DateTime.UtcNow.Second, DateTime.UtcNow.Millisecond, DateTimeKind.Utc);
+        }
     }
 }
