@@ -34,11 +34,8 @@
             if (!int.TryParse(input, out int value))
                 return fallback;
 
-            if (value < min)
-                return min;
-
-            if (value > max)
-                return max;
+            if (value < min || value > max)
+                return fallback;
 
             return value;
         }
