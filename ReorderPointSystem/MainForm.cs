@@ -187,7 +187,6 @@ namespace ReorderPointSystem
                         if (item.MaxAmount != itemsList.Find(x => x.Id == item.Id).MaxAmount)
                         {
                             manualOrderItems.Add(item);
-                            Debug.WriteLine(manualOrderItems.Count);
                         }
                     }
                 }
