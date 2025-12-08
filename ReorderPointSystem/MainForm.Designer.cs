@@ -57,6 +57,7 @@
             AddToOrderBtn = new Button();
             ItemSearchTextBox = new TextBox();
             SearchBtn = new Button();
+            openAnalysisButton = new Button();
             SubmitPendingOrderButton = new Button();
             DeletePendingOrderBtn = new Button();
             CurrentOrdersGroupBox = new GroupBox();
@@ -70,7 +71,6 @@
             BtnExportCategories = new Button();
             BtnExportReorders = new Button();
             BtnExportLogs = new Button();
-            openAnalysisButton = new Button();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -84,17 +84,17 @@
             // EnableTestModeChkbx
             // 
             EnableTestModeChkbx.AutoSize = true;
-            EnableTestModeChkbx.Location = new Point(18, 727);
+            EnableTestModeChkbx.Location = new Point(12, 724);
             EnableTestModeChkbx.Name = "EnableTestModeChkbx";
-            EnableTestModeChkbx.Size = new Size(160, 19);
+            EnableTestModeChkbx.Size = new Size(155, 19);
             EnableTestModeChkbx.TabIndex = 0;
-            EnableTestModeChkbx.Text = "Enable Simulation Mode?";
+            EnableTestModeChkbx.Text = "Enable Simulation Mode";
             EnableTestModeChkbx.UseVisualStyleBackColor = true;
             EnableTestModeChkbx.CheckedChanged += EnableTestModeChkbx_CheckedChanged;
             // 
             // SimDayBtn
             // 
-            SimDayBtn.Location = new Point(198, 723);
+            SimDayBtn.Location = new Point(164, 720);
             SimDayBtn.Name = "SimDayBtn";
             SimDayBtn.Size = new Size(95, 23);
             SimDayBtn.TabIndex = 0;
@@ -105,7 +105,7 @@
             // 
             // AddTestDataBtn
             // 
-            AddTestDataBtn.Location = new Point(309, 722);
+            AddTestDataBtn.Location = new Point(265, 720);
             AddTestDataBtn.Name = "AddTestDataBtn";
             AddTestDataBtn.Size = new Size(90, 23);
             AddTestDataBtn.TabIndex = 0;
@@ -144,10 +144,10 @@
             // 
             // DeleteCategoryBtn
             // 
-            DeleteCategoryBtn.Location = new Point(412, 72);
+            DeleteCategoryBtn.Location = new Point(438, 72);
             DeleteCategoryBtn.Margin = new Padding(2, 1, 2, 1);
             DeleteCategoryBtn.Name = "DeleteCategoryBtn";
-            DeleteCategoryBtn.Size = new Size(114, 25);
+            DeleteCategoryBtn.Size = new Size(55, 25);
             DeleteCategoryBtn.TabIndex = 27;
             DeleteCategoryBtn.Text = "Delete";
             DeleteCategoryBtn.UseVisualStyleBackColor = true;
@@ -155,10 +155,10 @@
             // 
             // AddCategoryBtn
             // 
-            AddCategoryBtn.Location = new Point(552, 72);
+            AddCategoryBtn.Location = new Point(394, 72);
             AddCategoryBtn.Margin = new Padding(2, 1, 2, 1);
             AddCategoryBtn.Name = "AddCategoryBtn";
-            AddCategoryBtn.Size = new Size(114, 25);
+            AddCategoryBtn.Size = new Size(40, 25);
             AddCategoryBtn.TabIndex = 27;
             AddCategoryBtn.Text = "Add";
             AddCategoryBtn.UseVisualStyleBackColor = true;
@@ -189,7 +189,7 @@
             // 
             CategoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             CategoryComboBox.FormattingEnabled = true;
-            CategoryComboBox.Location = new Point(106, 74);
+            CategoryComboBox.Location = new Point(104, 74);
             CategoryComboBox.Name = "CategoryComboBox";
             CategoryComboBox.Size = new Size(283, 23);
             CategoryComboBox.TabIndex = 5;
@@ -197,7 +197,7 @@
             // EnableReorderLabel
             // 
             EnableReorderLabel.AutoSize = true;
-            EnableReorderLabel.Location = new Point(483, 101);
+            EnableReorderLabel.Location = new Point(521, 77);
             EnableReorderLabel.Name = "EnableReorderLabel";
             EnableReorderLabel.Size = new Size(140, 15);
             EnableReorderLabel.TabIndex = 0;
@@ -206,7 +206,7 @@
             // EnableReorderChkbx
             // 
             EnableReorderChkbx.AutoSize = true;
-            EnableReorderChkbx.Location = new Point(462, 101);
+            EnableReorderChkbx.Location = new Point(505, 77);
             EnableReorderChkbx.Name = "EnableReorderChkbx";
             EnableReorderChkbx.Size = new Size(15, 14);
             EnableReorderChkbx.TabIndex = 6;
@@ -245,9 +245,9 @@
             // ItemDescriptionGroupBox
             // 
             ItemDescriptionGroupBox.Controls.Add(ItemDescriptionTextBox);
-            ItemDescriptionGroupBox.Location = new Point(6, 119);
+            ItemDescriptionGroupBox.Location = new Point(6, 103);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
-            ItemDescriptionGroupBox.Size = new Size(679, 152);
+            ItemDescriptionGroupBox.Size = new Size(679, 168);
             ItemDescriptionGroupBox.TabIndex = 0;
             ItemDescriptionGroupBox.TabStop = false;
             ItemDescriptionGroupBox.Text = "Item Description";
@@ -259,7 +259,7 @@
             ItemDescriptionTextBox.Multiline = true;
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
             ItemDescriptionTextBox.PlaceholderText = "Enter the item description here (size, color, weight, material, etc.)";
-            ItemDescriptionTextBox.Size = new Size(667, 124);
+            ItemDescriptionTextBox.Size = new Size(667, 140);
             ItemDescriptionTextBox.TabIndex = 10;
             // 
             // ReorderMaxTextBox
@@ -319,11 +319,11 @@
             // 
             // ItemNameTextBox
             // 
-            ItemNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ItemNameTextBox.Location = new Point(106, 30);
+            ItemNameTextBox.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ItemNameTextBox.Location = new Point(104, 38);
             ItemNameTextBox.Name = "ItemNameTextBox";
             ItemNameTextBox.PlaceholderText = "Enter item name";
-            ItemNameTextBox.Size = new Size(283, 29);
+            ItemNameTextBox.Size = new Size(283, 23);
             ItemNameTextBox.TabIndex = 1;
             // 
             // ItemNameLabel
@@ -342,6 +342,7 @@
             ItemsListGroupBox.Controls.Add(AddToOrderBtn);
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
+            ItemsListGroupBox.Controls.Add(openAnalysisButton);
             ItemsListGroupBox.Location = new Point(12, 295);
             ItemsListGroupBox.Name = "ItemsListGroupBox";
             ItemsListGroupBox.Size = new Size(816, 422);
@@ -369,32 +370,43 @@
             // 
             // AddToOrderBtn
             // 
-            AddToOrderBtn.Location = new Point(213, 393);
+            AddToOrderBtn.Location = new Point(290, 393);
             AddToOrderBtn.Name = "AddToOrderBtn";
-            AddToOrderBtn.Size = new Size(393, 23);
+            AddToOrderBtn.Size = new Size(236, 23);
             AddToOrderBtn.TabIndex = 18;
-            AddToOrderBtn.Text = "Add The Selected Item To A Pending Order";
+            AddToOrderBtn.Text = "Add Selected Item To Pending Order";
             AddToOrderBtn.UseVisualStyleBackColor = true;
             AddToOrderBtn.Click += AddToOrderBtn_Click;
             // 
             // ItemSearchTextBox
             // 
-            ItemSearchTextBox.Location = new Point(213, 16);
+            ItemSearchTextBox.Location = new Point(212, 16);
             ItemSearchTextBox.Name = "ItemSearchTextBox";
             ItemSearchTextBox.PlaceholderText = "Search...";
-            ItemSearchTextBox.Size = new Size(312, 23);
+            ItemSearchTextBox.Size = new Size(323, 23);
             ItemSearchTextBox.TabIndex = 15;
             ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
             // 
             // SearchBtn
             // 
-            SearchBtn.Location = new Point(531, 17);
+            SearchBtn.Location = new Point(541, 17);
             SearchBtn.Name = "SearchBtn";
             SearchBtn.Size = new Size(75, 23);
             SearchBtn.TabIndex = 16;
             SearchBtn.Text = "Search";
             SearchBtn.UseVisualStyleBackColor = true;
             SearchBtn.Click += SearchBtn_Click;
+            // 
+            // openAnalysisButton
+            // 
+            openAnalysisButton.Location = new Point(6, 393);
+            openAnalysisButton.Margin = new Padding(2, 1, 2, 1);
+            openAnalysisButton.Name = "openAnalysisButton";
+            openAnalysisButton.Size = new Size(102, 23);
+            openAnalysisButton.TabIndex = 27;
+            openAnalysisButton.Text = "View Analytics";
+            openAnalysisButton.UseVisualStyleBackColor = true;
+            openAnalysisButton.Click += openAnalysisButton_Click;
             // 
             // SubmitPendingOrderButton
             // 
@@ -508,10 +520,10 @@
             // 
             // BtnExportItems
             // 
-            BtnExportItems.Location = new Point(92, 750);
+            BtnExportItems.Location = new Point(360, 720);
             BtnExportItems.Margin = new Padding(2, 1, 2, 1);
             BtnExportItems.Name = "BtnExportItems";
-            BtnExportItems.Size = new Size(181, 22);
+            BtnExportItems.Size = new Size(86, 23);
             BtnExportItems.TabIndex = 27;
             BtnExportItems.Text = "Export Items";
             BtnExportItems.UseVisualStyleBackColor = true;
@@ -519,10 +531,10 @@
             // 
             // BtnExportCategories
             // 
-            BtnExportCategories.Location = new Point(462, 750);
+            BtnExportCategories.Location = new Point(565, 719);
             BtnExportCategories.Margin = new Padding(2, 1, 2, 1);
             BtnExportCategories.Name = "BtnExportCategories";
-            BtnExportCategories.Size = new Size(181, 22);
+            BtnExportCategories.Size = new Size(119, 23);
             BtnExportCategories.TabIndex = 28;
             BtnExportCategories.Text = "Export Categories";
             BtnExportCategories.UseVisualStyleBackColor = true;
@@ -530,10 +542,10 @@
             // 
             // BtnExportReorders
             // 
-            BtnExportReorders.Location = new Point(277, 750);
+            BtnExportReorders.Location = new Point(450, 719);
             BtnExportReorders.Margin = new Padding(2, 1, 2, 1);
             BtnExportReorders.Name = "BtnExportReorders";
-            BtnExportReorders.Size = new Size(181, 22);
+            BtnExportReorders.Size = new Size(111, 23);
             BtnExportReorders.TabIndex = 28;
             BtnExportReorders.Text = "Export Reorders";
             BtnExportReorders.UseVisualStyleBackColor = true;
@@ -541,43 +553,31 @@
             // 
             // BtnExportLogs
             // 
-            BtnExportLogs.Location = new Point(647, 750);
+            BtnExportLogs.Location = new Point(692, 719);
             BtnExportLogs.Margin = new Padding(2, 1, 2, 1);
             BtnExportLogs.Name = "BtnExportLogs";
-            BtnExportLogs.Size = new Size(181, 22);
+            BtnExportLogs.Size = new Size(130, 23);
             BtnExportLogs.TabIndex = 29;
             BtnExportLogs.Text = "Export Inventory Log";
             BtnExportLogs.UseVisualStyleBackColor = true;
             BtnExportLogs.Click += BtnExportLogs_Click;
             // 
-            // openAnalysisButton
-            // 
-            openAnalysisButton.Location = new Point(516, 722);
-            openAnalysisButton.Margin = new Padding(2, 1, 2, 1);
-            openAnalysisButton.Name = "openAnalysisButton";
-            openAnalysisButton.Size = new Size(181, 22);
-            openAnalysisButton.TabIndex = 27;
-            openAnalysisButton.Text = "Analysis";
-            openAnalysisButton.UseVisualStyleBackColor = true;
-            openAnalysisButton.Click += openAnalysisButton_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1260, 774);
+            ClientSize = new Size(1260, 754);
             Controls.Add(BtnExportLogs);
             Controls.Add(BtnExportReorders);
-            Controls.Add(BtnExportCategories);
-            Controls.Add(BtnExportItems);
-            Controls.Add(openAnalysisButton);
             Controls.Add(OrderRecievedBtn);
             Controls.Add(CurrentOrdersGroupBox);
             Controls.Add(EditOrderAmtBtn);
             Controls.Add(EditOrderAmtTextBox);
+            Controls.Add(BtnExportCategories);
             Controls.Add(ItemsListGroupBox);
             Controls.Add(OrderItemsGroupBox);
             Controls.Add(ItemInfoGroupBox);
+            Controls.Add(BtnExportItems);
             Controls.Add(AddTestDataBtn);
             Controls.Add(SimDayBtn);
             Controls.Add(EnableTestModeChkbx);
