@@ -2,6 +2,7 @@
 using ReorderPointSystem.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
@@ -51,27 +52,62 @@ namespace ReorderPointSystem.Services
             {
                 start[i] = current[i].CurrentAmount;
             }
-            backwardHistory.Add((int[])start.Clone());
-            backwardDates.Add(GlobalDate.date.Date);
 
-            int[] currentDay = start;
+            int[] currentDay = (int[]) start.Clone();
             DateTime date = logs[0].CreatedAt.Date;
             int[] gains = new int[itemCount];
             int[] losses = new int[itemCount];
-            for (int i = 0; i < logCount; i++) // step through logs end to start
+            int switchDay = 0;
+
+            // seperate logs by day
+            List<InventoryLog[]> logsPerDay = new List<InventoryLog[]>();
+            List<InventoryLog> logsInDay = new List<InventoryLog>();
+            for (int i = 0; i < logCount; i++)
             {
                 var log = logs[i];
-                (log.QuantityChange <= 0 ? gains : losses)[log.ItemId - 1] += log.QuantityChange;
-                if (log.CreatedAt.Date != date) // IF date is same, continue to update current day ELSE add current day to history and start new current day, which is a clone of current day
+                if (log.CreatedAt.Date != date)
                 {
-                    backwardHistory.Add((int[])currentDay.Clone());
-                    backwardDates.Add(log.CreatedAt.Date.AddDays(1));
                     date = log.CreatedAt.Date;
+                    logsPerDay.Add(logsInDay.ToArray());
+                    logsInDay.Clear();
                 }
-                currentDay[log.ItemId - 1] -= log.QuantityChange; // edit current day log by log by reversing the action of the log. database ids start at 1, not 0, so subtract 1 to get array id
+                logsInDay.Add(log);
             }
-            backwardHistory.Add((int[])currentDay.Clone());
-            backwardDates.Add(logs[logCount - 1].CreatedAt.Date);
+            logsPerDay.Add(logsInDay.ToArray());
+
+            // calculate state day by day
+            foreach (InventoryLog[] day in logsPerDay)
+            {
+                foreach (InventoryLog log in day)
+                {
+                    currentDay[log.ItemId - 1] -= log.QuantityChange; // edit current day log by log by reversing the action of the log. database ids start at 1, not 0, so subtract 1 to get array id
+                    (log.QuantityChange >= 0 ? gains : losses)[log.ItemId - 1] += log.QuantityChange;
+                    // debug print for when quantity is changed
+                    Debug.Print(current[log.ItemId - 1].Name);
+                    Debug.Print(log.ToString());
+                    string debug = "";
+                    foreach (int val in currentDay)
+                    {
+                        debug += val.ToString() + " ";
+                    }
+                    Debug.Print(debug);
+                    // --------------------------------------------
+                }
+                // debug print for when day is saved
+                Debug.Print("saving " + date);
+                string debug2 = "";
+                foreach (int val in currentDay)
+                {
+                    debug2 += val.ToString() + " ";
+                }
+                Debug.Print(debug2);
+                Debug.Print("new day");
+                // ----------------------------------
+                backwardDates.Add(day[0].CreatedAt.Date);
+                backwardHistory.Add((int[]) currentDay.Clone());
+            }
+            backwardDates.Add(date.AddDays(-1));
+            backwardHistory.Add(currentDay);
             grossGains = gains;
             grossLosses = losses;
 
@@ -103,12 +139,27 @@ namespace ReorderPointSystem.Services
             predictExponent = new int[timeLevel + 1][];
             for (int i = 0; i <= timeLevel; i++)
             {
+                // setup
                 totalGains[i] = calcGainsFromSpan(validHistory[0], validHistory[timeLevelDays[i]]);
                 List<int[]> days = validHistory.GetRange(0, timeLevelDays[i]);
+                days.Reverse();
+                // predictions
                 predictLinear[i] = calcLinearFromDays(days);
                 Point[][] controlPoints = calcControlPointsFromDays(days);
                 predictParabola[i] = calcParabolaFromControlPoints(controlPoints, timeLevelDays[i] + 1);
                 predictExponent[i] = calcExponentFromControlPoints(controlPoints, timeLevelDays[i] + 1);
+                // force predictions inside standard range of possible item quantity
+                clampCalculatedItemQuantities(predictLinear[i]);
+                clampCalculatedItemQuantities(predictParabola[i]);
+                clampCalculatedItemQuantities(predictExponent[i]);
+            }
+        }
+        private void clampCalculatedItemQuantities(int[] values)
+        {
+            for (int i = 0; i < itemCount; i++)
+            {
+                values[i] = Math.Min(current[i].MaxAmount, values[i]);
+                values[i] = Math.Max(0, values[i]);
             }
         }
         private int[] calcGainsFromSpan(int[] start, int[] end)
@@ -165,6 +216,9 @@ namespace ReorderPointSystem.Services
                 avg1.X /= pool1.Count();
                 avg2.X /= pool2.Count();
                 avg3.X /= pool3.Count();
+                avg1.Y /= pool1.Count();
+                avg2.Y /= pool2.Count();
+                avg3.Y /= pool3.Count();
                 controlPoints[i] = [ avg1, avg2, avg3 ];
             }
             return controlPoints;
