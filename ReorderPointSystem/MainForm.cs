@@ -174,12 +174,32 @@ namespace ReorderPointSystem
         private async Task CheckReorders()
         {
             await Task.Delay(2500);
+            if (manualOrderItems == null)
+            {
+                manualOrderItems = new List<Item> { };
+            }
+            if (pendingOrder != null && manualOrderItems != null)
+            {
+                foreach (Item item in pendingOrder)
+                {
+                    if (item != null && !manualOrderItems.Contains(item))
+                    {
+                        if (item.MaxAmount != itemsList.Find(x => x.Id == item.Id).MaxAmount)
+                        {
+                            manualOrderItems.Add(item);
+                        }
+                    }
+                }
+            }
 
             pendingOrder = controller.ProcessLowStockReorders(itemsList, reorders);
             if (manualOrderItems != null && manualOrderItems.Count > 0)
             {
                 foreach (Item item in manualOrderItems)
                 {
+                    if (pendingOrder.Find(x => x.Id.Equals(item.Id)) != null){
+                        pendingOrder.Remove(pendingOrder.Find(x => x.Id == item.Id));
+                    }
                     pendingOrder.Add(item);
                 }
             }
@@ -839,7 +859,18 @@ namespace ReorderPointSystem
         {
             if (ItemsGridView.CurrentRow != null || selectedItem != null)
             {
-                Item copy = selectedItem;
+                Item copy = new Item(
+                    selectedItem.Id,
+                    selectedItem.CategoryId,
+                    selectedItem.Name,
+                    selectedItem.Description,
+                    selectedItem.CurrentAmount,
+                    selectedItem.ReorderPoint,
+                    selectedItem.MaxAmount,
+                    selectedItem.ReorderEnabled,
+                    selectedItem.CreatedAt,
+                    selectedItem.LastUpdatedAt
+                    );
                 if (pendingOrder == null)
                 {
                     pendingOrder = new List<Item> { };
@@ -917,15 +948,13 @@ namespace ReorderPointSystem
                     if (Validator.IsValidInt(qty))
                     {
                         var row = OrderItemsDataGrid.SelectedRows[0];
-                        pendingOrder[row.Index].MaxAmount = qty;
+                        pendingOrder.Find(x => x.Id.Equals(row.Cells["Id"].Value)).MaxAmount = qty;
                     }
                     OrderItemsDataGrid.Rows.Clear();
                     foreach (Item item in pendingOrder)
                     {
                         OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
                     }
-                    EditOrderAmtBtn.Enabled = false;
-                    EditOrderAmtTextBox.Enabled = false;
                 }
                 else
                 {
@@ -953,6 +982,7 @@ namespace ReorderPointSystem
                         wipReorder = null;
                         wipReorder = new Reorder();
                         manualOrderItems = new List<Item> { };
+                        pendingOrder = new List<Item>();
                         LoadOrders();
                     } else
                     {
