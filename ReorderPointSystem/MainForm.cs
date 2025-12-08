@@ -853,6 +853,10 @@ namespace ReorderPointSystem
                 {
                     pendingOrder.Add(copy);
                     manualOrderItems.Add(copy);
+                    if (orderSelection.Equals("Pending approval")) 
+                    {
+                        OrderItemsDataGrid.Rows.Add(copy.Id, copy.Name, copy.MaxAmount);
+                    } 
                 } else
                 {
                     ShowError("Item is already in the pending order, please update it's order quantity instead");
