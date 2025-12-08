@@ -75,9 +75,9 @@
             label5.AutoSize = true;
             label5.Location = new Point(19, 320);
             label5.Name = "label5";
-            label5.Size = new Size(36, 15);
+            label5.Size = new Size(48, 15);
             label5.TabIndex = 7;
-            label5.Text = "Gains";
+            label5.Text = "Change";
             // 
             // historyRecentGainsGrid
             // 
@@ -109,7 +109,7 @@
             groupBox2.Size = new Size(614, 509);
             groupBox2.TabIndex = 2;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Projected growth for tomorrow";
+            groupBox2.Text = "Projected values by end of tomorrow";
             // 
             // label4
             // 

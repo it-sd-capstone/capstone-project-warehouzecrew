@@ -71,6 +71,14 @@ namespace ReorderPointSystem
                 }
                 historyRecentGainsGrid.Rows.Add(row);
             }
+            var lastRow = new DataGridViewRow();
+            lastRow.CreateCells(historyRecentGainsGrid);
+            lastRow.Cells[0].Value = "all time";
+            for (int i = 0; i < analysis.itemCount; i++)
+            {
+                lastRow.Cells[i + 1].Value = analysis.grossGains[i] + analysis.grossLosses[i];
+            }
+            historyRecentGainsGrid.Rows.Add(lastRow);
             // ---------- PREDICT ----------
             // predictionLinearGrid
             for (int i = 0; i < timeLevel; i++)

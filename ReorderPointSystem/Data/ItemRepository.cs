@@ -153,7 +153,7 @@ namespace ReorderPointSystem.Data
             bool result = command.ExecuteNonQuery() > 0;
 
             // Add inventory log
-            if (!ignoreLog && result)
+            if (!ignoreLog)
             {
                 InventoryLogRepository logRepository = new InventoryLogRepository();
                 InventoryLog newLog = new InventoryLog(item.Id, item.CurrentAmount - previousQuantity, "Item updated");
