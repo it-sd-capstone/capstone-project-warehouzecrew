@@ -290,6 +290,12 @@ namespace ReorderPointSystem
             LoadOrders();
             _ = CheckReorders();
             ClearFieldsBtn_Click(sender, e);
+            //this.BeginInvoke(new Action(() =>
+            //{
+            //    ItemNameTextBox.Focus();
+            //    ItemNameTextBox.Select();
+            //}));
+
         }
 
         /***** Simulation Mode Events *****/
@@ -1061,9 +1067,58 @@ namespace ReorderPointSystem
             );
         }
 
+        private void SaveCsvToFile(string csvContent, string defaultFileName)
+        {
+            using SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Title = "Save CSV Export";
+            sfd.Filter = "CSV Files (*.csv)|*.csv";
+            sfd.FileName = defaultFileName;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(sfd.FileName, csvContent);
+                MessageBox.Show("Export complete!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void BtnExportItems_Click(object sender, EventArgs e)
+        {
+            var repo = new ItemRepository();
+            var items = repo.GetAll();
+
+            string csv = CSVExport.ExportItems(items);
+            SaveCsvToFile(csv, "items_export.csv");
+        }
+
+        private void BtnExportCategories_Click(object sender, EventArgs e)
+        {
+            var repo = new CategoryRepository();
+            var categories = repo.GetAll();
+
+            string csv = CSVExport.ExportCategories(categories);
+            SaveCsvToFile(csv, "categories_export.csv");
+        }
+
+        private void BtnExportReorders_Click(object sender, EventArgs e)
+        {
+            var repo = new ReorderRepository();
+            var reorders = repo.GetAll();
+
+            string csv = CSVExport.ExportReorders(reorders);
+            SaveCsvToFile(csv, "reorders_export.csv");
+        }
+
+        private void BtnExportLogs_Click(object sender, EventArgs e)
+        {
+            var repo = new InventoryLogRepository();
+            var logs = repo.GetAll();
+
+            string csv = CSVExport.ExportInventoryLogs(logs);
+            SaveCsvToFile(csv, "inventory_logs_export.csv");
         private string FormatDateTime(DateTime dt)
         {
             return dt.ToString("MM/dd/yyyy h:mm tt");
         }
     }
 }
+
