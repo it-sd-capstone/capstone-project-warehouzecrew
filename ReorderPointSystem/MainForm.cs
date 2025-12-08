@@ -349,13 +349,16 @@ namespace ReorderPointSystem
         {
             if (EnableTestModeChkbx.Checked == true)
             {
+                SimDateTime.Text = "Current Simulation Date: " + GlobalDate.GetUpdatedDate().ToString("MM/dd/yyyy");
                 AddTestDataBtn.Visible = true;
                 SimDayBtn.Visible = true;
+                SimDateTime.Visible = true;
             }
             else
             {
                 AddTestDataBtn.Visible = false;
                 SimDayBtn.Visible = false;
+                SimDateTime.Visible = false;
             }
         }
 
@@ -380,6 +383,7 @@ namespace ReorderPointSystem
 
             LoadCategories();
             LoadItems();
+            SimDateTime.Text = "Current Simulation Date: " + GlobalDate.GetUpdatedDate().ToString("MM/dd/yyyy");
         }
 
 

@@ -58,6 +58,7 @@
             ItemSearchTextBox = new TextBox();
             SearchBtn = new Button();
             openAnalysisButton = new Button();
+            SimDateTime = new Label();
             SubmitPendingOrderButton = new Button();
             DeletePendingOrderBtn = new Button();
             CurrentOrdersGroupBox = new GroupBox();
@@ -343,6 +344,7 @@
             ItemsListGroupBox.Controls.Add(ItemSearchTextBox);
             ItemsListGroupBox.Controls.Add(SearchBtn);
             ItemsListGroupBox.Controls.Add(openAnalysisButton);
+            ItemsListGroupBox.Controls.Add(SimDateTime);
             ItemsListGroupBox.Location = new Point(12, 295);
             ItemsListGroupBox.Name = "ItemsListGroupBox";
             ItemsListGroupBox.Size = new Size(816, 422);
@@ -407,6 +409,18 @@
             openAnalysisButton.Text = "View Analytics";
             openAnalysisButton.UseVisualStyleBackColor = true;
             openAnalysisButton.Click += openAnalysisButton_Click;
+            // 
+            // SimDateTime
+            // 
+            SimDateTime.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            SimDateTime.ForeColor = SystemColors.WindowFrame;
+            SimDateTime.Location = new Point(560, 393);
+            SimDateTime.Name = "SimDateTime";
+            SimDateTime.Size = new Size(250, 23);
+            SimDateTime.TabIndex = 0;
+            SimDateTime.Text = "Current date";
+            SimDateTime.TextAlign = ContentAlignment.MiddleRight;
+            SimDateTime.Visible = false;
             // 
             // SubmitPendingOrderButton
             // 
@@ -649,5 +663,6 @@
         private Button openAnalysisButton;
         private Button DeleteCategoryBtn;
         private Button AddCategoryBtn;
+        private Label SimDateTime;
     }
 }
