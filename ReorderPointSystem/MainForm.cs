@@ -1149,9 +1149,10 @@ namespace ReorderPointSystem
         private void BtnExportReorders_Click(object sender, EventArgs e)
         {
             var repo = new ReorderRepository();
-            var reorders = repo.GetAll();
+            var reorders = repo.GetAllForCSV();
 
             string csv = CSVExport.ExportReorders(reorders);
+
             SaveCsvToFile(csv, "reorders_export.csv");
         }
 
