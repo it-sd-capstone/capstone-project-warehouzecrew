@@ -1146,9 +1146,13 @@ namespace ReorderPointSystem
             var repo = new CategoryRepository();
             var categories = repo.GetAll();
 
+            // Ensure categories are ordered by Id before export
+            categories = categories.OrderBy(c => c.Id).ToList();
+
             string csv = CSVExport.ExportCategories(categories);
             SaveCsvToFile(csv, "categories_export.csv");
         }
+
 
         private void BtnExportReorders_Click(object sender, EventArgs e)
         {
