@@ -198,11 +198,11 @@ namespace ReorderPointSystem
                     orderID = 1;
                 }
                 if (wipReorder.Id == -1) {
-                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", DateTime.Now);
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.date);
                 } else
                 {
                     wipReorder = null;
-                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", DateTime.Now);
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.date);
                 }
                 if (PastOrderDataGridView.Rows.Count == orderID -1 && wipReorder.Items.Count != 0)
                 {
@@ -453,7 +453,7 @@ namespace ReorderPointSystem
                                 insertCmd.Parameters.AddWithValue("@reorderPt", itemReorderPoint[i]);
                                 insertCmd.Parameters.AddWithValue("@maxAmt", itemReorderAmt[i]);
                                 insertCmd.Parameters.AddWithValue("@enabled", reorderEnabled);
-                                insertCmd.Parameters.AddWithValue("@currentTime", DateTime.UtcNow);
+                                insertCmd.Parameters.AddWithValue("@currentTime", GlobalDate.date);
 
                                 insertCmd.ExecuteNonQuery();
                             }
