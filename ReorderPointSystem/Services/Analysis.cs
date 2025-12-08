@@ -82,27 +82,7 @@ namespace ReorderPointSystem.Services
                 {
                     currentDay[log.ItemId - 1] -= log.QuantityChange; // edit current day log by log by reversing the action of the log. database ids start at 1, not 0, so subtract 1 to get array id
                     (log.QuantityChange >= 0 ? gains : losses)[log.ItemId - 1] += log.QuantityChange;
-                    // debug print for when quantity is changed
-                    Debug.Print(current[log.ItemId - 1].Name);
-                    Debug.Print(log.ToString());
-                    string debug = "";
-                    foreach (int val in currentDay)
-                    {
-                        debug += val.ToString() + " ";
-                    }
-                    Debug.Print(debug);
-                    // --------------------------------------------
                 }
-                // debug print for when day is saved
-                Debug.Print("saving " + date);
-                string debug2 = "";
-                foreach (int val in currentDay)
-                {
-                    debug2 += val.ToString() + " ";
-                }
-                Debug.Print(debug2);
-                Debug.Print("new day");
-                // ----------------------------------
                 backwardDates.Add(day[0].CreatedAt.Date);
                 backwardHistory.Add((int[]) currentDay.Clone());
             }
