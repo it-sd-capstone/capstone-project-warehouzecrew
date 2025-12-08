@@ -18,6 +18,7 @@ namespace ReorderPointSystem
         private List<Reorder> reorders;
         private Item selectedItem;
         private String orderSelection = "";
+        private Reorder wipReorder = new Reorder();
 
         private UIController controller = new UIController(new InventoryManager());
 
@@ -176,14 +177,31 @@ namespace ReorderPointSystem
                     pendingOrder.Add(item);
                 }
             }
-            if (pendingOrder.Count > 0 && PendingOrderListBox.Items.Count == 0)
+            if (pendingOrder.Count > 0)
             {
-                String searchStr = "SELECT COUNT(\'id\') FROM reorders";
+                String searchStr = "SELECT id FROM reorders ORDER BY id DESC";
                 SQLiteConnection conn = Database.GetConnection();
                 SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
                 int orderID;
-                int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
+                object result = cmd.ExecuteScalar();
+                if (result != null) {
+                    int.TryParse(result.ToString(), out orderID);
+                    orderID++;
+                } else
+                {
+                    orderID = 1;
+                }
+                if (wipReorder.Id == -1) {
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", DateTime.Now);
+                } else
+                {
+                    wipReorder = null;
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", DateTime.Now);
+                }
+                if (PastOrderDataGridView.Rows.Count == orderID -1 && wipReorder.Items.Count != 0)
+                {
+                    PastOrderDataGridView.Rows.Add(wipReorder.Id, wipReorder.CreatedAt, wipReorder.Status);
+                }
             }
             CheckReorders();
         }
@@ -810,15 +828,6 @@ namespace ReorderPointSystem
             if (ItemsGridView.CurrentRow != null || selectedItem != null)
             {
                 Item copy = selectedItem;
-                if (PendingOrderListBox.Items.Count == 0)
-                {
-                    String searchStr = "SELECT COUNT(\'id\') FROM reorders";
-                    SQLiteConnection conn = Database.GetConnection();
-                    SQLiteCommand cmd = new SQLiteCommand(searchStr, conn);
-                    int orderID;
-                    int.TryParse(cmd.ExecuteScalar().ToString(), out orderID);
-                    PendingOrderListBox.Items.Add("WIP Order ID: " + (1 + orderID));
-                }
                 if (pendingOrder == null)
                 {
                     pendingOrder = new List<Item> { };
@@ -829,11 +838,7 @@ namespace ReorderPointSystem
                     manualOrderItems = new List<Item> { };
                 }
                 manualOrderItems.Add(copy);
-                OrderItemsDataGrid.Rows.Clear();
-                foreach (Item item in pendingOrder)
-                {
-                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
-                }
+
             }
             else
             {
@@ -848,14 +853,29 @@ namespace ReorderPointSystem
         // WILL NOT STOP THE ORDER FROM BEING RECREATED IF AN ITEM IS BELOW REORDER THRESHOLD
         private void DeletePendingOrderBtn_Click(object sender, EventArgs e)
         {
-            if (PendingOrderListBox.SelectedIndex != -1)
+            if (PastOrderDataGridView.SelectedRows.Count > 0)
             {
-                PendingOrderListBox.Items.Clear();
-                PendingOrderListBox.SelectedIndex = -1;
-                PendingOrderListBox.Refresh();
-                pendingOrder.Clear();
-                manualOrderItems = null;
+                var row = PastOrderDataGridView.SelectedRows[0];
+                int id = Convert.ToInt32(row.Cells["Id"].Value);
+                if (id != wipReorder.Id)
+                {
+                    ShowError("Selected order is not pending, could not delete.");
+                    return;
+                }
+                if (pendingOrder != null)
+                {
+                    pendingOrder.Clear();
+                }
+                if (manualOrderItems != null)
+                {
+                    manualOrderItems.Clear();
+                }
+                if (wipReorder != null)
+                {
+                    wipReorder = new Reorder();
+                }
                 OrderItemsDataGrid.Rows.Clear();
+                PastOrderDataGridView.Rows.RemoveAt(row.Index);
             }
             else
             {
@@ -898,33 +918,22 @@ namespace ReorderPointSystem
         // Submit the pending order to the Reorders DB
         private void SubmitPendingOrderButton_Click(object sender, EventArgs e)
         {
-            // Add all items into a single reorder
-            Reorder reorder = new Reorder();
-            foreach (Item item in pendingOrder)
+            if (wipReorder != null)
             {
-                reorder.Items.Add(new ReorderItem(item.Id, item.MaxAmount));
-            }
-            controller.GetInventoryManager().GetReorderRepository().Add(reorder);
-
-            LoadOrders();
-            DeletePendingOrderBtn_Click(sender, e);
-        }
-
-        // When a pending order is selected, display its items in the OrderItemsDataGrid
-        private void PendingOrderListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (PendingOrderListBox.SelectedIndex != -1)
-            {
-                orderSelection = "Pending";
-                OrderItemsDataGrid.Rows.Clear();
-                foreach (Item item in pendingOrder)
+                if (PastOrderDataGridView.SelectedRows.Count > 0)
                 {
-                    OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
+                    var row = PastOrderDataGridView.SelectedRows[0];
+                    if (row != null && row.Cells["Id"].Value.Equals(wipReorder.Id))
+                    {
+                        wipReorder.MarkInProcess();
+                        controller.GetInventoryManager().GetReorderRepository().Add(wipReorder);
+                        wipReorder = new Reorder();
+                        LoadOrders();
+                    } else
+                    {
+                        ShowError("You can only submit orders that are \"Pending approval\".");
+                    }
                 }
-            }
-            else
-            {
-                ShowError("You must select a pending order before you can view its items.");
             }
         }
 
@@ -999,21 +1008,44 @@ namespace ReorderPointSystem
         // When a past order is selected, display its items in the OrderItemsDataGrid
         private void PastOrderDataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            if (PastOrderDataGridView.SelectedRows.Count > 0)
+            if (PastOrderDataGridView.SelectedRows.Count > 0 && PastOrderDataGridView.Rows.Count > 0)
             {
                 EditOrderAmtBtn.Enabled = false;
                 EditOrderAmtTextBox.Enabled = false;
-                orderSelection = "Past";
                 var row = PastOrderDataGridView.SelectedRows[0];
                 int id;
                 int.TryParse(row.Cells["Id"].Value.ToString(), out id);
-                List<ReorderItem> items = controller.GetInventoryManager().GetReorderRepository().GetById(id).Items;
+                List<ReorderItem> items;
+
+                // if selected reorder is "Pending approval" pull the items list from wipReorder
+                // otherwise pull the items list from the DB. Also toggle the EditOrderAmt Btn and TextBox
+                // to only be usable if the selected reorder is still pending approval
+                if (wipReorder != null && id == wipReorder.Id)
+                {
+                    orderSelection = "Pending approval";
+                    items = wipReorder.Items;
+                    EditOrderAmtBtn.Enabled = true;
+                    EditOrderAmtTextBox.Enabled = true;
+                    SubmitPendingOrderButton.Enabled = true;
+                    DeletePendingOrderBtn.Enabled = true;
+                }
+                else
+                {
+                    orderSelection = "Past";
+                    items = controller.GetInventoryManager().GetReorderRepository().GetById(id).Items;
+                    EditOrderAmtBtn.Enabled = false;
+                    EditOrderAmtTextBox.Enabled = false;
+                    SubmitPendingOrderButton.Enabled = false;
+                    DeletePendingOrderBtn.Enabled = false;
+                }
                 OrderItemsDataGrid.Rows.Clear();
                 foreach (ReorderItem item in items)
                 {
                     OrderItemsDataGrid.Rows.Add(item.ItemId, item.Name, item.Quantity);
                 }
-                if (!row.Cells["Status"].Value.Equals("Complete"))
+
+                // enable/disable order recieved btn based on selected order's status
+                if (row.Cells["Status"].Value.Equals("In process"))
                 {
                     OrderRecievedBtn.Enabled = true;
                 }

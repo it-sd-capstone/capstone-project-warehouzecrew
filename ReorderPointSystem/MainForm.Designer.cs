@@ -57,10 +57,8 @@
             AddToOrderBtn = new Button();
             ItemSearchTextBox = new TextBox();
             SearchBtn = new Button();
-            PendingOrdersGroupBox = new GroupBox();
             SubmitPendingOrderButton = new Button();
             DeletePendingOrderBtn = new Button();
-            PendingOrderListBox = new ListBox();
             CurrentOrdersGroupBox = new GroupBox();
             PastOrderDataGridView = new DataGridView();
             OrderItemsGroupBox = new GroupBox();
@@ -73,7 +71,6 @@
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ItemsGridView).BeginInit();
-            PendingOrdersGroupBox.SuspendLayout();
             CurrentOrdersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PastOrderDataGridView).BeginInit();
             OrderItemsGroupBox.SuspendLayout();
@@ -390,21 +387,9 @@
             SearchBtn.UseVisualStyleBackColor = true;
             SearchBtn.Click += SearchBtn_Click;
             // 
-            // PendingOrdersGroupBox
-            // 
-            PendingOrdersGroupBox.Controls.Add(SubmitPendingOrderButton);
-            PendingOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
-            PendingOrdersGroupBox.Controls.Add(PendingOrderListBox);
-            PendingOrdersGroupBox.Location = new Point(834, 12);
-            PendingOrdersGroupBox.Name = "PendingOrdersGroupBox";
-            PendingOrdersGroupBox.Size = new Size(405, 139);
-            PendingOrdersGroupBox.TabIndex = 0;
-            PendingOrdersGroupBox.TabStop = false;
-            PendingOrdersGroupBox.Text = "Pending Orders";
-            // 
             // SubmitPendingOrderButton
             // 
-            SubmitPendingOrderButton.Location = new Point(6, 107);
+            SubmitPendingOrderButton.Location = new Point(206, 485);
             SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
             SubmitPendingOrderButton.Size = new Size(195, 23);
             SubmitPendingOrderButton.TabIndex = 20;
@@ -414,7 +399,7 @@
             // 
             // DeletePendingOrderBtn
             // 
-            DeletePendingOrderBtn.Location = new Point(205, 107);
+            DeletePendingOrderBtn.Location = new Point(6, 485);
             DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
             DeletePendingOrderBtn.Size = new Size(194, 23);
             DeletePendingOrderBtn.TabIndex = 21;
@@ -422,25 +407,17 @@
             DeletePendingOrderBtn.UseVisualStyleBackColor = true;
             DeletePendingOrderBtn.Click += DeletePendingOrderBtn_Click;
             // 
-            // PendingOrderListBox
-            // 
-            PendingOrderListBox.FormattingEnabled = true;
-            PendingOrderListBox.ItemHeight = 15;
-            PendingOrderListBox.Location = new Point(6, 18);
-            PendingOrderListBox.Name = "PendingOrderListBox";
-            PendingOrderListBox.Size = new Size(393, 79);
-            PendingOrderListBox.TabIndex = 0;
-            PendingOrderListBox.SelectedIndexChanged += PendingOrderListBox_SelectedIndexChanged;
-            // 
             // CurrentOrdersGroupBox
             // 
+            CurrentOrdersGroupBox.Controls.Add(SubmitPendingOrderButton);
+            CurrentOrdersGroupBox.Controls.Add(DeletePendingOrderBtn);
             CurrentOrdersGroupBox.Controls.Add(PastOrderDataGridView);
-            CurrentOrdersGroupBox.Location = new Point(834, 157);
+            CurrentOrdersGroupBox.Location = new Point(834, 12);
             CurrentOrdersGroupBox.Name = "CurrentOrdersGroupBox";
-            CurrentOrdersGroupBox.Size = new Size(405, 369);
+            CurrentOrdersGroupBox.Size = new Size(405, 514);
             CurrentOrdersGroupBox.TabIndex = 0;
             CurrentOrdersGroupBox.TabStop = false;
-            CurrentOrdersGroupBox.Text = "Past Orders";
+            CurrentOrdersGroupBox.Text = "Orders";
             // 
             // PastOrderDataGridView
             // 
@@ -455,7 +432,7 @@
             PastOrderDataGridView.Name = "PastOrderDataGridView";
             PastOrderDataGridView.ReadOnly = true;
             PastOrderDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            PastOrderDataGridView.Size = new Size(393, 344);
+            PastOrderDataGridView.Size = new Size(393, 460);
             PastOrderDataGridView.TabIndex = 22;
             PastOrderDataGridView.SelectionChanged += PastOrderDataGridView_SelectionChanged;
             // 
@@ -537,7 +514,6 @@
             Controls.Add(OrderRecievedBtn);
             Controls.Add(CurrentOrdersGroupBox);
             Controls.Add(EditOrderAmtBtn);
-            Controls.Add(PendingOrdersGroupBox);
             Controls.Add(EditOrderAmtTextBox);
             Controls.Add(ItemsListGroupBox);
             Controls.Add(OrderItemsGroupBox);
@@ -557,7 +533,6 @@
             ItemsListGroupBox.ResumeLayout(false);
             ItemsListGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ItemsGridView).EndInit();
-            PendingOrdersGroupBox.ResumeLayout(false);
             CurrentOrdersGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)PastOrderDataGridView).EndInit();
             OrderItemsGroupBox.ResumeLayout(false);
@@ -573,7 +548,6 @@
         private Button AddTestDataBtn;
         private GroupBox ItemInfoGroupBox;
         private GroupBox ItemsListGroupBox;
-        private GroupBox PendingOrdersGroupBox;
         private GroupBox CurrentOrdersGroupBox;
         private Label CurrentAmountLabel;
         private TextBox ItemNameTextBox;
@@ -592,7 +566,6 @@
         private Button EditItemBtn;
         private Label EnableReorderLabel;
         private CheckBox EnableReorderChkbx;
-        private ListBox PendingOrderListBox;
         private Button DeletePendingOrderBtn;
         private Button EditOrderAmtBtn;
         private TextBox EditOrderAmtTextBox;
