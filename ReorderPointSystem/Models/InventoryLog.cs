@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReorderPointSystem.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace ReorderPointSystem.Models
 
         public InventoryLog()
         {
-            CreatedAt = DateTime.Now;
+            CreatedAt = GlobalDate.date;
         }
 
         public InventoryLog(int itemId, int quantityChange, string type)
@@ -24,7 +25,7 @@ namespace ReorderPointSystem.Models
             ItemId = itemId;
             QuantityChange = quantityChange;
             Type = type;
-            CreatedAt = DateTime.Now;
+            CreatedAt = GlobalDate.date;
         }
 
         public override string ToString()

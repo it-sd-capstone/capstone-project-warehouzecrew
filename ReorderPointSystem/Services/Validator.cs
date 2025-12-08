@@ -13,7 +13,7 @@
                 return false;
 
             // Only allow safe characters
-            var pattern = @"^[a-zA-Z0-9\s_.()&-]+$";
+            var pattern = @"^[a-zA-Z0-9\s_.,;:()&-]+$";
             if (!System.Text.RegularExpressions.Regex.IsMatch(value, pattern))
                 return false;
 
@@ -34,13 +34,23 @@
             if (!int.TryParse(input, out int value))
                 return fallback;
 
-            if (value < min)
-                return min;
-
-            if (value > max)
-                return max;
+            if (value < min || value > max)
+                return fallback;
 
             return value;
+        }
+
+        public static string SanitizeString(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            // Remove invalid characters
+            var pattern = @"[^a-zA-Z0-9\s_.,;:()&-]";
+            var sanitized = System.Text.RegularExpressions.Regex.Replace(value, pattern, "");
+
+            // Trim whitespace from start and end
+            return sanitized.Trim();
         }
     }
 }

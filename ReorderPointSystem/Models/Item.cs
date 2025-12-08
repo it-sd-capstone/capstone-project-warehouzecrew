@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReorderPointSystem.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,8 +47,8 @@ namespace ReorderPointSystem.Models
             ReorderPoint = reorderPoint;
             MaxAmount = maxAmount;
             ReorderEnabled = enableReorder;
-            CreatedAt = DateTime.Now;
-            LastUpdatedAt = DateTime.Now;
+            CreatedAt = GlobalDate.date;
+            LastUpdatedAt = GlobalDate.date;
         }
 
         public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount, bool enableReorder, DateTime createdAt, DateTime updatedAt)

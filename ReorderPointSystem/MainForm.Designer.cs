@@ -32,14 +32,9 @@
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
             ItemInfoGroupBox = new GroupBox();
-            DeleteCatLabel = new Label();
-            DeleteCatCheckBox = new CheckBox();
-            NewCategoryNameLabel = new Label();
-            AddNewCatLabel = new Label();
-            AddNewCatCheckBox = new CheckBox();
-            SubmitNewCategoryBtn = new Button();
+            DeleteCategoryBtn = new Button();
+            AddCategoryBtn = new Button();
             EditItemBtn = new Button();
-            NewCategoryTextBox = new TextBox();
             CategoryComboBoxLabel = new Label();
             CategoryComboBox = new ComboBox();
             EnableReorderLabel = new Label();
@@ -77,6 +72,7 @@
             BtnExportCategories = new Button();
             BtnExportReorders = new Button();
             BtnExportLogs = new Button();
+            openAnalysisButton = new Button();
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -126,14 +122,9 @@
             // 
             // ItemInfoGroupBox
             // 
-            ItemInfoGroupBox.Controls.Add(DeleteCatLabel);
-            ItemInfoGroupBox.Controls.Add(DeleteCatCheckBox);
-            ItemInfoGroupBox.Controls.Add(NewCategoryNameLabel);
-            ItemInfoGroupBox.Controls.Add(AddNewCatLabel);
-            ItemInfoGroupBox.Controls.Add(AddNewCatCheckBox);
-            ItemInfoGroupBox.Controls.Add(SubmitNewCategoryBtn);
+            ItemInfoGroupBox.Controls.Add(DeleteCategoryBtn);
+            ItemInfoGroupBox.Controls.Add(AddCategoryBtn);
             ItemInfoGroupBox.Controls.Add(EditItemBtn);
-            ItemInfoGroupBox.Controls.Add(NewCategoryTextBox);
             ItemInfoGroupBox.Controls.Add(CategoryComboBoxLabel);
             ItemInfoGroupBox.Controls.Add(CategoryComboBox);
             ItemInfoGroupBox.Controls.Add(EnableReorderLabel);
@@ -223,6 +214,25 @@
             SubmitNewCategoryBtn.UseVisualStyleBackColor = true;
             SubmitNewCategoryBtn.Visible = false;
             SubmitNewCategoryBtn.Click += SubmitNewCategoryBtn_Click;
+            // DeleteCategoryBtn
+            // 
+            DeleteCategoryBtn.Location = new Point(444, 70);
+            DeleteCategoryBtn.Name = "DeleteCategoryBtn";
+            DeleteCategoryBtn.Size = new Size(51, 23);
+            DeleteCategoryBtn.TabIndex = 27;
+            DeleteCategoryBtn.Text = "Delete";
+            DeleteCategoryBtn.UseVisualStyleBackColor = true;
+            DeleteCategoryBtn.Click += DeleteCategoryBtn_Click;
+            // 
+            // AddCategoryBtn
+            // 
+            AddCategoryBtn.Location = new Point(398, 70);
+            AddCategoryBtn.Name = "AddCategoryBtn";
+            AddCategoryBtn.Size = new Size(42, 23);
+            AddCategoryBtn.TabIndex = 27;
+            AddCategoryBtn.Text = "Add";
+            AddCategoryBtn.UseVisualStyleBackColor = true;
+            AddCategoryBtn.Click += AddCategoryBtn_Click;
             // 
             // EditItemBtn
             // 
@@ -246,12 +256,10 @@
             NewCategoryTextBox.TabIndex = 8;
             NewCategoryTextBox.Visible = false;
             NewCategoryTextBox.KeyDown += NewCategoryTextBox_KeyDown;
-            // 
             // CategoryComboBoxLabel
             // 
             CategoryComboBoxLabel.AutoSize = true;
-            CategoryComboBoxLabel.Location = new Point(63, 164);
-            CategoryComboBoxLabel.Margin = new Padding(6, 0, 6, 0);
+            CategoryComboBoxLabel.Location = new Point(34, 73);
             CategoryComboBoxLabel.Name = "CategoryComboBoxLabel";
             CategoryComboBoxLabel.Size = new Size(132, 32);
             CategoryComboBoxLabel.TabIndex = 0;
@@ -261,7 +269,7 @@
             // 
             CategoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             CategoryComboBox.FormattingEnabled = true;
-            CategoryComboBox.Location = new Point(197, 158);
+            CategoryComboBox.Location = new Point(106, 70);
             CategoryComboBox.Margin = new Padding(6);
             CategoryComboBox.Name = "CategoryComboBox";
             CategoryComboBox.Size = new Size(522, 40);
@@ -270,17 +278,17 @@
             // EnableReorderLabel
             // 
             EnableReorderLabel.AutoSize = true;
-            EnableReorderLabel.Location = new Point(804, 137);
+            EnableReorderLabel.Location = new Point(526, 74);
             EnableReorderLabel.Margin = new Padding(6, 0, 6, 0);
             EnableReorderLabel.Name = "EnableReorderLabel";
-            EnableReorderLabel.Size = new Size(290, 32);
+            EnableReorderLabel.Size = new Size(140, 15);
             EnableReorderLabel.TabIndex = 0;
-            EnableReorderLabel.Text = "Disable automatic reorder";
+            EnableReorderLabel.Text = "Enable automatic reorder";
             // 
             // EnableReorderChkbx
             // 
             EnableReorderChkbx.AutoSize = true;
-            EnableReorderChkbx.Location = new Point(765, 139);
+            EnableReorderChkbx.Location = new Point(512, 75);
             EnableReorderChkbx.Margin = new Padding(6);
             EnableReorderChkbx.Name = "EnableReorderChkbx";
             EnableReorderChkbx.Size = new Size(28, 27);
@@ -323,11 +331,11 @@
             // ItemDescriptionGroupBox
             // 
             ItemDescriptionGroupBox.Controls.Add(ItemDescriptionTextBox);
-            ItemDescriptionGroupBox.Location = new Point(11, 309);
+            ItemDescriptionGroupBox.Location = new Point(6, 99);
             ItemDescriptionGroupBox.Margin = new Padding(6);
             ItemDescriptionGroupBox.Name = "ItemDescriptionGroupBox";
             ItemDescriptionGroupBox.Padding = new Padding(6);
-            ItemDescriptionGroupBox.Size = new Size(1255, 265);
+            ItemDescriptionGroupBox.Size = new Size(676, 170);
             ItemDescriptionGroupBox.TabIndex = 0;
             ItemDescriptionGroupBox.TabStop = false;
             ItemDescriptionGroupBox.Text = "Item Description";
@@ -340,7 +348,7 @@
             ItemDescriptionTextBox.Multiline = true;
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
             ItemDescriptionTextBox.PlaceholderText = "Enter the item description here (size, color, weight, material, etc.)";
-            ItemDescriptionTextBox.Size = new Size(1228, 200);
+            ItemDescriptionTextBox.Size = new Size(663, 145);
             ItemDescriptionTextBox.TabIndex = 10;
             // 
             // ReorderMaxTextBox
@@ -444,7 +452,6 @@
             // 
             ItemsGridView.AllowUserToAddRows = false;
             ItemsGridView.AllowUserToDeleteRows = false;
-            ItemsGridView.AllowUserToResizeColumns = false;
             ItemsGridView.AllowUserToResizeRows = false;
             ItemsGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             ItemsGridView.BackgroundColor = SystemColors.Window;
@@ -554,7 +561,6 @@
             // 
             PastOrderDataGridView.AllowUserToAddRows = false;
             PastOrderDataGridView.AllowUserToDeleteRows = false;
-            PastOrderDataGridView.AllowUserToResizeColumns = false;
             PastOrderDataGridView.AllowUserToResizeRows = false;
             PastOrderDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             PastOrderDataGridView.BackgroundColor = SystemColors.Window;
@@ -586,7 +592,6 @@
             // 
             OrderItemsDataGrid.AllowUserToAddRows = false;
             OrderItemsDataGrid.AllowUserToDeleteRows = false;
-            OrderItemsDataGrid.AllowUserToResizeColumns = false;
             OrderItemsDataGrid.AllowUserToResizeRows = false;
             OrderItemsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             OrderItemsDataGrid.BackgroundColor = SystemColors.Window;
@@ -676,16 +681,26 @@
             BtnExportLogs.Text = "Export Inventory Log";
             BtnExportLogs.UseVisualStyleBackColor = true;
             BtnExportLogs.Click += BtnExportLogs_Click;
+            // openAnalysisButton
+            // 
+            openAnalysisButton.Location = new Point(418, 723);
+            openAnalysisButton.Name = "openAnalysisButton";
+            openAnalysisButton.Size = new Size(113, 23);
+            openAnalysisButton.TabIndex = 27;
+            openAnalysisButton.Text = "Analysis";
+            openAnalysisButton.UseVisualStyleBackColor = true;
+            openAnalysisButton.Click += openAnalysisButton_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(2347, 1628);
+            ClientSize = new Size(1264, 761);
             Controls.Add(BtnExportLogs);
             Controls.Add(BtnExportReorders);
             Controls.Add(BtnExportCategories);
             Controls.Add(BtnExportItems);
+            Controls.Add(openAnalysisButton);
             Controls.Add(OrderRecievedBtn);
             Controls.Add(CurrentOrdersGroupBox);
             Controls.Add(EditOrderAmtBtn);
@@ -758,11 +773,6 @@
         private ComboBox CategoryComboBox;
         private DataGridView ItemsGridView;
         private DataGridView OrderItemsDataGrid;
-        private Label AddNewCatLabel;
-        private CheckBox AddNewCatCheckBox;
-        private Button SubmitNewCategoryBtn;
-        private TextBox NewCategoryTextBox;
-        private Label NewCategoryNameLabel;
         private TextBox ItemDescriptionTextBox;
         private DataGridView PastOrderDataGridView;
         private Label DeleteCatLabel;
@@ -771,5 +781,8 @@
         private Button BtnExportCategories;
         private Button BtnExportReorders;
         private Button BtnExportLogs;      
+        private Button openAnalysisButton;
+        private Button DeleteCategoryBtn;
+        private Button AddCategoryBtn;
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Data.SQLite;
+﻿using System.Data;
+using System.Data.SQLite;
 using ReorderPointSystem.Models;
+using ReorderPointSystem.Services;
 
 namespace ReorderPointSystem.Data
 {
@@ -65,7 +67,7 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = GlobalDate.date;
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);
@@ -137,7 +139,7 @@ namespace ReorderPointSystem.Data
                     updated_at = @LastUpdatedAt
                 WHERE id = @Id;
             ";
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = GlobalDate.date;
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);
@@ -151,7 +153,7 @@ namespace ReorderPointSystem.Data
             bool result = command.ExecuteNonQuery() > 0;
 
             // Add inventory log
-            if (!ignoreLog && result)
+            if (!ignoreLog)
             {
                 InventoryLogRepository logRepository = new InventoryLogRepository();
                 InventoryLog newLog = new InventoryLog(item.Id, item.CurrentAmount - previousQuantity, "Item updated");
