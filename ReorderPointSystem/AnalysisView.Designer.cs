@@ -51,9 +51,15 @@
             // 
             // historyGrid
             // 
+            historyGrid.AllowUserToAddRows = false;
+            historyGrid.AllowUserToDeleteRows = false;
+            historyGrid.BackgroundColor = SystemColors.Window;
             historyGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            historyGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
             historyGrid.Location = new Point(6, 37);
             historyGrid.Name = "historyGrid";
+            historyGrid.ReadOnly = true;
+            historyGrid.ShowEditingIcon = false;
             historyGrid.Size = new Size(602, 280);
             historyGrid.TabIndex = 0;
             // 
@@ -81,9 +87,15 @@
             // 
             // historyRecentGainsGrid
             // 
+            historyRecentGainsGrid.AllowUserToAddRows = false;
+            historyRecentGainsGrid.AllowUserToDeleteRows = false;
+            historyRecentGainsGrid.BackgroundColor = SystemColors.Window;
             historyRecentGainsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            historyRecentGainsGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
             historyRecentGainsGrid.Location = new Point(6, 338);
             historyRecentGainsGrid.Name = "historyRecentGainsGrid";
+            historyRecentGainsGrid.ReadOnly = true;
+            historyRecentGainsGrid.ShowEditingIcon = false;
             historyRecentGainsGrid.Size = new Size(602, 164);
             historyRecentGainsGrid.TabIndex = 6;
             // 
@@ -122,9 +134,15 @@
             // 
             // predictionExponentialGrid
             // 
+            predictionExponentialGrid.AllowUserToAddRows = false;
+            predictionExponentialGrid.AllowUserToDeleteRows = false;
+            predictionExponentialGrid.BackgroundColor = SystemColors.Window;
             predictionExponentialGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            predictionExponentialGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
             predictionExponentialGrid.Location = new Point(6, 361);
             predictionExponentialGrid.Name = "predictionExponentialGrid";
+            predictionExponentialGrid.ReadOnly = true;
+            predictionExponentialGrid.ShowEditingIcon = false;
             predictionExponentialGrid.Size = new Size(602, 141);
             predictionExponentialGrid.TabIndex = 4;
             // 
@@ -139,9 +157,15 @@
             // 
             // predictionParabolicGrid
             // 
+            predictionParabolicGrid.AllowUserToAddRows = false;
+            predictionParabolicGrid.AllowUserToDeleteRows = false;
+            predictionParabolicGrid.BackgroundColor = SystemColors.Window;
             predictionParabolicGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            predictionParabolicGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
             predictionParabolicGrid.Location = new Point(6, 199);
             predictionParabolicGrid.Name = "predictionParabolicGrid";
+            predictionParabolicGrid.ReadOnly = true;
+            predictionParabolicGrid.ShowEditingIcon = false;
             predictionParabolicGrid.Size = new Size(602, 141);
             predictionParabolicGrid.TabIndex = 2;
             // 
@@ -156,9 +180,15 @@
             // 
             // predictionLinearGrid
             // 
+            predictionLinearGrid.AllowUserToAddRows = false;
+            predictionLinearGrid.AllowUserToDeleteRows = false;
+            predictionLinearGrid.BackgroundColor = SystemColors.Window;
             predictionLinearGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            predictionLinearGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
             predictionLinearGrid.Location = new Point(6, 37);
             predictionLinearGrid.Name = "predictionLinearGrid";
+            predictionLinearGrid.ReadOnly = true;
+            predictionLinearGrid.ShowEditingIcon = false;
             predictionLinearGrid.Size = new Size(602, 141);
             predictionLinearGrid.TabIndex = 0;
             // 
