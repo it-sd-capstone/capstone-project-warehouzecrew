@@ -15,8 +15,8 @@ namespace ReorderPointSystem.Tests.Models
                 CurrentAmount = 5,
                 ReorderPoint = 10,
                 MaxAmount = 15,
-                CreatedAt = GlobalDate.date,
-                LastUpdatedAt = GlobalDate.date,
+                CreatedAt = GlobalDate.GetUpdatedDate(),
+                LastUpdatedAt = GlobalDate.GetUpdatedDate(),
             };
         }
 

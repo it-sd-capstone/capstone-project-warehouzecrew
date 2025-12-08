@@ -67,7 +67,7 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
-            var currentDateTime = GlobalDate.date;
+            var currentDateTime = GlobalDate.GetUpdatedDate();
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);
@@ -87,7 +87,7 @@ namespace ReorderPointSystem.Data
                 logRepository.Add(newLog);
             }
 
-            currentDateTime = GlobalDate.date.ToLocalTime();
+            currentDateTime = GlobalDate.GetUpdatedDate().ToLocalTime();
             return new Item
             {
                 Id = newId,
@@ -140,7 +140,7 @@ namespace ReorderPointSystem.Data
                     updated_at = @LastUpdatedAt
                 WHERE id = @Id;
             ";
-            var currentDateTime = GlobalDate.date;
+            var currentDateTime = GlobalDate.GetUpdatedDate();
             command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);

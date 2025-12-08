@@ -19,7 +19,7 @@ namespace ReorderPointSystem.Data
                 SELECT last_insert_rowid();
             ";
 
-            var currentDateTime = GlobalDate.date;
+            var currentDateTime = GlobalDate.GetUpdatedDate();
             cmd.Parameters.AddWithValue("@item_id", log.ItemId);
             cmd.Parameters.AddWithValue("@quantity_change", log.QuantityChange);
             cmd.Parameters.AddWithValue("@type", log.Type);

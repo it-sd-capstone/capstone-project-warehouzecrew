@@ -188,7 +188,7 @@ namespace ReorderPointSystem.Tests.Data
         {
             // Arrange
             AddSampleItems();
-            var beforeAdd = GlobalDate.date.ToLocalTime();
+            var beforeAdd = GlobalDate.GetUpdatedDate().ToLocalTime();
             var repo = new ReorderRepository();
             var reorder = new Reorder(new List<ReorderItem>
             {
@@ -197,7 +197,7 @@ namespace ReorderPointSystem.Tests.Data
 
             // Act
             var result = repo.Add(reorder);
-            var afterAdd = GlobalDate.date.ToLocalTime();
+            var afterAdd = GlobalDate.GetUpdatedDate().ToLocalTime();
 
             // Assert
             Assert.InRange(result.CreatedAt, beforeAdd.AddSeconds(-1), afterAdd.AddSeconds(1));
@@ -396,7 +396,7 @@ namespace ReorderPointSystem.Tests.Data
                 id: 999,
                 items: new List<ReorderItem>(),
                 status: "Complete",
-                createdAt: GlobalDate.date
+                createdAt: GlobalDate.GetUpdatedDate()
             );
 
             // Act

@@ -17,7 +17,7 @@ namespace ReorderPointSystem.Models
 
         public InventoryLog()
         {
-            CreatedAt = GlobalDate.date;
+            CreatedAt = GlobalDate.GetUpdatedDate();
         }
 
         public InventoryLog(int itemId, int quantityChange, string type)
@@ -25,7 +25,7 @@ namespace ReorderPointSystem.Models
             ItemId = itemId;
             QuantityChange = quantityChange;
             Type = type;
-            CreatedAt = GlobalDate.date;
+            CreatedAt = GlobalDate.GetUpdatedDate();
         }
 
         public override string ToString()

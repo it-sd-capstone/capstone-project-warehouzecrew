@@ -198,11 +198,11 @@ namespace ReorderPointSystem
                     orderID = 1;
                 }
                 if (wipReorder.Id == -1) {
-                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.date);
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.GetUpdatedDate());
                 } else
                 {
                     wipReorder = null;
-                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.date);
+                    wipReorder = new Reorder(orderID, controller.ConvertItemToReorderItem(pendingOrder), "Pending approval", GlobalDate.GetUpdatedDate());
                 }
                 if (PastOrderDataGridView.Rows.Count == orderID -1 && wipReorder.Items.Count != 0)
                 {
@@ -343,7 +343,7 @@ namespace ReorderPointSystem
         private void SimDayBtn_Click(object sender, EventArgs e)
         {
             GlobalDate.nextDay();
-            Random rand = new Random(GlobalDate.date.Day + GlobalDate.date.Month * 50 + GlobalDate.date.Year * 500);
+            Random rand = new Random(GlobalDate.GetUpdatedDate().Day + GlobalDate.GetUpdatedDate().Month * 50 + GlobalDate.GetUpdatedDate().Year * 500);
             foreach (Item item in itemsList)
             {
                 int num = rand.Next(100);
@@ -453,7 +453,7 @@ namespace ReorderPointSystem
                                 insertCmd.Parameters.AddWithValue("@reorderPt", itemReorderPoint[i]);
                                 insertCmd.Parameters.AddWithValue("@maxAmt", itemReorderAmt[i]);
                                 insertCmd.Parameters.AddWithValue("@enabled", reorderEnabled);
-                                insertCmd.Parameters.AddWithValue("@currentTime", GlobalDate.date);
+                                insertCmd.Parameters.AddWithValue("@currentTime", GlobalDate.GetUpdatedDate());
 
                                 insertCmd.ExecuteNonQuery();
                             }

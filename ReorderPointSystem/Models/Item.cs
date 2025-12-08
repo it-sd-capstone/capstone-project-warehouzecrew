@@ -47,8 +47,8 @@ namespace ReorderPointSystem.Models
             ReorderPoint = reorderPoint;
             MaxAmount = maxAmount;
             ReorderEnabled = enableReorder;
-            CreatedAt = GlobalDate.date;
-            LastUpdatedAt = GlobalDate.date;
+            CreatedAt = GlobalDate.GetUpdatedDate();
+            LastUpdatedAt = GlobalDate.GetUpdatedDate();
         }
 
         public Item(int id, int categoryId, string name, string description, int currentAmount, int reorderPoint, int maxAmount, bool enableReorder, DateTime createdAt, DateTime updatedAt)

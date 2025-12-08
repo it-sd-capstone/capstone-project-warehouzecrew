@@ -78,7 +78,7 @@ namespace ReorderPointSystem.Tests.Data
             SeedFakeItem();
             var repo = new InventoryLogRepository();
 
-            var before = GlobalDate.date;
+            var before = GlobalDate.GetUpdatedDate();
             InventoryLog newLog = repo.Add(new InventoryLog(1, 7, "IN"));
 
             Assert.NotNull(newLog);
@@ -86,7 +86,7 @@ namespace ReorderPointSystem.Tests.Data
             // Allow 1 second timestamp drift due to SQLite string-based timestamps
             Assert.InRange(newLog!.CreatedAt,
                 before.AddSeconds(-1),
-                GlobalDate.date.AddSeconds(1));
+                GlobalDate.GetUpdatedDate().AddSeconds(1));
         }
 
         // ------------------------------------------------------

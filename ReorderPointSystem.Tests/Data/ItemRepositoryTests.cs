@@ -310,11 +310,11 @@ namespace ReorderPointSystem.Tests.Data
             AddSampleData();
             var repo = new ItemRepository();
             Item item = CreateTestItem();
-            DateTime beforeAdd = GlobalDate.date.ToLocalTime().AddSeconds(-1);
+            DateTime beforeAdd = GlobalDate.GetUpdatedDate().ToLocalTime().AddSeconds(-1);
 
             // Act
             Item result = repo.Add(item);
-            DateTime afterAdd = GlobalDate.date.ToLocalTime().AddSeconds(1);
+            DateTime afterAdd = GlobalDate.GetUpdatedDate().ToLocalTime().AddSeconds(1);
 
             // Assert
             Assert.InRange(result.CreatedAt, beforeAdd, afterAdd);
