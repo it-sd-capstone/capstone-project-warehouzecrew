@@ -30,7 +30,30 @@ namespace ReorderPointSystem.Data
                     Id = reader.GetInt32(0),
                     Status = reader.GetString(1),
                     CreatedAt = reader.GetDateTime(2),
-                    //Items = GetReorderItems(reader.GetInt32(0))
+                    // Items = GetReorderItems(reader.GetInt32(0))
+                });
+            }
+
+            return reorders;
+        }
+
+        public List<Reorder> GetAllForCSV()
+        {
+            using var connection = Database.GetConnection();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM reorders";
+
+            List<Reorder> reorders = new List<Reorder>();
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                reorders.Add(new Reorder
+                {
+                    Id = reader.GetInt32(0),
+                    Status = reader.GetString(1),
+                    CreatedAt = reader.GetDateTime(2),
+                    Items = GetReorderItems(reader.GetInt32(0))
                 });
             }
 
