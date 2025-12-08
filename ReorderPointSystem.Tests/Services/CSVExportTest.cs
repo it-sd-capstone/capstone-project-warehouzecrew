@@ -72,7 +72,7 @@ namespace ReorderPointSystem.Tests.Services
         {
             var csv = CSVExport.ExportReorders(new List<Reorder>());
 
-            Assert.StartsWith("Id,ItemId,Quantity,Status,CreatedAt", csv);
+            Assert.StartsWith("ReorderId,ItemId,Quantity,Status,CreatedAt", csv);
         }
 
         [Fact]
