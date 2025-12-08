@@ -112,5 +112,16 @@ namespace ReorderPointSystem.Services
             }
             return reorderItems;
         }
+
+        public List<ReorderItem> ConvertItemToReorderItem(List<Item> items)
+        {
+            List<ReorderItem> returnList = new List<ReorderItem>();
+            foreach (Item item in items)
+            {
+                ReorderItem reorderItem = new ReorderItem(item.Id, item.MaxAmount, item.Name);
+                returnList.Add(reorderItem);
+            }
+            return returnList;
+        }
     }
 }
