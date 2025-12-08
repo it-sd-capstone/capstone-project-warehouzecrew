@@ -1115,9 +1115,15 @@ namespace ReorderPointSystem
 
             string csv = CSVExport.ExportInventoryLogs(logs);
             SaveCsvToFile(csv, "inventory_logs_export.csv");
+        }
         private string FormatDateTime(DateTime dt)
         {
             return dt.ToString("MM/dd/yyyy h:mm tt");
+        }
+
+        private void CategoryComboBoxLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
