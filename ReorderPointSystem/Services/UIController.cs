@@ -83,7 +83,19 @@ namespace ReorderPointSystem.Services
                 {
                     if (reorderItems.Find(x => x.ItemId == item.Id) == null)
                     {
-                        itemsOut.Add(item);
+                        Item newItem = new Item(
+                    item.Id,
+                    item.CategoryId,
+                    item.Name,
+                    item.Description,
+                    item.CurrentAmount,
+                    item.ReorderPoint,
+                    item.MaxAmount,
+                    item.ReorderEnabled,
+                    item.CreatedAt,
+                    item.LastUpdatedAt
+                    );
+                        itemsOut.Add(newItem);
                     }
                 }
             }
