@@ -955,8 +955,6 @@ namespace ReorderPointSystem
                     {
                         OrderItemsDataGrid.Rows.Add(item.Id, item.Name, item.MaxAmount);
                     }
-                    EditOrderAmtBtn.Enabled = false;
-                    EditOrderAmtTextBox.Enabled = false;
                 }
                 else
                 {
