@@ -87,7 +87,7 @@
             EnableTestModeChkbx.Location = new Point(12, 724);
             EnableTestModeChkbx.Name = "EnableTestModeChkbx";
             EnableTestModeChkbx.Size = new Size(155, 19);
-            EnableTestModeChkbx.TabIndex = 0;
+            EnableTestModeChkbx.TabIndex = 19;
             EnableTestModeChkbx.Text = "Enable Simulation Mode";
             EnableTestModeChkbx.UseVisualStyleBackColor = true;
             EnableTestModeChkbx.CheckedChanged += EnableTestModeChkbx_CheckedChanged;
@@ -97,7 +97,7 @@
             SimDayBtn.Location = new Point(164, 720);
             SimDayBtn.Name = "SimDayBtn";
             SimDayBtn.Size = new Size(95, 23);
-            SimDayBtn.TabIndex = 0;
+            SimDayBtn.TabIndex = 21;
             SimDayBtn.Text = "Simulate Day";
             SimDayBtn.UseVisualStyleBackColor = true;
             SimDayBtn.Visible = false;
@@ -108,7 +108,7 @@
             AddTestDataBtn.Location = new Point(265, 720);
             AddTestDataBtn.Name = "AddTestDataBtn";
             AddTestDataBtn.Size = new Size(90, 23);
-            AddTestDataBtn.TabIndex = 0;
+            AddTestDataBtn.TabIndex = 20;
             AddTestDataBtn.Text = "Add Test Data";
             AddTestDataBtn.UseVisualStyleBackColor = true;
             AddTestDataBtn.Visible = false;
@@ -148,7 +148,7 @@
             DeleteCategoryBtn.Margin = new Padding(2, 1, 2, 1);
             DeleteCategoryBtn.Name = "DeleteCategoryBtn";
             DeleteCategoryBtn.Size = new Size(55, 25);
-            DeleteCategoryBtn.TabIndex = 27;
+            DeleteCategoryBtn.TabIndex = 7;
             DeleteCategoryBtn.Text = "Delete";
             DeleteCategoryBtn.UseVisualStyleBackColor = true;
             DeleteCategoryBtn.Click += DeleteCategoryBtn_Click;
@@ -159,7 +159,7 @@
             AddCategoryBtn.Margin = new Padding(2, 1, 2, 1);
             AddCategoryBtn.Name = "AddCategoryBtn";
             AddCategoryBtn.Size = new Size(40, 25);
-            AddCategoryBtn.TabIndex = 27;
+            AddCategoryBtn.TabIndex = 6;
             AddCategoryBtn.Text = "Add";
             AddCategoryBtn.UseVisualStyleBackColor = true;
             AddCategoryBtn.Click += AddCategoryBtn_Click;
@@ -169,7 +169,7 @@
             EditItemBtn.Location = new Point(691, 119);
             EditItemBtn.Name = "EditItemBtn";
             EditItemBtn.Size = new Size(114, 46);
-            EditItemBtn.TabIndex = 12;
+            EditItemBtn.TabIndex = 11;
             EditItemBtn.Text = "Edit Item";
             EditItemBtn.UseVisualStyleBackColor = true;
             EditItemBtn.Click += EditItemBtn_Click;
@@ -209,7 +209,7 @@
             EnableReorderChkbx.Location = new Point(505, 77);
             EnableReorderChkbx.Name = "EnableReorderChkbx";
             EnableReorderChkbx.Size = new Size(15, 14);
-            EnableReorderChkbx.TabIndex = 6;
+            EnableReorderChkbx.TabIndex = 8;
             EnableReorderChkbx.UseVisualStyleBackColor = true;
             // 
             // DeleteItemBtn
@@ -217,7 +217,7 @@
             DeleteItemBtn.Location = new Point(691, 223);
             DeleteItemBtn.Name = "DeleteItemBtn";
             DeleteItemBtn.Size = new Size(114, 46);
-            DeleteItemBtn.TabIndex = 14;
+            DeleteItemBtn.TabIndex = 13;
             DeleteItemBtn.Text = "Delete Item";
             DeleteItemBtn.UseVisualStyleBackColor = true;
             DeleteItemBtn.Click += DeleteItemBtn_Click;
@@ -227,7 +227,7 @@
             ClearFieldsBtn.Location = new Point(691, 171);
             ClearFieldsBtn.Name = "ClearFieldsBtn";
             ClearFieldsBtn.Size = new Size(114, 46);
-            ClearFieldsBtn.TabIndex = 13;
+            ClearFieldsBtn.TabIndex = 12;
             ClearFieldsBtn.Text = "Clear Fields";
             ClearFieldsBtn.UseVisualStyleBackColor = true;
             ClearFieldsBtn.Click += ClearFieldsBtn_Click;
@@ -237,7 +237,7 @@
             SubmitItemBtn.Location = new Point(691, 67);
             SubmitItemBtn.Name = "SubmitItemBtn";
             SubmitItemBtn.Size = new Size(114, 46);
-            SubmitItemBtn.TabIndex = 11;
+            SubmitItemBtn.TabIndex = 10;
             SubmitItemBtn.Text = "Submit Item";
             SubmitItemBtn.UseVisualStyleBackColor = true;
             SubmitItemBtn.Click += SubmitItemBtn_Click;
@@ -260,7 +260,7 @@
             ItemDescriptionTextBox.Name = "ItemDescriptionTextBox";
             ItemDescriptionTextBox.PlaceholderText = "Enter the item description here (size, color, weight, material, etc.)";
             ItemDescriptionTextBox.Size = new Size(667, 140);
-            ItemDescriptionTextBox.TabIndex = 10;
+            ItemDescriptionTextBox.TabIndex = 9;
             // 
             // ReorderMaxTextBox
             // 
@@ -365,7 +365,7 @@
             ItemsGridView.RowHeadersWidth = 82;
             ItemsGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ItemsGridView.Size = new Size(804, 341);
-            ItemsGridView.TabIndex = 17;
+            ItemsGridView.TabIndex = 16;
             ItemsGridView.SelectionChanged += ItemsGridView_SelectionChanged;
             // 
             // AddToOrderBtn
@@ -373,7 +373,7 @@
             AddToOrderBtn.Location = new Point(290, 393);
             AddToOrderBtn.Name = "AddToOrderBtn";
             AddToOrderBtn.Size = new Size(236, 23);
-            AddToOrderBtn.TabIndex = 18;
+            AddToOrderBtn.TabIndex = 17;
             AddToOrderBtn.Text = "Add Selected Item To Pending Order";
             AddToOrderBtn.UseVisualStyleBackColor = true;
             AddToOrderBtn.Click += AddToOrderBtn_Click;
@@ -384,7 +384,7 @@
             ItemSearchTextBox.Name = "ItemSearchTextBox";
             ItemSearchTextBox.PlaceholderText = "Search...";
             ItemSearchTextBox.Size = new Size(323, 23);
-            ItemSearchTextBox.TabIndex = 15;
+            ItemSearchTextBox.TabIndex = 14;
             ItemSearchTextBox.KeyDown += ItemSearchTextBox_KeyDown;
             // 
             // SearchBtn
@@ -392,7 +392,7 @@
             SearchBtn.Location = new Point(541, 17);
             SearchBtn.Name = "SearchBtn";
             SearchBtn.Size = new Size(75, 23);
-            SearchBtn.TabIndex = 16;
+            SearchBtn.TabIndex = 15;
             SearchBtn.Text = "Search";
             SearchBtn.UseVisualStyleBackColor = true;
             SearchBtn.Click += SearchBtn_Click;
@@ -403,7 +403,7 @@
             openAnalysisButton.Margin = new Padding(2, 1, 2, 1);
             openAnalysisButton.Name = "openAnalysisButton";
             openAnalysisButton.Size = new Size(102, 23);
-            openAnalysisButton.TabIndex = 27;
+            openAnalysisButton.TabIndex = 18;
             openAnalysisButton.Text = "View Analytics";
             openAnalysisButton.UseVisualStyleBackColor = true;
             openAnalysisButton.Click += openAnalysisButton_Click;
@@ -413,7 +413,7 @@
             SubmitPendingOrderButton.Location = new Point(206, 485);
             SubmitPendingOrderButton.Name = "SubmitPendingOrderButton";
             SubmitPendingOrderButton.Size = new Size(195, 23);
-            SubmitPendingOrderButton.TabIndex = 20;
+            SubmitPendingOrderButton.TabIndex = 23;
             SubmitPendingOrderButton.Text = "Submit Selected Pending Order";
             SubmitPendingOrderButton.UseVisualStyleBackColor = true;
             SubmitPendingOrderButton.Click += SubmitPendingOrderButton_Click;
@@ -423,7 +423,7 @@
             DeletePendingOrderBtn.Location = new Point(6, 485);
             DeletePendingOrderBtn.Name = "DeletePendingOrderBtn";
             DeletePendingOrderBtn.Size = new Size(194, 23);
-            DeletePendingOrderBtn.TabIndex = 21;
+            DeletePendingOrderBtn.TabIndex = 24;
             DeletePendingOrderBtn.Text = "Delete Selected Pending Order";
             DeletePendingOrderBtn.UseVisualStyleBackColor = true;
             DeletePendingOrderBtn.Click += DeletePendingOrderBtn_Click;
@@ -483,7 +483,7 @@
             OrderItemsDataGrid.RowHeadersWidth = 82;
             OrderItemsDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             OrderItemsDataGrid.Size = new Size(393, 151);
-            OrderItemsDataGrid.TabIndex = 23;
+            OrderItemsDataGrid.TabIndex = 25;
             OrderItemsDataGrid.SelectionChanged += OrderItemsDataGrid_SelectionChanged;
             // 
             // EditOrderAmtTextBox
@@ -493,7 +493,7 @@
             EditOrderAmtTextBox.Name = "EditOrderAmtTextBox";
             EditOrderAmtTextBox.PlaceholderText = "Enter quantity";
             EditOrderAmtTextBox.Size = new Size(102, 23);
-            EditOrderAmtTextBox.TabIndex = 24;
+            EditOrderAmtTextBox.TabIndex = 27;
             EditOrderAmtTextBox.TextAlign = HorizontalAlignment.Center;
             // 
             // EditOrderAmtBtn
@@ -502,7 +502,7 @@
             EditOrderAmtBtn.Location = new Point(942, 720);
             EditOrderAmtBtn.Name = "EditOrderAmtBtn";
             EditOrderAmtBtn.Size = new Size(173, 23);
-            EditOrderAmtBtn.TabIndex = 25;
+            EditOrderAmtBtn.TabIndex = 26;
             EditOrderAmtBtn.Text = "Update Item's Order Quantity";
             EditOrderAmtBtn.UseVisualStyleBackColor = true;
             EditOrderAmtBtn.Click += EditOrderAmtBtn_Click;
@@ -513,7 +513,7 @@
             OrderRecievedBtn.Location = new Point(1121, 720);
             OrderRecievedBtn.Name = "OrderRecievedBtn";
             OrderRecievedBtn.Size = new Size(118, 23);
-            OrderRecievedBtn.TabIndex = 26;
+            OrderRecievedBtn.TabIndex = 28;
             OrderRecievedBtn.Text = "Order Recieved";
             OrderRecievedBtn.UseVisualStyleBackColor = true;
             OrderRecievedBtn.Click += OrderRecievedBtn_Click;
@@ -524,7 +524,7 @@
             BtnExportItems.Margin = new Padding(2, 1, 2, 1);
             BtnExportItems.Name = "BtnExportItems";
             BtnExportItems.Size = new Size(86, 23);
-            BtnExportItems.TabIndex = 27;
+            BtnExportItems.TabIndex = 29;
             BtnExportItems.Text = "Export Items";
             BtnExportItems.UseVisualStyleBackColor = true;
             BtnExportItems.Click += BtnExportItems_Click;
@@ -535,7 +535,7 @@
             BtnExportCategories.Margin = new Padding(2, 1, 2, 1);
             BtnExportCategories.Name = "BtnExportCategories";
             BtnExportCategories.Size = new Size(119, 23);
-            BtnExportCategories.TabIndex = 28;
+            BtnExportCategories.TabIndex = 31;
             BtnExportCategories.Text = "Export Categories";
             BtnExportCategories.UseVisualStyleBackColor = true;
             BtnExportCategories.Click += BtnExportCategories_Click;
@@ -546,7 +546,7 @@
             BtnExportReorders.Margin = new Padding(2, 1, 2, 1);
             BtnExportReorders.Name = "BtnExportReorders";
             BtnExportReorders.Size = new Size(111, 23);
-            BtnExportReorders.TabIndex = 28;
+            BtnExportReorders.TabIndex = 30;
             BtnExportReorders.Text = "Export Reorders";
             BtnExportReorders.UseVisualStyleBackColor = true;
             BtnExportReorders.Click += BtnExportReorders_Click;
@@ -557,7 +557,7 @@
             BtnExportLogs.Margin = new Padding(2, 1, 2, 1);
             BtnExportLogs.Name = "BtnExportLogs";
             BtnExportLogs.Size = new Size(130, 23);
-            BtnExportLogs.TabIndex = 29;
+            BtnExportLogs.TabIndex = 32;
             BtnExportLogs.Text = "Export Inventory Log";
             BtnExportLogs.UseVisualStyleBackColor = true;
             BtnExportLogs.Click += BtnExportLogs_Click;
