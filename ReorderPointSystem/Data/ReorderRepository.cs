@@ -107,6 +107,7 @@ namespace ReorderPointSystem.Data
                 command.Parameters.AddWithValue("@CreatedAt", reorderEntry.CreatedAt);
 
                 reorderEntry.Id = Convert.ToInt32(command.ExecuteScalar());
+                reorderEntry.CreatedAt = reorderEntry.CreatedAt.ToLocalTime(); // Ensure local time
             }
                 
             // Create reorder item entries

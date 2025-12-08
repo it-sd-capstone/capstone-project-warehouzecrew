@@ -80,13 +80,14 @@ namespace ReorderPointSystem.Data
 
             int newId = Convert.ToInt32(command.ExecuteScalar());
             
-            if (!ignoreLog)
+            if (!ignoreLog && newId > 0)
             {
                 InventoryLogRepository logRepository = new InventoryLogRepository();
                 InventoryLog newLog = new InventoryLog(newId, item.CurrentAmount, "Item created");
                 logRepository.Add(newLog);
             }
 
+            currentDateTime = GlobalDate.date.ToLocalTime();
             return new Item
             {
                 Id = newId,
@@ -153,7 +154,7 @@ namespace ReorderPointSystem.Data
             bool result = command.ExecuteNonQuery() > 0;
 
             // Add inventory log
-            if (!ignoreLog)
+            if (!ignoreLog && result)
             {
                 InventoryLogRepository logRepository = new InventoryLogRepository();
                 InventoryLog newLog = new InventoryLog(item.Id, item.CurrentAmount - previousQuantity, "Item updated");
