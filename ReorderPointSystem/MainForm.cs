@@ -27,6 +27,12 @@ namespace ReorderPointSystem
         public MainForm()
         {
             Database.Initialize();
+            var log = new InventoryLogRepository();
+            var all = log.GetAll();
+            if (all.Count() > 0)
+            {
+                GlobalDate.date = all[0].CreatedAt;
+            }
             InitializeComponent();
             LoadCategories();
             SetupGridColumns();
