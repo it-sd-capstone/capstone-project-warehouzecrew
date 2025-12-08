@@ -95,7 +95,7 @@ namespace ReorderPointSystem.Services
         public static string ExportInventoryLogs(List<InventoryLog> logs)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Id,ItemId,QuantityChange,Type,CreatedAt");
+            sb.AppendLine("Id,ItemId,QuantityChange,CreatedAt");
 
             foreach (var log in logs)
             {
@@ -103,7 +103,6 @@ namespace ReorderPointSystem.Services
                     $"{log.Id}," +
                     $"{log.ItemId}," +
                     $"{log.QuantityChange}," +
-                    $"{Escape(log.Type)}," +
                     $"{log.CreatedAt:yyyy-MM-dd HH:mm:ss}"
                 );
             }
