@@ -103,17 +103,17 @@ namespace ReorderPointSystem
             DataGridViewTextBoxColumn pastOrderIDColumn = new DataGridViewTextBoxColumn();
             pastOrderIDColumn.Name = "Id";
             pastOrderIDColumn.HeaderText = "Order ID";
-            pastOrderIDColumn.FillWeight = 20; // 20% of total width
+            pastOrderIDColumn.FillWeight = 15; // 20% of total width
 
             DataGridViewTextBoxColumn pastOrderDateColumn = new DataGridViewTextBoxColumn();
             pastOrderDateColumn.Name = "Created";
             pastOrderDateColumn.HeaderText = "Date Submitted";
-            pastOrderDateColumn.FillWeight = 40; // 40% of total width
+            pastOrderDateColumn.FillWeight = 48; // 40% of total width
 
             DataGridViewTextBoxColumn pastOrderStatusColumn = new DataGridViewTextBoxColumn();
             pastOrderStatusColumn.Name = "Status";
             pastOrderStatusColumn.HeaderText = "Status";
-            pastOrderStatusColumn.FillWeight = 40; // 40% of total width
+            pastOrderStatusColumn.FillWeight = 37; // 40% of total width
 
             // Add columns to grid
             ItemsGridView.Columns.Add(idColumn);
