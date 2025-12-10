@@ -1,5 +1,6 @@
 ﻿using System.Data.SQLite;
 using System.Diagnostics;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 using Microsoft.VisualBasic;
 using ReorderPointSystem.Data;
@@ -51,6 +52,10 @@ namespace ReorderPointSystem
             ItemsGridView.Columns.Clear();
             OrderItemsDataGrid.Columns.Clear();
             PastOrderDataGridView.Columns.Clear();
+
+            ItemsGridView.ColumnHeadersDefaultCellStyle.SelectionBackColor = ItemsGridView.ColumnHeadersDefaultCellStyle.BackColor;
+            OrderItemsDataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = OrderItemsDataGrid.ColumnHeadersDefaultCellStyle.BackColor;
+            PastOrderDataGridView.ColumnHeadersDefaultCellStyle.SelectionBackColor = PastOrderDataGridView.ColumnHeadersDefaultCellStyle.BackColor;
 
             // Create columns on percentages or total element space
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn();

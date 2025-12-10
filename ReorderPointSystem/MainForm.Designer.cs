@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             EnableTestModeChkbx = new CheckBox();
             SimDayBtn = new Button();
             AddTestDataBtn = new Button();
@@ -72,6 +74,7 @@
             BtnExportCategories = new Button();
             BtnExportReorders = new Button();
             BtnExportLogs = new Button();
+            SubmitTooltip = new ToolTip(components);
             ItemInfoGroupBox.SuspendLayout();
             ItemDescriptionGroupBox.SuspendLayout();
             ItemsListGroupBox.SuspendLayout();
@@ -240,6 +243,7 @@
             SubmitItemBtn.Size = new Size(114, 46);
             SubmitItemBtn.TabIndex = 10;
             SubmitItemBtn.Text = "Submit Item";
+            SubmitTooltip.SetToolTip(SubmitItemBtn, resources.GetString("SubmitItemBtn.ToolTip"));
             SubmitItemBtn.UseVisualStyleBackColor = true;
             SubmitItemBtn.Click += SubmitItemBtn_Click;
             // 
@@ -576,6 +580,12 @@
             BtnExportLogs.UseVisualStyleBackColor = true;
             BtnExportLogs.Click += BtnExportLogs_Click;
             // 
+            // SubmitTooltip
+            // 
+            SubmitTooltip.AutoPopDelay = 5000;
+            SubmitTooltip.InitialDelay = 300;
+            SubmitTooltip.ReshowDelay = 100;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -664,5 +674,6 @@
         private Button DeleteCategoryBtn;
         private Button AddCategoryBtn;
         private Label SimDateTime;
+        private ToolTip SubmitTooltip;
     }
 }
