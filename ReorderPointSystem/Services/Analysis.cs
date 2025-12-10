@@ -16,6 +16,7 @@ namespace ReorderPointSystem.Services
         private ItemRepository itemRepo = new ItemRepository();
         private List<InventoryLog>? logs = null;
         private List<Item>? current = null;
+        public List<int> deleted = null;
 
         public string[] timeLevelIdentities = [ "3 days", "5 days", "week", "2 weeks", "month" ];
         public int[] timeLevelDays = [3, 5, 7, 14, 30];
@@ -34,7 +35,20 @@ namespace ReorderPointSystem.Services
         public bool initialize()
         {
             logs = logRepo.GetAll();
-            current = itemRepo.GetAll();
+            current = new List<Item>();
+            deleted = new List<int>();
+            int i = 0;
+            while (true)
+            {
+                var nextItem = itemRepo.GetById(i + 1);
+                if (nextItem == null) { break; }
+                current.Add(nextItem);
+                if (current[i].IsDeleted)
+                {
+                    deleted.Add(i + 1);
+                }
+                i++;
+            }
             logCount = logs.Count();
             itemCount = current.Count();
             if (logCount == 0 || itemCount == 0) { return false; }
@@ -68,7 +82,10 @@ namespace ReorderPointSystem.Services
                 if (log.CreatedAt.Date != date)
                 {
                     date = log.CreatedAt.Date;
-                    logsPerDay.Add(logsInDay.ToArray());
+                    if (!deleted.Contains(log.ItemId))
+                    {
+                        logsPerDay.Add(logsInDay.ToArray());
+                    }
                     logsInDay.Clear();
                 }
                 logsInDay.Add(log);

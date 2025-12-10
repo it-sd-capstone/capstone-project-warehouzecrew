@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,7 @@ namespace ReorderPointSystem
             predictionExponentialGrid.Columns.Add("By last", "By last");
             foreach (Item item in items)
             {
+                if (analysis.deleted.Contains(item.Id)) { continue; }
                 var name = item.Name;
                 historyGrid.Columns.Add(name, name);
                 historyRecentGainsGrid.Columns.Add(name, name);
@@ -52,9 +54,15 @@ namespace ReorderPointSystem
                 row.CreateCells(historyGrid);
                 row.Cells[0].Value = analysis.dates[i].ToString("d");
                 var vals = analysis.history[i];
+                int delete = 0;
                 for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Cells[j + 1].Value = vals[j].ToString();
+                    if (analysis.deleted.Contains(j + 1))
+                    {
+                        delete++;
+                        continue;
+                    }
+                    row.Cells[j + 1 - delete].Value = vals[j].ToString();
                 }
                 historyGrid.Rows.Add(row);
             }
@@ -65,18 +73,30 @@ namespace ReorderPointSystem
                 row.CreateCells(historyRecentGainsGrid);
                 row.Cells[0].Value = timeLevelIdentities[i];
                 var vals = analysis.totalGains[i];
+                int delete = 0;
                 for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Cells[j + 1].Value = vals[j].ToString();
+                    if (analysis.deleted.Contains(j + 1))
+                    {
+                        delete++;
+                        continue;
+                    }
+                    row.Cells[j + 1 - delete].Value = vals[j].ToString();
                 }
                 historyRecentGainsGrid.Rows.Add(row);
             }
             var lastRow = new DataGridViewRow();
             lastRow.CreateCells(historyRecentGainsGrid);
             lastRow.Cells[0].Value = "all time";
+            int delete1 = 0;
             for (int i = 0; i < analysis.itemCount; i++)
             {
-                lastRow.Cells[i + 1].Value = analysis.grossGains[i] + analysis.grossLosses[i];
+                if (analysis.deleted.Contains(i + 1))
+                {
+                    delete1++;
+                    continue;
+                }
+                lastRow.Cells[i + 1 - delete1].Value = analysis.grossGains[i] + analysis.grossLosses[i];
             }
             historyRecentGainsGrid.Rows.Add(lastRow);
             // ---------- PREDICT ----------
@@ -87,9 +107,15 @@ namespace ReorderPointSystem
                 row.CreateCells(predictionLinearGrid);
                 row.Cells[0].Value = timeLevelIdentities[i];
                 var vals = analysis.predictLinear[i];
+                int delete = 0;
                 for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Cells[j + 1].Value = vals[j].ToString();
+                    if (analysis.deleted.Contains(j + 1))
+                    {
+                        delete++;
+                        continue;
+                    }
+                    row.Cells[j + 1 - delete].Value = vals[j].ToString();
                 }
                 predictionLinearGrid.Rows.Add(row);
             }
@@ -100,9 +126,15 @@ namespace ReorderPointSystem
                 row.CreateCells(predictionParabolicGrid);
                 row.Cells[0].Value = timeLevelIdentities[i];
                 var vals = analysis.predictParabola[i];
+                int delete = 0;
                 for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Cells[j + 1].Value = vals[j].ToString();
+                    if (analysis.deleted.Contains(j + 1))
+                    {
+                        delete++;
+                        continue;
+                    }
+                    row.Cells[j + 1 - delete].Value = vals[j].ToString();
                 }
                 predictionParabolicGrid.Rows.Add(row);
             }
@@ -113,9 +145,15 @@ namespace ReorderPointSystem
                 row.CreateCells(predictionExponentialGrid);
                 row.Cells[0].Value = timeLevelIdentities[i];
                 var vals = analysis.predictExponent[i];
+                int delete = 0;
                 for (int j = 0; j < vals.Length; j++)
                 {
-                    row.Cells[j + 1].Value = vals[j].ToString();
+                    if (analysis.deleted.Contains(j + 1))
+                    {
+                        delete++;
+                        continue;
+                    }
+                    row.Cells[j + 1 - delete].Value = vals[j].ToString();
                 }
                 predictionExponentialGrid.Rows.Add(row);
             }
